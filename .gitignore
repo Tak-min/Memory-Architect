@@ -1,0 +1,13 @@
+# 環境変数ファイル
+.env
+
+# Node.js関連
+node_modules/
+
+# ログファイル
+*.log
+
+# OSやエディタ固有のファイル
+.DS_Store
+Thumbs.db
+.vscode/
