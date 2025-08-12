@@ -44,3 +44,38 @@ export const specialRecipes = [
   }
   // 他の特殊レシピを追加
 ];
+
+export const actionPoints = {
+  initialAP: 6,
+  gatherRumor: -2,
+  buyIngredients: -1,
+  exploreLocation: -3,
+  specialEvent: -4
+};
+
+export const customerSatisfaction = {
+  correctCocktail: 20,
+  wrongCocktail: -15,
+  emotionMatchBonus: 10,
+  emotionMismatchPenalty: -8
+};
+
+export const rumorEffects = {
+  common: { impact: 5, expiry: 3 },
+  rare: { impact: 10, expiry: 5 },
+  epic: { impact: 20, expiry: 7 },
+  legendary: { impact: 35, expiry: 10 }
+};
+
+export const reputationSystem = {
+  satisfactionToReputation: 0.1,
+  negativeTrigger: 20,
+  highTrigger: 80,
+  troublemakerChance: 15,
+  vipChance: 20
+};
+
+export const synergyBonuses = {
+  fullEmotionMatch: 1.2,
+  specialRecipeMatch: 1.5
+};
