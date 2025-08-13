@@ -33,8 +33,8 @@ export class PerformanceManager {
     this.fps = 1000 / deltaTime;
     this.lastFrameTime = currentTime;
 
-    // FPS警告
-    if (this.fps < 30 && this.frameCount > 60) {
+    // FPS警告（初期化時は無効化）
+    if (this.fps < 15 && this.frameCount > 120) {
       console.warn(`Low FPS detected: ${this.fps.toFixed(1)}`);
     }
 

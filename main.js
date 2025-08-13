@@ -53,8 +53,14 @@ class MidnightMetropolisMixup {
       // パフォーマンス監視開始
       this.performanceManager.startMonitoring();
 
-      // UI の初期化
-      this.uiController.initialize();
+      // UI の初期化（エラーハンドリングを追加）
+      try {
+        this.uiController.initialize();
+      } catch (error) {
+        console.error('UI初期化でエラーが発生しました:', error);
+        // 基本的なUIフォールバック
+        this.initializeFallbackUI();
+      }
 
       // セーブシステムの初期化
       this.saveSystem.initialize();
@@ -131,19 +137,49 @@ class MidnightMetropolisMixup {
   }
 
   // ゲーム開始
+  // フォールバックUI初期化
+  initializeFallbackUI() {
+    console.log('基本UIを初期化します...');
+    
+    // 基本的な統計表示を更新
+    const updateBasicUI = () => {
+      const gameState = this.gameEngine.gameState;
+      
+      // APとレピュテーション表示
+      const apDisplay = document.getElementById('action-points-display');
+      const repDisplay = document.getElementById('reputation-display');
+      const dayDisplay = document.getElementById('current-day');
+      
+      if (apDisplay) apDisplay.textContent = gameState.actionPoints;
+      if (repDisplay) repDisplay.textContent = gameState.reputation;
+      if (dayDisplay) dayDisplay.textContent = gameState.currentDay;
+    };
+
+    // 基本的なイベントリスナー
+    const phaseBtn = document.getElementById('phase-switch-btn');
+    if (phaseBtn) {
+      phaseBtn.addEventListener('click', () => {
+        this.gameEngine.switchPhase();
+        updateBasicUI();
+      });
+    }
+
+    updateBasicUI();
+  }
+
+  // ゲーム開始後の処理
   startGame() {
-    console.log('Starting Midnight Metropolis Mix-up!');
+    console.log('Starting game...');
     
-    // セーブファイルがあるかチェック
-    this.checkForExistingSave();
-    
-    // ゲーム開始
-    this.gameEngine.startGame();
+    // ゲームループ開始
+    this.gameEngine.startGameLoop();
     
     // ウェルカムメッセージ
     setTimeout(() => {
-      this.uiController.showMessage('Welcome to Midnight Metropolis Mix-up!', 'info');
-      this.uiController.showMessage('Collect rumors during the day, serve customers at night!', 'info');
+      if (this.uiController.showMessage) {
+        this.uiController.showMessage('Welcome to Midnight Metropolis Mix-up!', 'info');
+        this.uiController.showMessage('Collect rumors during the day, serve customers at night!', 'info');
+      }
     }, 1000);
   }
 

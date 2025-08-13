@@ -140,28 +140,35 @@ export class UIController {
             </div>
           </div>
         </div>
-        <button id="create-cocktail-btn" class="create-btn" disabled>Create Cocktail</button>
-        <button id="clear-cocktail-btn" class="clear-btn">Clear All</button>
+        <button id="create-cocktail-btn" class="btn btn-primary" disabled>🍸 カクテル作成</button>
+        <button id="clear-slots-btn" class="btn btn-secondary">🗑️ クリア</button>
       </div>
     `;
     
-    // 満足度メーターの更新
-    const satisfactionMeters = document.getElementById('satisfaction-meters');
-    satisfactionMeters.innerHTML = `
-      <div class="satisfaction-container">
-        <div id="current-satisfaction" class="satisfaction-meter">
-          <h4>Predicted Satisfaction</h4>
-          <div class="meter-bar">
-            <div class="meter-fill" id="satisfaction-fill"></div>
+    // 満足度メーターを夜フェーズに動的に追加
+    const nightPhaseContent = document.querySelector('#night-phase .phase-content');
+    if (!document.getElementById('satisfaction-meters')) {
+      const satisfactionMetersDiv = document.createElement('div');
+      satisfactionMetersDiv.id = 'satisfaction-meters';
+      satisfactionMetersDiv.className = 'satisfaction-meters';
+      satisfactionMetersDiv.innerHTML = `
+        <h2 class="section-title">📊 満足度予測</h2>
+        <div class="satisfaction-container">
+          <div id="current-satisfaction" class="satisfaction-meter">
+            <h4>予想満足度</h4>
+            <div class="meter-bar">
+              <div class="meter-fill" id="satisfaction-fill"></div>
+            </div>
+            <div id="satisfaction-value">0</div>
           </div>
-          <div id="satisfaction-value">0</div>
+          <div id="customer-mood-display" class="mood-display">
+            <h4>顧客の気分</h4>
+            <div id="mood-indicator">😐</div>
+          </div>
         </div>
-        <div id="customer-mood-display" class="mood-display">
-          <h4>Customer Mood</h4>
-          <div id="mood-indicator"></div>
-        </div>
-      </div>
-    `;
+      `;
+      nightPhaseContent.appendChild(satisfactionMetersDiv);
+    }
   }
 
   // 共通UI要素の追加
@@ -224,7 +231,7 @@ export class UIController {
   // イベントリスナーの設定
   setupEventListeners() {
     // フェーズ切り替え
-    document.getElementById('switch-phase-btn')?.addEventListener('click', () => {
+    document.getElementById('phase-switch-btn')?.addEventListener('click', () => {
       this.gameEngine.switchPhase();
     });
 
@@ -251,7 +258,7 @@ export class UIController {
     });
 
     // カクテルクリア
-    document.getElementById('clear-cocktail-btn')?.addEventListener('click', () => {
+    document.getElementById('clear-slots-btn')?.addEventListener('click', () => {
       this.clearCocktail();
     });
   }
@@ -537,7 +544,7 @@ export class UIController {
   updatePhaseDisplay() {
     const dayPhase = document.getElementById('day-phase');
     const nightPhase = document.getElementById('night-phase');
-    const switchBtn = document.getElementById('switch-phase-btn');
+    const switchBtn = document.getElementById('phase-switch-btn');
 
     if (this.gameEngine.gameState.currentPhase === 'day') {
       dayPhase?.classList.remove('hidden');
