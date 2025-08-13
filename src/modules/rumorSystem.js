@@ -1,9 +1,10 @@
-import { gameData } from '../data/gameData.js';
+import { rumorData, specialRecipes } from '../data/gameData.js';
 
 export class RumorSystem {
-  constructor() {
-    this.rumorData = gameData.rumorData;
-    this.specialRecipes = gameData.specialRecipes;
+  constructor(gameEngine) {
+    this.gameEngine = gameEngine;
+    this.rumorData = rumorData;
+    this.specialRecipes = specialRecipes;
   }
 
   combineCocktail(baseId, flavorId, garnishId = null) {
