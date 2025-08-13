@@ -538,13 +538,6 @@ export class UIController {
     this.updateReputationDisplay();
     this.updateActionPointsDisplay();
     this.updateInventoryDisplay();
-    
-    // フェーズに応じてコンテンツを表示
-    if (this.gameEngine.gameState.currentPhase === 'day') {
-      this.showDayPhase();
-    } else {
-      this.showNightPhase();
-    }
   }
 
   // フェーズ表示の更新
@@ -652,124 +645,22 @@ export class UIController {
 
   // フェーズ表示
   showDayPhase() {
-    console.log('Switching to day phase...');
     this.updatePhaseDisplay();
-    
-    // Day phaseでのrumor inventoryを表示
-    this.populateDayInventory();
-  }
-
-  populateDayInventory() {
-    console.log('Populating day phase inventory...');
-    
-    const basesGrid = document.getElementById('bases-grid');
-    const flavorsGrid = document.getElementById('flavors-grid');
-    const garnishesGrid = document.getElementById('garnishes-grid');
-    
-    console.log('Day inventory containers:', {
-      bases: basesGrid ? 'found' : 'NOT FOUND',
-      flavors: flavorsGrid ? 'found' : 'NOT FOUND',
-      garnishes: garnishesGrid ? 'found' : 'NOT FOUND'
-    });
-    
-    if (!basesGrid || !flavorsGrid || !garnishesGrid) {
-      console.error('Day phase inventory containers not found!');
-      console.log('Available inventory elements:', Array.from(document.querySelectorAll('[id*="grid"], [id*="inventory"]')).map(el => el.id));
-      return;
-    }
-    
-    // プレイヤーのインベントリからrumorsを取得
-    const playerInventory = this.gameEngine.gameState.inventory || { bases: [], flavors: [], garnishes: [] };
-    
-    console.log('Player inventory:', playerInventory);
-    
-    // Clear existing content
-    basesGrid.innerHTML = '';
-    flavorsGrid.innerHTML = '';
-    garnishesGrid.innerHTML = '';
-    
-    // Populate each category
-    playerInventory.bases.forEach(rumor => {
-      const element = this.createInventoryRumorElement(rumor, 'base');
-      basesGrid.appendChild(element);
-    });
-    
-    playerInventory.flavors.forEach(rumor => {
-      const element = this.createInventoryRumorElement(rumor, 'flavor');
-      flavorsGrid.appendChild(element);
-    });
-    
-    playerInventory.garnishes.forEach(rumor => {
-      const element = this.createInventoryRumorElement(rumor, 'garnish');
-      garnishesGrid.appendChild(element);
-    });
-    
-    console.log('Day inventory populated successfully');
-  }
-
-  createInventoryRumorElement(rumor, type) {
-    const element = document.createElement('div');
-    element.className = 'rumor-item inventory-item';
-    element.dataset.rumorId = rumor.id;
-    element.dataset.rumorType = type;
-    element.draggable = true;
-    
-    element.innerHTML = `
-      <div class="rumor-content">
-        <div class="rumor-title">${rumor.title}</div>
-        <div class="rumor-emotion">${rumor.emotion}</div>
-        <div class="rumor-rarity">${rumor.rarity}</div>
-      </div>
-    `;
-    
-    // Add drag event listeners
-    element.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', JSON.stringify({
-        id: rumor.id,
-        type: type,
-        rumor: rumor
-      }));
-      element.classList.add('dragging');
-    });
-    
-    element.addEventListener('dragend', () => {
-      element.classList.remove('dragging');
-    });
-    
-    return element;
   }
 
   showNightPhase() {
-    console.log('Switching to night phase...');
     this.updatePhaseDisplay();
-    
-    // Force night phase to be visible
-    const nightPhase = document.getElementById('night-phase');
-    if (nightPhase) {
-      nightPhase.classList.add('active');
-      nightPhase.style.display = 'block';
-      // Force reflow
-      nightPhase.offsetHeight;
-      console.log('Night phase made visible');
-    }
     
     // Wait for DOM to update before populating rumor board
     setTimeout(() => {
       this.populateRumorBoard();
-    }, 300);
+    }, 100);
     
-    // Generate customers ONLY if in night phase
-    if (this.customerSystem && this.gameEngine.gameState.currentPhase === 'night') {
-      const customers = this.customerSystem.generateNightCustomers(this.gameEngine.gameState.reputation);
-      this.gameEngine.setCustomers(customers);
-      
-      // Wait before displaying customers
-      setTimeout(() => {
-        if (customers.length > 0) {
-          this.displayCustomers(customers);
-          this.displayCurrentCustomer(customers[0]);
-        }
-      }, 400);
+    const customers = this.customerSystem.generateNightCustomers(this.gameEngine.gameState.reputation);
+    this.gameEngine.setCustomers(customers);
+    
+    if (customers.length > 0) {
+      this.displayCurrentCustomer(customers[0]);
     }
   }
 
