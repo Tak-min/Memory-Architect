@@ -7,7 +7,6 @@ import { CustomerSystem } from './customerSystem.js';
 import { ReputationSystem } from './reputationSystem.js';
 import { SaveSystem } from './saveSystem.js';
 import { PerformanceManager } from './performanceManager.js';
-import { gameData } from '../data/gameData.js';
 import { mapData } from '../data/mapData.js';
 
 export class GameEngine {
@@ -76,7 +75,7 @@ export class GameEngine {
 
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height);
-    this.gameMap.draw(this.player.x, this.player.y);
+    this.gameMap.draw();
     this.player.draw(this.ctx);
   }
 
