@@ -1,783 +1,481 @@
-/* style.css - Midnight Metropolis Mix-up スタイルシート */
+/* style.css - Midnight Metropolis Mix-up Stylesheet */
 
-/* === 基本設定 === */
+/* === Core Setup === */
+:root {
+  --bg-dark: #0a0a10;
+  --bg-medium: #1a1a2e;
+  --bg-light: #2a2a4e;
+  --primary: #4d7cff;
+  --secondary: #ff4da6;
+  --accent: #00ffc3;
+  --text-light: #e0e0ff;
+  --text-dark: #a0a0c0;
+  --font-title: 'Orbitron', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+}
+
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
-  color: #ffffff;
-  margin: 0;
-  padding: 0;
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--bg-dark), var(--bg-medium));
+  color: var(--text-light);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* === ゲームコンテナ === */
+/* === Game Container & Layout === */
 #game-container {
-  width: 100%;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 20px;
-  min-height: 100vh;
-  position: relative;
-}
-
-/* === フェーズ制御 === */
-#phase-controls {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  display: flex;
-  gap: 10px;
-}
-
-.phase-btn, .control-btn {
-  background: linear-gradient(135deg, #0f3460, #533483);
-  color: #ffffff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.phase-btn:hover, .control-btn:hover {
-  background: linear-gradient(135deg, #1a1a2e, #634693);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
-}
-
-/* === フェーズ表示 === */
-.game-phase {
-  min-height: 80vh;
-  transition: opacity 0.5s ease;
-  display: none;
-}
-
-.game-phase.active {
-  display: block;
-}
-
-.game-phase.hidden {
-  display: none;
-}
-
-/* === 昼フェーズ UI === */
-#day-phase {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  border-radius: 15px;
-  padding: 30px;
-  margin-bottom: 20px;
-}
-
-/* シティマップ */
-.city-map-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.district-card {
-  background: linear-gradient(135deg, #2c3e50, #34495e);
-  border: 2px solid #3498db;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.district-card:hover {
-  transform: translateY(-5px);
-  border-color: #00ff88;
-  box-shadow: 0 8px 16px rgba(0,255,136,0.3);
-}
-
-.district-card h4 {
-  margin-top: 0;
-  color: #00ff88;
-  font-size: 1.3em;
-}
-
-.ap-cost {
-  color: #f39c12;
-  font-weight: bold;
-  margin: 10px 0;
-}
-
-.district-desc {
-  color: #bdc3c7;
-  font-size: 0.9em;
-  margin-bottom: 15px;
-}
-
-.visit-btn {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.visit-btn:hover {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  transform: scale(1.05);
-}
-
-.visit-btn:disabled {
-  background: #7f8c8d;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* アクションポイント表示 */
-.ap-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0,0,0,0.5);
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-
-.ap-value {
-  font-size: 2em;
-  font-weight: bold;
-  color: #00ff88;
-}
-
-.ap-max {
-  color: #bdc3c7;
-  font-size: 1.2em;
-}
-
-/* インベントリ */
-.inventory-container {
-  background: rgba(0,0,0,0.3);
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.inventory-section {
-  margin-bottom: 20px;
-}
-
-.inventory-section h4 {
-  margin-bottom: 10px;
-  color: #3498db;
-  border-bottom: 2px solid #3498db;
-  padding-bottom: 5px;
-}
-
-.inventory-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  min-height: 60px;
-  padding: 10px;
-  border: 2px dashed #555;
-  border-radius: 8px;
-}
-
-.rumor-item {
-  background: linear-gradient(135deg, #8e44ad, #9b59b6);
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
-  cursor: grab;
-  transition: all 0.3s ease;
-  min-width: 120px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.rumor-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-}
-
-.rumor-item.dragging {
-  opacity: 0.5;
-  transform: rotate(5deg);
-}
-
-.rumor-name {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.rumor-rarity {
-  font-size: 0.8em;
-  color: #f1c40f;
-  text-transform: uppercase;
-}
-
-.rumor-expire {
-  font-size: 0.7em;
-  color: #e67e22;
-  margin-top: 5px;
-}
-
-/* === 夜フェーズ UI === */
-#night-phase {
-  background: linear-gradient(135deg, #2c3e50, #4a6741);
-  border-radius: 15px;
-  padding: 30px;
-  margin-bottom: 20px;
-}
-
-/* バービュー */
-#bar-view {
-  width: 100%;
-  max-width: 800px;
-  height: 400px;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  position: relative;
-  border: 3px solid #0f3460;
-  border-radius: 15px;
-  margin-bottom: 30px;
-  overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-}
-
-.bar-interior {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background-image: 
-    radial-gradient(circle at 20% 50%, rgba(255,215,0,0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 30%, rgba(0,255,136,0.1) 0%, transparent 50%);
-}
-
-.bar-counter {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: linear-gradient(135deg, #8b4513, #a0522d);
-  border-top: 3px solid #daa520;
-}
-
-.customer-seat {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.customer-avatar {
-  font-size: 4em;
-  margin-bottom: 10px;
-  animation: gentle-bounce 2s ease-in-out infinite;
-}
-
-@keyframes gentle-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.customer-reaction {
-  position: absolute;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-}
-
-.reaction-bubble {
-  background: rgba(0,0,0,0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 15px;
-  position: relative;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.reaction-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 10px solid transparent;
-  border-top-color: rgba(0,0,0,0.8);
-}
-
-.reaction-stats {
-  margin-top: 10px;
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-/* 顧客キュー */
-.customer-queue-container {
-  background: rgba(0,0,0,0.3);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.customers-list {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 10px 0;
-}
-
-.current-customer-display {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-/* 噂ボード（カクテル作成） */
-.rumor-board-container {
-  background: rgba(0,0,0,0.5);
-  border-radius: 15px;
-  padding: 25px;
-  margin-bottom: 20px;
-}
-
-.cocktail-slots {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.slot-container {
-  text-align: center;
-}
-
-.slot-container label {
-  display: block;
-  color: #3498db;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.rumor-slot {
-  min-height: 80px;
-  border: 2px dashed #555;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.05);
-  color: #bdc3c7;
-  padding: 10px;
-  text-align: center;
-  position: relative;
-}
-
-/* Add placeholder text for empty slots */
-.rumor-slot:empty::before {
-  content: attr(data-placeholder);
-  color: #7f8c8d;
-  font-style: italic;
-  font-size: 0.9em;
-}
-
-.rumor-slot.droppable {
-  border-color: #00ff88;
-  background: rgba(0,255,136,0.1);
-  box-shadow: 0 0 20px rgba(0,255,136,0.3);
-}
-
-/* Specific slot styling */
-.slot[data-type="base"] .rumor-slot:empty::before {
-  content: "Drop Base Rumor Here";
-}
-
-.slot[data-type="flavor"] .rumor-slot:empty::before {
-  content: "Drop Flavor Here";
-}
-
-.slot[data-type="garnish"] .rumor-slot:empty::before {
-  content: "Drop Garnish Here";
-}
-
-.placed-rumor {
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
+  min-height: 100vh;
 }
 
-.placed-rumor .rumor-name {
-  font-weight: bold;
-  color: #00ff88;
-  margin-bottom: 5px;
-}
-
-.remove-btn {
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.create-btn {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 10px;
-  font-size: 1.1em;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-right: 10px;
-}
-
-.create-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-  transform: scale(1.05);
-}
-
-.create-btn:disabled {
-  background: #7f8c8d;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.clear-btn {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 10px;
-  font-size: 1.1em;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.clear-btn:hover {
-  background: linear-gradient(135deg, #c0392b, #e74c3c);
-  transform: scale(1.05);
-}
-
-/* 満足度メーター */
-.satisfaction-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.satisfaction-meter {
-  text-align: center;
-}
-
-.meter-bar {
-  width: 100%;
-  height: 20px;
-  background: #34495e;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 10px 0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.meter-fill {
-  height: 100%;
-  transition: width 0.5s ease, background-color 0.3s ease;
-  border-radius: 10px;
-}
-
-.meter-fill.excellent {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
-}
-
-.meter-fill.good {
-  background: linear-gradient(135deg, #f39c12, #e67e22);
-}
-
-.meter-fill.average {
-  background: linear-gradient(135deg, #f1c40f, #f39c12);
-}
-
-.meter-fill.poor {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-}
-
-.mood-display {
-  text-align: center;
-}
-
-.mood-info {
-  background: rgba(255,255,255,0.1);
-  border-radius: 10px;
-  padding: 15px;
-}
-
-.mood-name {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #f1c40f;
-  margin-bottom: 5px;
-}
-
-.mood-desc {
-  color: #bdc3c7;
-  font-size: 0.9em;
-}
-
-/* === 評判表示 === */
-.reputation-container {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(0,0,0,0.8);
-  border-radius: 15px;
-  padding: 20px;
-  min-width: 200px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-.reputation-container h3 {
-  margin-top: 0;
-  color: #3498db;
-  text-align: center;
-}
-
-.reputation-meter {
-  width: 100%;
-  height: 15px;
-  background: #34495e;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 10px 0;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.reputation-fill {
-  height: 100%;
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  transition: width 0.5s ease;
-  border-radius: 8px;
-}
-
-#reputation-value {
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #00ff88;
-}
-
-#reputation-level {
-  text-align: center;
-  font-size: 0.9em;
-  margin-top: 5px;
-}
-
-/* === メッセージシステム === */
-.message-area {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.message {
-  background: rgba(0,0,0,0.9);
-  color: white;
-  padding: 15px 25px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  animation: message-slide-in 0.3s ease;
-}
-
-.message.success {
-  border-left: 4px solid #27ae60;
-}
-
-.message.error {
-  border-left: 4px solid #e74c3c;
-}
-
-.message.info {
-  border-left: 4px solid #3498db;
-}
-
-.message.special {
-  border-left: 4px solid #f1c40f;
-  background: linear-gradient(135deg, rgba(241,196,15,0.2), rgba(230,126,34,0.2));
-}
-
-@keyframes message-slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* === アニメーション効果 === */
-.reputation-change {
-  position: fixed;
-  font-size: 24px;
-  font-weight: bold;
-  z-index: 1000;
-  pointer-events: none;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-.reputation-up {
-  color: #00ff00;
-}
-
-.reputation-down {
-  color: #ff0000;
-}
-
-.particle {
-  position: fixed;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-.sparkle {
-  position: fixed;
-  width: 6px;
-  height: 6px;
-  background: #ffffff;
-  border-radius: 50%;
-  z-index: 1001;
-  pointer-events: none;
-  box-shadow: 0 0 10px #ffffff;
-}
-
-/* === レスポンシブ対応 === */
-@media (max-width: 1024px) {
-  #game-container {
-    padding: 10px;
-  }
-  
-  .city-map-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  }
-  
-  .cocktail-slots {
-    grid-template-columns: 1fr;
-  }
-  
-  .satisfaction-container {
-    grid-template-columns: 1fr;
-  }
-  
-  #phase-controls {
-    position: static;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
-  .reputation-container {
-    position: static;
-    margin: 20px 0;
-  }
-}
-
-@media (max-width: 768px) {
-  body {
-    font-size: 14px;
-  }
-  
-  .district-card {
-    padding: 15px;
-  }
-  
-  .customer-avatar {
-    font-size: 3em;
-  }
-  
-  #bar-view {
-    height: 300px;
-  }
-  
-  .phase-btn, .control-btn {
-    padding: 10px 15px;
-    font-size: 0.9em;
-  }
-}
-
-/* === ユーティリティクラス === */
 .hidden {
   display: none !important;
 }
 
-.fade-in {
-  animation: fade-in 0.5s ease;
+/* === Header === */
+#game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.game-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent);
 }
 
-.slide-up {
-  animation: slide-up 0.3s ease;
+.header-center, .header-left, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.stats-display {
+  display: flex;
+  gap: 1.5rem;
 }
 
-/* === スクロールバーカスタマイズ === */
+.stat-item {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-label {
+  color: var(--text-dark);
+}
+
+#reputation-display, #action-points-display, #earnings-display, #current-day {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* === Phase Display & Switching === */
+.game-phase {
+  display: none;
+  flex-grow: 1;
+}
+.game-phase.active {
+  display: block;
+}
+
+.phase-indicator {
+  font-family: var(--font-title);
+  font-size: 1.2rem;
+}
+
+/* === Buttons === */
+.btn {
+  font-family: var(--font-body);
+  font-weight: 700;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.btn-primary {
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+.btn-primary:disabled {
+  background: #555;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn-secondary {
+  background: var(--bg-light);
+  color: var(--text-light);
+  border: 1px solid var(--primary);
+}
+.btn-secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* === Section Titles === */
+.section-title {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+  border-bottom: 2px solid var(--secondary);
+  padding-bottom: 0.5rem;
+}
+
+/* === Day Phase === */
+#day-phase .phase-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.city-districts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.district {
+  background: var(--bg-light);
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+.district:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px);
+}
+.district-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+.district-header h3 {
+  color: var(--secondary);
+  font-size: 1.1rem;
+}
+.ap-cost {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+.district-description {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+  min-height: 40px;
+}
+
+/* === Rumor Inventory (Day Phase) === */
+.rumor-inventory {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 12px;
+}
+.rumor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* === Night Phase === */
+#night-phase .phase-content {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+/* Customer Queue */
+.customers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.customer-card {
+  background: var(--bg-light);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  border: 2px solid transparent;
+}
+.customer-card.active {
+  border-color: var(--secondary);
+  box-shadow: 0 0 15px var(--secondary);
+}
+.customer-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.customer-type {
+  color: var(--text-dark);
+  font-style: italic;
+}
+.customer-mood {
+  margin-top: 0.5rem;
+  font-size: 1.5rem;
+}
+
+/* Bar View & Cocktail Creation */
+.bar-view {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+.ingredient-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.slot {
+  text-align: center;
+}
+.slot-label {
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+.rumor-slot {
+  background: var(--bg-dark);
+  border: 2px dashed var(--text-dark);
+  border-radius: 8px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.rumor-slot:hover {
+  border-color: var(--accent);
+  background: var(--bg-light);
+}
+.rumor-slot .rumor-item {
+  cursor: default;
+  width: 90%;
+}
+.cocktail-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+/* === Rumor Item Styling === */
+.rumor-item {
+  padding: 0.8rem;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+  border: 1px solid;
+  position: relative;
+  overflow: hidden;
+}
+.rumor-name {
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.rumor-description {
+  font-size: 0.8rem;
+  color: var(--text-dark);
+}
+.rumor-rarity {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Rumor types */
+.rumor-item[data-type="base"] { border-color: #4da6ff; background: radial-gradient(circle, #1a2e4a, #101c2e); }
+.rumor-item[data-type="flavor"] { border-color: #ff4da6; background: radial-gradient(circle, #4a1a3a, #2e1024); }
+.rumor-item[data-type="garnish"] { border-color: #00ffc3; background: radial-gradient(circle, #1a4a40, #102e28); }
+
+/* Rumor rarities */
+.rumor-item[data-rarity="common"] .rumor-rarity { color: #bbb; }
+.rumor-item[data-rarity="rare"] .rumor-rarity { color: #4d7cff; }
+.rumor-item[data-rarity="epic"] .rumor-rarity { color: #a64dff; }
+.rumor-item[data-rarity="legendary"] .rumor-rarity { color: #ffc300; text-shadow: 0 0 5px #ffc300; }
+
+/* === Rumor Selection Panel (Modal) === */
+.rumor-selection-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.rumor-selection-panel .panel-content {
+  background: var(--bg-medium);
+  width: 80%;
+  max-width: 900px;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid var(--primary);
+  box-shadow: 0 0 30px rgba(77, 124, 255, 0.3);
+}
+#rumor-selection-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 1rem;
+  margin-bottom: 1.5rem;
+}
+.rumor-selection-panel .rumor-item {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.rumor-selection-panel .rumor-item:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
+}
+
+/* === Modal Dialog === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-dialog {
+  background: var(--bg-light);
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid var(--secondary);
+  min-width: 300px;
+  max-width: 500px;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+#modal-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: var(--secondary);
+}
+#modal-close {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 2rem;
+  cursor: pointer;
+}
+.modal-body {
+  margin-bottom: 2rem;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* === Notifications === */
+#notifications {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.notification {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--bg-light);
+  border-left: 4px solid var(--accent);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease-out;
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* === Scrollbar === */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #2c3e50;
-  border-radius: 4px;
+  background: var(--bg-dark);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  border-radius: 4px;
+  background: var(--primary);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2980b9, #3498db);
+/* === Responsive Design === */
+@media (max-width: 1200px) {
+  #day-phase .phase-content {
+    grid-template-columns: 1fr;
+  }
+  #night-phase .phase-content {
+    grid-template-columns: 1fr;
+  }
+  .bar-view, .customer-queue {
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  #game-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .stats-display {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .rumor-grid {
+    grid-template-columns: 1fr;
+  }
 }

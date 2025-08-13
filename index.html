@@ -49,36 +49,52 @@
         <div id="city-map" class="city-map">
           <h2 class="section-title">🏙️ City Map</h2>
           <div class="city-districts">
-            <div class="district" data-district="downtown">
+            <div class="district" data-district="central_park">
               <div class="district-header">
-                <h3>🏢 Downtown</h3>
-                <span class="ap-cost">AP: 1</span>
-              </div>
-              <p class="district-description">Political rumors from business district</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="port">
-              <div class="district-header">
-                <h3>⚓ Port Area</h3>
-                <span class="ap-cost">AP: 2</span>
-              </div>
-              <p class="district-description">Information from dock workers</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="suburbs">
-              <div class="district-header">
-                <h3>🏘️ Suburbs</h3>
-                <span class="ap-cost">AP: 1</span>
-              </div>
-              <p class="district-description">Daily rumors from residents</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="underground">
-              <div class="district-header">
-                <h3>🌌 Underground</h3>
+                <h3>� Central Park</h3>
                 <span class="ap-cost">AP: 3</span>
               </div>
-              <p class="district-description">Information from the underworld</p>
+              <p class="district-description">The time-traveling fountain is here.</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
+            </div>
+            <div class="district" data-district="city_hall">
+              <div class="district-header">
+                <h3>🏛️ City Hall Steps</h3>
+                <span class="ap-cost">AP: 2</span>
+              </div>
+              <p class="district-description">Political gossip and the mayor's cat.</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
+            </div>
+            <div class="district" data-district="back_alleys">
+              <div class="district-header">
+                <h3>� Back Alleys</h3>
+                <span class="ap-cost">AP: 2</span>
+              </div>
+              <p class="district-description">Shady deals and secret meetings.</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
+            </div>
+            <div class="district" data-district="underground_club">
+              <div class="district-header">
+                <h3>� Underground Club</h3>
+                <span class="ap-cost">AP: 2</span>
+              </div>
+              <p class="district-description">The DJ's dark secrets unfold.</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
+            </div>
+            <div class="district" data-district="news_agency">
+              <div class="district-header">
+                <h3>📰 News Agency</h3>
+                <span class="ap-cost">AP: 2</span>
+              </div>
+              <p class="district-description">Gather official and unofficial news.</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
+            </div>
+            <div class="district" data-district="black_market">
+              <div class="district-header">
+                <h3>💰 Black Market</h3>
+                <span class="ap-cost">AP: 1</span>
+              </div>
+              <p class="district-description">Buy rare information and items.</p>
               <button class="btn btn-secondary visit-btn">Visit</button>
             </div>
           </div>
@@ -87,21 +103,8 @@
         <!-- Rumor Inventory -->
         <div id="rumor-inventory" class="rumor-inventory">
           <h2 class="section-title">📚 Rumor Inventory</h2>
-          <div class="inventory-tabs">
-            <button class="tab-btn active" data-tab="bases">Base Rumors</button>
-            <button class="tab-btn" data-tab="flavors">Flavors</button>
-            <button class="tab-btn" data-tab="garnishes">Garnishes</button>
-          </div>
           <div class="inventory-content">
-            <div id="bases-inventory" class="inventory-tab active">
-              <div class="rumor-grid" id="bases-grid"></div>
-            </div>
-            <div id="flavors-inventory" class="inventory-tab">
-              <div class="rumor-grid" id="flavors-grid"></div>
-            </div>
-            <div id="garnishes-inventory" class="inventory-tab">
-              <div class="rumor-grid" id="garnishes-grid"></div>
-            </div>
+            <div id="inventory-grid" class="rumor-grid"></div>
           </div>
         </div>
       </div>
@@ -142,25 +145,11 @@
           <div class="customers-container" id="customers-container"></div>
         </div>
 
-        <!-- Rumor Board -->
-        <div id="rumor-board" class="rumor-board">
-          <h2 class="section-title">📋 Available Rumors</h2>
-          <div class="rumor-board-tabs">
-            <button class="tab-btn active" data-tab="bases">Bases</button>
-            <button class="tab-btn" data-tab="flavors">Flavors</button>
-            <button class="tab-btn" data-tab="garnishes">Garnishes</button>
-          </div>
-          <div class="rumor-board-content">
-            <div id="board-bases" class="rumor-board-tab active">
-              <div class="rumor-items" id="board-bases-items"></div>
-            </div>
-            <div id="board-flavors" class="rumor-board-tab">
-              <div class="rumor-items" id="board-flavors-items"></div>
-            </div>
-            <div id="board-garnishes" class="rumor-board-tab">
-              <div class="rumor-items" id="board-garnishes-items"></div>
-            </div>
-          </div>
+        <!-- Rumor Selection for Cocktail -->
+        <div id="rumor-selection-panel" class="rumor-selection-panel hidden">
+          <h2 class="section-title">Select a Rumor</h2>
+          <div id="rumor-selection-content" class="rumor-grid"></div>
+          <button id="cancel-selection-btn" class="btn btn-secondary">Cancel</button>
         </div>
       </div>
     </div>
