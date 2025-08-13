@@ -1,15 +1,12 @@
-/* style.css - Midnight Metropolis Mix-up Stylesheet */
+/* style.css - Rebuilt for Canvas-based game */
 
-/* === Core Setup === */
 :root {
-  --bg-dark: #0a0a10;
-  --bg-medium: #1a1a2e;
-  --bg-light: #2a2a4e;
-  --primary: #4d7cff;
-  --secondary: #ff4da6;
-  --accent: #00ffc3;
-  --text-light: #e0e0ff;
-  --text-dark: #a0a0c0;
+  --bg-dark: #0d0c1d;
+  --bg-medium: #1c1b3a;
+  --primary: #6c5ce7;
+  --secondary: #fd79a8;
+  --accent: #55efc4;
+  --text-light: #f5f6fa;
   --font-title: 'Orbitron', sans-serif;
   --font-body: 'Roboto', sans-serif;
 }
@@ -22,460 +19,145 @@
 
 body {
   font-family: var(--font-body);
-  background: linear-gradient(135deg, var(--bg-dark), var(--bg-medium));
-  color: var(--text-light);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* === Game Container & Layout === */
-#game-container {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* === Header === */
-#game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.game-title {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  color: var(--accent);
-  text-shadow: 0 0 8px var(--accent);
-}
-
-.header-center, .header-left, .header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.stats-display {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.stat-item {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.stat-label {
-  color: var(--text-dark);
-}
-
-#reputation-display, #action-points-display, #earnings-display, #current-day {
-  font-weight: 700;
-  color: var(--accent);
-}
-
-/* === Phase Display & Switching === */
-.game-phase {
-  display: none;
-  flex-grow: 1;
-}
-.game-phase.active {
-  display: block;
-}
-
-.phase-indicator {
-  font-family: var(--font-title);
-  font-size: 1.2rem;
-}
-
-/* === Buttons === */
-.btn {
-  font-family: var(--font-body);
-  font-weight: 700;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.btn-primary {
-  background: linear-gradient(45deg, var(--primary), var(--secondary));
-  color: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-.btn-primary:disabled {
-  background: #555;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-.btn-secondary {
-  background: var(--bg-light);
-  color: var(--text-light);
-  border: 1px solid var(--primary);
-}
-.btn-secondary:hover {
-  background: var(--primary);
-  color: white;
-}
-
-/* === Section Titles === */
-.section-title {
-  font-family: var(--font-title);
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  color: var(--primary);
-  border-bottom: 2px solid var(--secondary);
-  padding-bottom: 0.5rem;
-}
-
-/* === Day Phase === */
-#day-phase .phase-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
-}
-
-.city-districts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.district {
-  background: var(--bg-light);
-  border-radius: 12px;
-  padding: 1rem;
-  border: 1px solid transparent;
-  transition: all 0.3s ease;
-}
-.district:hover {
-  border-color: var(--accent);
-  transform: translateY(-5px);
-}
-.district-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 0.5rem;
-}
-.district-header h3 {
-  color: var(--secondary);
-  font-size: 1.1rem;
-}
-.ap-cost {
-  font-size: 0.9rem;
-  color: var(--text-dark);
-}
-.district-description {
-  font-size: 0.9rem;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-  min-height: 40px;
-}
-
-/* === Rumor Inventory (Day Phase) === */
-.rumor-inventory {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1rem;
-  border-radius: 12px;
-}
-.rumor-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 0.5rem;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
-/* === Night Phase === */
-#night-phase .phase-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-
-/* Customer Queue */
-.customers-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.customer-card {
-  background: var(--bg-light);
-  padding: 1rem;
-  border-radius: 12px;
-  text-align: center;
-  border: 2px solid transparent;
-}
-.customer-card.active {
-  border-color: var(--secondary);
-  box-shadow: 0 0 15px var(--secondary);
-}
-.customer-name {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-.customer-type {
-  color: var(--text-dark);
-  font-style: italic;
-}
-.customer-mood {
-  margin-top: 0.5rem;
-  font-size: 1.5rem;
-}
-
-/* Bar View & Cocktail Creation */
-.bar-view {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 1.5rem;
-  border-radius: 12px;
-}
-.ingredient-slots {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-.slot {
-  text-align: center;
-}
-.slot-label {
-  margin-bottom: 0.5rem;
-  color: var(--text-dark);
-}
-.rumor-slot {
   background: var(--bg-dark);
-  border: 2px dashed var(--text-dark);
-  border-radius: 8px;
-  min-height: 80px;
+  color: var(--text-light);
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.rumor-slot:hover {
-  border-color: var(--accent);
-  background: var(--bg-light);
-}
-.rumor-slot .rumor-item {
-  cursor: default;
-  width: 90%;
-}
-.cocktail-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-/* === Rumor Item Styling === */
-.rumor-item {
-  padding: 0.8rem;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 0.9rem;
-  border: 1px solid;
-  position: relative;
+  min-height: 100vh;
   overflow: hidden;
 }
-.rumor-name {
-  font-weight: 700;
-  margin-bottom: 0.3rem;
+
+#game-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.rumor-description {
-  font-size: 0.8rem;
-  color: var(--text-dark);
+
+#canvas-wrapper {
+  position: relative;
+  width: 800px; /* Match canvas width */
+  height: 600px; /* Match canvas height */
+  box-shadow: 0 0 30px rgba(108, 92, 231, 0.5);
 }
-.rumor-rarity {
+
+#game-canvas {
+  background-color: #000;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* This is crucial for crisp pixel art */
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* --- UI Overlays --- */
+#game-ui {
   position: absolute;
-  top: 2px;
-  right: 5px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-/* Rumor types */
-.rumor-item[data-type="base"] { border-color: #4da6ff; background: radial-gradient(circle, #1a2e4a, #101c2e); }
-.rumor-item[data-type="flavor"] { border-color: #ff4da6; background: radial-gradient(circle, #4a1a3a, #2e1024); }
-.rumor-item[data-type="garnish"] { border-color: #00ffc3; background: radial-gradient(circle, #1a4a40, #102e28); }
-
-/* Rumor rarities */
-.rumor-item[data-rarity="common"] .rumor-rarity { color: #bbb; }
-.rumor-item[data-rarity="rare"] .rumor-rarity { color: #4d7cff; }
-.rumor-item[data-rarity="epic"] .rumor-rarity { color: #a64dff; }
-.rumor-item[data-rarity="legendary"] .rumor-rarity { color: #ffc300; text-shadow: 0 0 5px #ffc300; }
-
-/* === Rumor Selection Panel (Modal) === */
-.rumor-selection-panel {
-  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(5px);
-  z-index: 1000;
+  pointer-events: none; /* Allow clicks to pass through to canvas */
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.rumor-selection-panel .panel-content {
-  background: var(--bg-medium);
-  width: 80%;
-  max-width: 900px;
-  padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--primary);
-  box-shadow: 0 0 30px rgba(77, 124, 255, 0.3);
-}
-#rumor-selection-content {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 1rem;
-  margin-bottom: 1.5rem;
-}
-.rumor-selection-panel .rumor-item {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.rumor-selection-panel .rumor-item:hover {
-  transform: scale(1.05);
-  border-color: var(--accent);
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
 }
 
-/* === Modal Dialog === */
-.modal-overlay {
+#game-header {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(28, 27, 58, 0.8);
+  backdrop-filter: blur(5px);
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+}
+
+.stat {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: var(--text-light);
+}
+
+.stat span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+#dialog-box {
+  background: rgba(28, 27, 58, 0.9);
+  border-top: 3px solid var(--secondary);
+  padding: 1.5rem;
+  margin: 0 auto;
+  width: 95%;
+  max-width: 700px;
+  border-radius: 5px;
+  pointer-events: all; /* Dialog box should be interactive */
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+}
+
+#dialog-text {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+#dialog-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+#dialog-choices button {
+  pointer-events: all;
+  background: var(--primary);
+  color: var(--text-light);
+  border: none;
+  padding: 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+#dialog-choices button:hover {
+  background: var(--secondary);
+}
+
+/* --- Modal --- */
+#modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
-  z-index: 2000;
+  backdrop-filter: blur(10px);
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: all;
 }
-.modal-dialog {
-  background: var(--bg-light);
+
+#modal-content {
+  background: var(--bg-medium);
   padding: 2rem;
-  border-radius: 16px;
-  border: 1px solid var(--secondary);
-  min-width: 300px;
-  max-width: 500px;
-}
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-#modal-title {
-  font-family: var(--font-title);
-  font-size: 1.5rem;
-  color: var(--secondary);
-}
-#modal-close {
-  background: none;
-  border: none;
-  color: var(--text-light);
-  font-size: 2rem;
-  cursor: pointer;
-}
-.modal-body {
-  margin-bottom: 2rem;
-}
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
+  border-radius: 15px;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 40px rgba(108, 92, 231, 0.6);
+  min-width: 400px;
+  max-width: 80%;
 }
 
-/* === Notifications === */
-#notifications {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 3000;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.notification {
-  padding: 1rem;
-  border-radius: 8px;
-  background: var(--bg-light);
-  border-left: 4px solid var(--accent);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  animation: slideIn 0.3s ease-out;
-}
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* === Scrollbar === */
-::-webkit-scrollbar {
-  width: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-dark);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 5px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--secondary);
-}
-
-/* === Responsive Design === */
-@media (max-width: 1200px) {
-  #day-phase .phase-content {
-    grid-template-columns: 1fr;
-  }
-  #night-phase .phase-content {
-    grid-template-columns: 1fr;
-  }
-  .bar-view, .customer-queue {
-    grid-row: 1;
-  }
-}
-
-@media (max-width: 768px) {
-  #game-header {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .stats-display {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .rumor-grid {
-    grid-template-columns: 1fr;
-  }
+/* --- Utility --- */
+.hidden {
+  display: none !important;
 }
