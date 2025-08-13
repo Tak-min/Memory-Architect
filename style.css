@@ -378,12 +378,34 @@ body {
   color: #bdc3c7;
   padding: 10px;
   text-align: center;
+  position: relative;
+}
+
+/* Add placeholder text for empty slots */
+.rumor-slot:empty::before {
+  content: attr(data-placeholder);
+  color: #7f8c8d;
+  font-style: italic;
+  font-size: 0.9em;
 }
 
 .rumor-slot.droppable {
   border-color: #00ff88;
   background: rgba(0,255,136,0.1);
-  box-shadow: 0 0 15px rgba(0,255,136,0.3);
+  box-shadow: 0 0 20px rgba(0,255,136,0.3);
+}
+
+/* Specific slot styling */
+.slot[data-type="base"] .rumor-slot:empty::before {
+  content: "Drop Base Rumor Here";
+}
+
+.slot[data-type="flavor"] .rumor-slot:empty::before {
+  content: "Drop Flavor Here";
+}
+
+.slot[data-type="garnish"] .rumor-slot:empty::before {
+  content: "Drop Garnish Here";
 }
 
 .placed-rumor {

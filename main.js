@@ -82,6 +82,12 @@ class MidnightMetropolisMixup {
 
   // システム間の連携設定
   setupSystemIntegration() {
+    // GameEngineに他のシステムへの参照を設定
+    this.gameEngine.customerSystem = this.customerSystem;
+    this.gameEngine.rumorSystem = this.rumorSystem;
+    this.gameEngine.reputationSystem = this.reputationSystem;
+    this.gameEngine.saveSystem = this.saveSystem;
+    
     // 評判変化時のアニメーション
     this.gameEngine.addEventListener('reputationChanged', (data) => {
       this.animationEffects.showReputationChange(data.change);

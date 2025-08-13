@@ -633,12 +633,54 @@ export class UIController {
 
   showNightPhase() {
     this.updatePhaseDisplay();
+    
+    // Populate rumor board with available rumors
+    this.populateRumorBoard();
+    
     const customers = this.customerSystem.generateNightCustomers(this.gameEngine.gameState.reputation);
     this.gameEngine.setCustomers(customers);
     
     if (customers.length > 0) {
       this.displayCurrentCustomer(customers[0]);
     }
+  }
+
+  // Populate rumor board for night phase
+  populateRumorBoard() {
+    const boardBasesItems = document.getElementById('board-bases-items');
+    const boardFlavorsItems = document.getElementById('board-flavors-items');
+    const boardGarnishesItems = document.getElementById('board-garnishes-items');
+    
+    if (!boardBasesItems || !boardFlavorsItems || !boardGarnishesItems) {
+      console.warn('Rumor board items containers not found');
+      return;
+    }
+
+    // Clear existing content
+    boardBasesItems.innerHTML = '';
+    boardFlavorsItems.innerHTML = '';
+    boardGarnishesItems.innerHTML = '';
+
+    // Populate with available rumors from inventory
+    const inventory = this.gameEngine.gameState.inventory;
+    
+    // Add base rumors
+    inventory.bases.forEach(rumor => {
+      const rumorElement = this.createRumorElement(rumor, 'bases');
+      boardBasesItems.appendChild(rumorElement);
+    });
+
+    // Add flavors
+    inventory.flavors.forEach(rumor => {
+      const rumorElement = this.createRumorElement(rumor, 'flavors');
+      boardFlavorsItems.appendChild(rumorElement);
+    });
+
+    // Add garnishes
+    inventory.garnishes.forEach(rumor => {
+      const rumorElement = this.createRumorElement(rumor, 'garnishes');
+      boardGarnishesItems.appendChild(rumorElement);
+    });
   }
 
   // メッセージ表示
@@ -660,12 +702,29 @@ export class UIController {
   // 顧客リストの表示
   displayCustomers(customers) {
     console.log('Displaying customers:', customers);
-    const customerContainer = document.getElementById('customers-container');
+    
+    // DOM要素の取得をより安全に行う
+    let customerContainer = document.getElementById('customers-container');
+    
+    // 要素が見つからない場合は少し待ってから再試行
     if (!customerContainer) {
-      console.error('Customer container not found');
+      console.warn('Customer container not found, retrying in 100ms...');
+      setTimeout(() => {
+        customerContainer = document.getElementById('customers-container');
+        if (customerContainer) {
+          this.renderCustomers(customerContainer, customers);
+        } else {
+          console.error('Customer container still not found after retry');
+        }
+      }, 100);
       return;
     }
+    
+    this.renderCustomers(customerContainer, customers);
+  }
 
+  // 顧客のレンダリング（内部メソッド）
+  renderCustomers(customerContainer, customers) {
     customerContainer.innerHTML = '';
     
     if (!customers || customers.length === 0) {
