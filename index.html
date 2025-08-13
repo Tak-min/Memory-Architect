@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>都市記憶管理ゲーム - Memory City</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a2e;
+            color: #eee;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        #gameContainer {
+            position: relative;
+            margin: 20px;
+            border: 2px solid #16213e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            display: block;
+            background: #0f3460;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        #ui {
+            display: flex;
+            gap: 20px;
+            margin: 10px;
+            padding: 10px;
+            background: #16213e;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .memory-counter {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .memory-orb {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .happy { background: #ffd700; }
+        .skill { background: #00ff88; }
+        .sad { background: #ff4757; }
+        
+        #instructions {
+            max-width: 600px;
+            margin: 10px;
+            padding: 15px;
+            background: #16213e;
+            border-radius: 8px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Memory City Manager 🏙️</h1>
+    
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div id="ui">
+        <div class="memory-counter">
+            <span class="memory-orb happy"></span>
+            <span>幸せな記憶: <span id="happyCount">0</span></span>
+        </div>
+        <div class="memory-counter">
+            <span class="memory-orb skill"></span>
+            <span>技能記憶: <span id="skillCount">0</span></span>
+        </div>
+        <div class="memory-counter">
+            <span class="memory-orb sad"></span>
+            <span>悲しい記憶: <span id="sadCount">0</span></span>
+        </div>
+        <div>住民満足度: <span id="satisfaction">100</span>%</div>
+        <div>時間: <span id="gameTime">0</span>s</div>
+    </div>
+    
+    <div id="instructions">
+        <strong>遊び方:</strong> あなたは記憶アーキテクトです。住民（白い点）は記憶を求めて移動します。
+        建物をクリックして記憶を配布し、住民の満足度を維持してください。
+        記憶は時間と共に劣化するので、適切に管理しましょう！
+    </div>
+
+    <script>
+        class MemoryCityGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                // ゲーム状態
+                this.gameTime = 0;
+                this.satisfaction = 100;
+                this.memories = { happy: 10, skill: 8, sad: 5 };
+                
+                // ゲームオブジェクト
+                this.buildings = [];
+                this.citizens = [];
+                this.memoryOrbs = [];
+                this.selectedBuilding = null;
+                
+                // マウス状態
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.mouseDown = false;
+                
+                this.initializeGame();
+                this.setupEventListeners();
+                this.gameLoop();
+            }
+            
+            initializeGame() {
+                // 建物を配置（記憶保管庫）
+                const buildingTypes = [
+                    { type: 'happy', color: '#ffd700', capacity: 20 },
+                    { type: 'skill', color: '#00ff88', capacity: 15 },
+                    { type: 'sad', color: '#ff4757', capacity: 25 }
+                ];
+                
+                for (let i = 0; i < 9; i++) {
+                    const x = (i % 3) * 200 + 100;
+                    const y = Math.floor(i / 3) * 150 + 100;
+                    const buildingType = buildingTypes[i % 3];
+                    
+                    this.buildings.push({
+                        x, y, width: 48, height: 48,
+                        type: buildingType.type,
+                        color: buildingType.color,
+                        storedMemories: 0,
+                        capacity: buildingType.capacity,
+                        lastDistribution: 0
+                    });
+                }
+                
+                // 住民を配置
+                for (let i = 0; i < 12; i++) {
+                    this.citizens.push({
+                        x: Math.random() * (this.canvas.width - 16) + 8,
+                        y: Math.random() * (this.canvas.height - 16) + 8,
+                        targetX: 0, targetY: 0,
+                        speed: 0.5 + Math.random() * 0.5,
+                        needsMemory: Math.random() < 0.7,
+                        memoryType: ['happy', 'skill', 'sad'][Math.floor(Math.random() * 3)],
+                        satisfaction: 80 + Math.random() * 20,
+                        lastFed: 0
+                    });
+                }
+                
+                this.assignNewTargets();
+            }
+            
+            setupEventListeners() {
+                this.canvas.addEventListener('mousemove', (e) => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouseX = e.clientX - rect.left;
+                    this.mouseY = e.clientY - rect.top;
+                });
+                
+                this.canvas.addEventListener('mousedown', (e) => {
+                    this.mouseDown = true;
+                    this.handleClick();
+                });
+                
+                this.canvas.addEventListener('mouseup', () => {
+                    this.mouseDown = false;
+                });
+            }
+            
+            handleClick() {
+                // 建物クリック判定
+                for (const building of this.buildings) {
+                    if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
+                        this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
+                        
+                        if (this.memories[building.type] > 0) {
+                            building.storedMemories = Math.min(
+                                building.capacity, 
+                                building.storedMemories + 5
+                            );
+                            this.memories[building.type] -= 1;
+                            building.lastDistribution = this.gameTime;
+                            
+                            // 記憶オーブエフェクト生成
+                            for (let i = 0; i < 3; i++) {
+                                this.memoryOrbs.push({
+                                    x: building.x + building.width/2,
+                                    y: building.y + building.height/2,
+                                    vx: (Math.random() - 0.5) * 2,
+                                    vy: (Math.random() - 0.5) * 2,
+                                    color: building.color,
+                                    life: 30,
+                                    maxLife: 30
+                                });
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            update() {
+                this.gameTime++;
+                
+                // 住民の更新
+                this.updateCitizens();
+                
+                // 記憶オーブの更新
+                this.memoryOrbs = this.memoryOrbs.filter(orb => {
+                    orb.x += orb.vx;
+                    orb.y += orb.vy;
+                    orb.life--;
+                    orb.vx *= 0.95;
+                    orb.vy *= 0.95;
+                    return orb.life > 0;
+                });
+                
+                // 記憶の自動生成（少量）
+                if (this.gameTime % 300 === 0) {
+                    const types = ['happy', 'skill', 'sad'];
+                    const randomType = types[Math.floor(Math.random() * types.length)];
+                    this.memories[randomType] = Math.min(50, this.memories[randomType] + 1);
+                }
+                
+                // 建物の記憶劣化
+                if (this.gameTime % 600 === 0) {
+                    for (const building of this.buildings) {
+                        if (building.storedMemories > 0) {
+                            building.storedMemories = Math.max(0, building.storedMemories - 1);
+                        }
+                    }
+                }
+                
+                this.updateSatisfaction();
+                this.updateUI();
+            }
+            
+            updateCitizens() {
+                for (const citizen of this.citizens) {
+                    // 目標に向かって移動
+                    const dx = citizen.targetX - citizen.x;
+                    const dy = citizen.targetY - citizen.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 2) {
+                        citizen.x += (dx / distance) * citizen.speed;
+                        citizen.y += (dy / distance) * citizen.speed;
+                    } else {
+                        // 建物に到達した場合の処理
+                        const nearBuilding = this.buildings.find(b => 
+                            Math.abs(citizen.x - (b.x + b.width/2)) < 30 &&
+                            Math.abs(citizen.y - (b.y + b.height/2)) < 30 &&
+                            b.type === citizen.memoryType
+                        );
+                        
+                        if (nearBuilding && nearBuilding.storedMemories > 0) {
+                            nearBuilding.storedMemories--;
+                            citizen.satisfaction = Math.min(100, citizen.satisfaction + 15);
+                            citizen.needsMemory = false;
+                            citizen.lastFed = this.gameTime;
+                        }
+                        
+                        // 新しい目標を設定
+                        this.setNewTarget(citizen);
+                    }
+                    
+                    // 満足度の自然減少
+                    if (this.gameTime - citizen.lastFed > 500) {
+                        citizen.satisfaction = Math.max(0, citizen.satisfaction - 0.1);
+                        citizen.needsMemory = citizen.satisfaction < 50;
+                    }
+                }
+                
+                // 定期的に新しい目標を割り当て
+                if (this.gameTime % 180 === 0) {
+                    this.assignNewTargets();
+                }
+            }
+            
+            assignNewTargets() {
+                for (const citizen of this.citizens) {
+                    this.setNewTarget(citizen);
+                }
+            }
+            
+            setNewTarget(citizen) {
+                if (citizen.needsMemory) {
+                    // 必要な記憶タイプの建物を探す
+                    const targetBuildings = this.buildings.filter(b => 
+                        b.type === citizen.memoryType && b.storedMemories > 0
+                    );
+                    
+                    if (targetBuildings.length > 0) {
+                        const target = targetBuildings[Math.floor(Math.random() * targetBuildings.length)];
+                        citizen.targetX = target.x + target.width/2;
+                        citizen.targetY = target.y + target.height/2;
+                    } else {
+                        // ランダムな位置へ
+                        citizen.targetX = Math.random() * (this.canvas.width - 32) + 16;
+                        citizen.targetY = Math.random() * (this.canvas.height - 32) + 16;
+                    }
+                } else {
+                    // ランダムな位置へ散歩
+                    citizen.targetX = Math.random() * (this.canvas.width - 32) + 16;
+                    citizen.targetY = Math.random() * (this.canvas.height - 32) + 16;
+                }
+            }
+            
+            updateSatisfaction() {
+                const averageSatisfaction = this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length;
+                this.satisfaction = Math.round(averageSatisfaction);
+            }
+            
+            render() {
+                // 背景をクリア
+                this.ctx.fillStyle = '#0f3460';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // グリッドを描画
+                this.drawGrid();
+                
+                // 建物を描画
+                this.drawBuildings();
+                
+                // 住民を描画
+                this.drawCitizens();
+                
+                // 記憶オーブを描画
+                this.drawMemoryOrbs();
+                
+                // UI要素を描画
+                this.drawGameUI();
+            }
+            
+            drawGrid() {
+                this.ctx.strokeStyle = '#1e4d73';
+                this.ctx.lineWidth = 1;
+                
+                // 縦線
+                for (let x = 0; x < this.canvas.width; x += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                
+                // 横線
+                for (let y = 0; y < this.canvas.height; y += 40) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(this.canvas.width, y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            drawBuildings() {
+                for (const building of this.buildings) {
+                    // 建物本体（ドット絵風）
+                    this.ctx.fillStyle = building.color;
+                    this.ctx.fillRect(building.x, building.y, building.width, building.height);
+                    
+                    // 建物の輪郭
+                    this.ctx.strokeStyle = '#ffffff';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeRect(building.x, building.y, building.width, building.height);
+                    
+                    // 窓（ドット絵風）
+                    this.ctx.fillStyle = '#ffffff';
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            const windowX = building.x + 8 + i * 12;
+                            const windowY = building.y + 8 + j * 12;
+                            this.ctx.fillRect(windowX, windowY, 4, 4);
+                        }
+                    }
+                    
+                    // 記憶ストレージ表示
+                    const fillRatio = building.storedMemories / building.capacity;
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                    this.ctx.fillRect(
+                        building.x + 2, 
+                        building.y + building.height - 6, 
+                        (building.width - 4) * fillRatio, 
+                        4
+                    );
+                    
+                    // ホバーエフェクト
+                    if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
+                        this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
+                        this.ctx.strokeStyle = '#ffff00';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.strokeRect(building.x - 2, building.y - 2, building.width + 4, building.height + 4);
+                    }
+                }
+            }
+            
+            drawCitizens() {
+                for (const citizen of this.citizens) {
+                    // 住民の満足度による色分け
+                    if (citizen.satisfaction > 70) {
+                        this.ctx.fillStyle = '#00ff00';
+                    } else if (citizen.satisfaction > 40) {
+                        this.ctx.fillStyle = '#ffff00';
+                    } else {
+                        this.ctx.fillStyle = '#ff0000';
+                    }
+                    
+                    // 住民本体（ドット絵風）
+                    this.ctx.fillRect(citizen.x, citizen.y, 8, 8);
+                    
+                    // 輪郭
+                    this.ctx.strokeStyle = '#ffffff';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.strokeRect(citizen.x, citizen.y, 8, 8);
+                    
+                    // 記憶が必要な住民にはアイコン表示
+                    if (citizen.needsMemory) {
+                        this.ctx.fillStyle = this.getMemoryColor(citizen.memoryType);
+                        this.ctx.fillRect(citizen.x - 2, citizen.y - 6, 4, 4);
+                    }
+                }
+            }
+            
+            drawMemoryOrbs() {
+                for (const orb of this.memoryOrbs) {
+                    const alpha = orb.life / orb.maxLife;
+                    this.ctx.fillStyle = orb.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(orb.x, orb.y, 3, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+            }
+            
+            drawGameUI() {
+                // 左上に簡単な説明
+                this.ctx.fillStyle = '#ffffff';
+                this.ctx.font = '12px monospace';
+                this.ctx.fillText('建物をクリックして記憶を配布', 10, 20);
+            }
+            
+            getMemoryColor(type) {
+                const colors = {
+                    happy: '#ffd700',
+                    skill: '#00ff88',
+                    sad: '#ff4757'
+                };
+                return colors[type] || '#ffffff';
+            }
+            
+            updateUI() {
+                document.getElementById('happyCount').textContent = this.memories.happy;
+                document.getElementById('skillCount').textContent = this.memories.skill;
+                document.getElementById('sadCount').textContent = this.memories.sad;
+                document.getElementById('satisfaction').textContent = this.satisfaction;
+                document.getElementById('gameTime').textContent = Math.floor(this.gameTime / 60);
+            }
+            
+            gameLoop() {
+                this.update();
+                this.render();
+                requestAnimationFrame(() => this.gameLoop());
+            }
+        }
+        
+        // ゲーム開始
+        window.addEventListener('load', () => {
+            new MemoryCityGame();
+        });
+    </script>
+</body>
+</html>
