@@ -1,70 +1,70 @@
 import { rumorData, specialRecipes } from '../data/gameData.js';
 
 export class RumorSystem {
-  constructor(gameEngine) {
-    this.gameEngine = gameEngine;
-    this.rumorData = rumorData;
+  constructor() {
+    this.bases = rumorData.bases;
+    this.flavors = rumorData.flavors;
+    this.garnishes = rumorData.garnishes;
     this.specialRecipes = specialRecipes;
   }
 
+  getBase(id) {
+    return this.bases.find(b => b.id === id);
+  }
+
+  getFlavor(id) {
+    return this.flavors.find(f => f.id === id);
+  }
+
+  getGarnish(id) {
+    return this.garnishes.find(g => g.id === id);
+  }
+
+  checkSpecialRecipe(baseId, flavorId, garnishId) {
+    return this.specialRecipes.find(r => 
+      r.baseId === baseId && 
+      r.flavorId === flavorId && 
+      r.garnishId === garnishId
+    );
+  }
+
   combineCocktail(baseId, flavorId, garnishId = null) {
-    const base = this.rumorData.bases.find(b => b.id === baseId);
-    const flavor = this.rumorData.flavors.find(f => f.id === flavorId);
-    const garnish = garnishId ? this.rumorData.garnishes.find(g => g.id === garnishId) : null;
-
-    if (!base || !flavor) {
-      console.error("Invalid base or flavor for cocktail combination.");
-      return null;
-    }
-
+    const base = this.getBase(baseId);
+    const flavor = this.getFlavor(flavorId); 
+    const garnish = garnishId ? this.getGarnish(garnishId) : null;
+    
+    // 特殊レシピチェック
     const specialRecipe = this.checkSpecialRecipe(baseId, flavorId, garnishId);
 
     return {
       satisfaction: this.calculateSatisfaction(base, flavor, garnish, specialRecipe),
       reputation: this.calculateReputation(base, flavor, garnish, specialRecipe),
-      specialEffects: this.getSpecialEffects(specialRecipe, garnish)
+      specialEffects: this.getSpecialEffects(specialRecipe)
     };
   }
-
+  
   calculateSatisfaction(base, flavor, garnish, specialRecipe) {
-    let satisfaction = base.effect;
-    // Add flavor bonus/penalty, garnish effects, and special recipe bonus
-    satisfaction += flavor.matchBonus; // Simplified for now
-    if (garnish) {
-      // Simplified garnish effect
-      satisfaction += 10;
-    }
-    if (specialRecipe) {
-      satisfaction += specialRecipe.satisfactionBonus;
-    }
-    return satisfaction;
+    let totalSatisfaction = 0;
+    if (base) totalSatisfaction += base.effect;
+    if (flavor) totalSatisfaction += flavor.matchBonus; // 仮のロジック
+    if (garnish) totalSatisfaction += garnish.bonus;
+    if (specialRecipe) totalSatisfaction += specialRecipe.satisfactionBonus;
+    return totalSatisfaction;
   }
 
   calculateReputation(base, flavor, garnish, specialRecipe) {
-    let reputation = Math.floor(base.effect / 10);
+    let totalReputation = 0;
+    // ここに評判計算ロジックを実装
     if (specialRecipe) {
-      reputation += specialRecipe.reputationBonus;
+      totalReputation += specialRecipe.reputationBonus;
     }
-    return reputation;
+    return totalReputation;
   }
 
-  getSpecialEffects(specialRecipe, garnish) {
-    const effects = [];
-    if (specialRecipe && specialRecipe.specialEffect) {
-      effects.push(specialRecipe.specialEffect);
+  getSpecialEffects(specialRecipe) {
+    if (specialRecipe) {
+      return [specialRecipe.specialEffect];
     }
-    if (garnish && garnish.effect) {
-      // This needs to be better defined in gameData
-      effects.push(garnish.effect);
-    }
-    return effects;
-  }
-
-  checkSpecialRecipe(baseId, flavorId, garnishId) {
-    return this.specialRecipes.find(recipe =>
-      recipe.baseId === baseId &&
-      recipe.flavorId === flavorId &&
-      recipe.garnishId === garnishId
-    );
+    return [];
   }
 }

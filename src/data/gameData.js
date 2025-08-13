@@ -10,19 +10,72 @@ export const rumorData = {
     { id: "dj_dark_deal", name: "DJ's Dark Deal", description: "A famous DJ's illegal dealings.", baseEffect: 30 },
     { id: "ghost_subway_station", name: "Ghost Subway Station", description: "A haunted, abandoned subway station.", baseEffect: 15 },
     { id: "rooftop_secret_meeting", name: "Rooftop Secret Meeting", description: "Mysterious meetings on skyscrapers.", baseEffect: 35 },
-    { id: "memory_coffee", name: "Memory Coffee", description: "An old cafe serves memory-altering coffee.", baseEffect: 40 }
+    { id: "memory_coffee", name: "Memory Coffee", description: "An old cafe serves memory-altering coffee.", baseEffect: 40 },
+    {
+      id: "tech_ceo_secret",
+      name: "Tech CEO's Secret",
+      effect: 35,
+      rarity: "uncommon",
+      description: "A tech mogul has a hidden vulnerability."
+    },
+    {
+      id: "artists_inspiration",
+      name: "Artist's Inspiration",
+      effect: 15,
+      rarity: "common",
+      description: "A struggling artist found a muse in the city's shadows."
+    },
+    {
+        id: "underground_market",
+        name: "Underground Market",
+        effect: 30,
+        rarity: "uncommon",
+        description: "There's a black market for more than just goods."
+    },
+    {
+        id: "corrupt_official",
+        name: "Corrupt Official",
+        effect: 40,
+        rarity: "rare",
+        description: "A city official is on the take."
+    },
+    {
+        id: "forgotten_legend",
+        name: "Forgotten Legend",
+        effect: 25,
+        rarity: "rare",
+        description: "An old urban legend might be true."
+    }
   ],
   flavors: [
     { id: "joy", name: "Joy", matchBonus: 15, mismatchPenalty: -8, specialEffect: "nextVisitBonus", description: "A burst of happiness." },
-    { id: "anger", name: "Anger", matchBonus: 15, mismatchPenalty: -10, specialEffect: "troublemakerPrevention", description: "A touch of fury." },
-    { id: "sorrow", name: "Sorrow", matchBonus: 15, mismatchPenalty: -6, specialEffect: "specialItemChance", description: "A wave of melancholy." },
-    { id: "surprise", name: "Surprise", matchBonus: 18, mismatchPenalty: -5, specialEffect: "hiddenRecipeBonus", description: "An unexpected twist." }
+    { id: "anger", name: "Anger", matchBonus: 18, mismatchPenalty: -10, specialEffect: "reputationSpike", description: "A touch of fury." },
+    { id: "sorrow", name: "Sorrow", matchBonus: 12, mismatchPenalty: -5, specialEffect: "doubleTip", description: "A wave of melancholy." },
+    { id: "surprise", name: "Surprise", matchBonus: 20, mismatchPenalty: -12, specialEffect: "unlockGarnish", description: "An unexpected twist." }
   ],
   garnishes: [
     { id: "witness_testimony", name: "Witness Testimony", description: "Adds +1 day to effect duration.", effect: "duration", value: 1 },
     { id: "midnight_only", name: "Midnight Only", description: "Boosts effect by +20%.", effect: "effectMultiplier", value: 0.20 },
     { id: "black_market_gossip", name: "Black Market Gossip", description: "Increases cash reward by +30%.", effect: "cashMultiplier", value: 0.30 },
-    { id: "mysterious_note", name: "Mysterious Note", description: "Increases new rumor chance by +15%.", effect: "newRumorChance", value: 0.15 }
+    { id: "mysterious_note", name: "Mysterious Note", description: "Increases new rumor chance by +15%.", effect: "newRumorChance", value: 0.15 },
+    {
+      id: "coded_message",
+      name: "Coded Message",
+      effect: "potencyPlus10",
+      bonus: 15
+    },
+    {
+      id: "forged_document",
+      name: "Forged Document",
+      effect: "reputationGuard",
+      bonus: 20
+    },
+    {
+      id: "secret_ingredient",
+      name: "Secret Ingredient",
+      effect: "satisfactionLock",
+      bonus: 25
+    }
   ]
 };
 
@@ -34,7 +87,43 @@ export const specialRecipes = [
   { name: "Midnight Fountain Shock", baseId: "time_traveling_fountain", flavorId: "surprise", garnishId: "midnight_only", satisfactionBonus: 50, specialEffect: "autoRumors" },
   { name: "Angry DJ's Secret", baseId: "dj_dark_deal", flavorId: "anger", garnishId: "black_market_gossip", satisfactionBonus: 40, specialEffect: "cashBoost" },
   { name: "Sorrowful Memory", baseId: "memory_coffee", flavorId: "sorrow", garnishId: "mysterious_note", satisfactionBonus: 35, specialEffect: "guaranteedItem" },
-  { name: "Ghost Surprise", baseId: "ghost_subway_station", flavorId: "surprise", garnishId: "midnight_only", satisfactionBonus: 60, specialEffect: "legendaryChance" }
+  { name: "Ghost Surprise", baseId: "ghost_subway_station", flavorId: "surprise", garnishId: "midnight_only", satisfactionBonus: 60, specialEffect: "legendaryChance" },
+  {
+    name: "Silicon Scandal",
+    baseId: "tech_ceo_secret",
+    flavorId: "anger",
+    garnishId: "forged_document",
+    satisfactionBonus: 60,
+    reputationBonus: 25,
+    specialEffect: "mediaFrenzy"
+  },
+  {
+    name: "Weeping Muse",
+    baseId: "artists_inspiration",
+    flavorId: "sorrow",
+    garnishId: "secret_ingredient",
+    satisfactionBonus: 40,
+    reputationBonus: 10,
+    specialEffect: "artPatronage"
+  },
+  {
+    name: "Market Surprise",
+    baseId: "underground_market",
+    flavorId: "surprise",
+    garnishId: "coded_message",
+    satisfactionBonus: 55,
+    reputationBonus: 20,
+    specialEffect: "rareItemDiscovery"
+  },
+  {
+    name: "Official's Downfall",
+    baseId: "corrupt_official",
+    flavorId: "anger",
+    garnishId: "witness_testimony",
+    satisfactionBonus: 70,
+    reputationBonus: 30,
+    specialEffect: "cityInvestigation"
+  }
 ];
 
 /**

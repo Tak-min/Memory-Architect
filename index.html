@@ -1,116 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+  <title>Midnight Metropolis Mix-up</title>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midnight Metropolis Mix-up - Cocktail Bar Management Game</title>
-  <meta name="description" content="A 2D business simulation game where you collect rumors during the day and serve cocktails to customers at night">
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍸</text></svg>">
 </head>
 <body>
-  <!-- Main Game Container -->
   <div id="game-container">
-    <!-- Game Header -->
-    <header id="game-header">
-      <div class="header-left">
-        <h1 class="game-title">🌃 Midnight Metropolis Mix-up</h1>
-        <div class="game-day">Day <span id="current-day">1</span></div>
-      </div>
-      <div class="header-center">
-        <div class="phase-indicator">
-          <span id="current-phase">Day Phase</span>
-          <button id="phase-switch-btn" class="btn btn-primary">Switch to Night</button>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="stats-display">
-          <div class="stat-item">
-            <span class="stat-label">⚡ AP:</span>
-            <span id="action-points-display">6</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">⭐ Reputation:</span>
-            <span id="reputation-display">50</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">💰 Earnings:</span>
-            <span id="earnings-display">0</span>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Canvas for game rendering -->
-    <canvas id="game-canvas"></canvas>
-
-    <!-- UI overlays will be managed by uiController.js -->
-    <div id="ui-overlay">
-      <!-- Modals, notifications, and other non-gameplay UI will go here -->
+    <!-- デイフェーズUI -->
+    <div id="day-phase" class="game-phase">
+      <div id="city-map"></div>
+      <div id="action-points-display"></div>
+      <div id="rumor-inventory"></div>
     </div>
-
-    <!-- Settings/Save Menu -->
-    <div id="game-menu" class="game-menu hidden">
-      <button id="menu-toggle" class="menu-toggle">⚙️</button>
-      <div id="menu-content" class="menu-content">
-        <button id="save-game-btn" class="btn btn-primary">💾 Save Game</button>
-        <button id="load-game-btn" class="btn btn-secondary">📁 Load Game</button>
-        <button id="export-save-btn" class="btn btn-secondary">📤 Export Save</button>
-        <button id="import-save-btn" class="btn btn-secondary">📥 Import Save</button>
-        <button id="new-game-btn" class="btn btn-danger">🆕 New Game</button>
-        <button id="toggle-debug-btn" class="btn btn-secondary">🐛 Debug</button>
-        <button id="run-tests-btn" class="btn btn-secondary">🧪 Run Tests</button>
+    
+    <!-- ナイトフェーズUI -->
+    <div id="night-phase" class="game-phase hidden">
+      <div id="bar-view"></div>
+      <div id="customer-queue"></div>
+      <div id="rumor-board">
+        <div class="rumor-slot" data-slot-type="base">Base</div>
+        <div class="rumor-slot" data-slot-type="flavor">Flavor</div>
+        <div class="rumor-slot" data-slot-type="garnish">Garnish</div>
       </div>
+      <div id="satisfaction-meters"></div>
     </div>
-
-    <!-- Debug Information -->
-    <div id="debug-info" class="debug-info hidden">
-      <h3>🐛 Debug Information</h3>
-      <div class="debug-content">
-        <div class="debug-stats">
-          <div>FPS: <span id="fps-counter">60</span></div>
-          <div>Frame Time: <span id="frame-time">16.67ms</span></div>
-          <div>Memory Usage: <span id="memory-usage">N/A</span></div>
-        </div>
-        <div class="debug-log" id="debug-log"></div>
-      </div>
-    </div>
-
-    <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <h2>🌃 Midnight Metropolis Mix-up</h2>
-        <p>Loading game...</p>
-        <div class="loading-bar">
-          <div class="loading-progress"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hidden File Import Element -->
-    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+    
+    <div id="reputation-display"></div>
   </div>
-
-  <!-- Modal Dialog -->
-  <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h3 id="modal-title">Confirmation</h3>
-        <button id="modal-close" class="modal-close">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p id="modal-message">Message</p>
-      </div>
-      <div class="modal-footer">
-        <button id="modal-confirm" class="btn btn-primary">OK</button>
-        <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- メインスクリプト -->
-  <script type="module" src="main_new.js"></script>
+  <script type="module" src="main.js"></script>
 </body>
 </html>

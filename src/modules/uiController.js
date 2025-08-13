@@ -1,54 +1,111 @@
 export class UIController {
-  constructor() {
-    // DOM Elements
-    this.currentDayEl = document.getElementById('current-day');
-    this.currentPhaseEl = document.getElementById('current-phase');
-    this.actionPointsEl = document.getElementById('action-points-display');
-    this.reputationEl = document.getElementById('reputation-display');
-    this.earningsEl = document.getElementById('earnings-display');
-    this.phaseSwitchBtn = document.getElementById('phase-switch-btn');
-    this.saveGameBtn = document.getElementById('save-game-btn');
-    this.loadGameBtn = document.getElementById('load-game-btn');
-    this.loadingScreen = document.getElementById('loading-screen');
-    this.fpsCounter = document.getElementById('fps-counter');
-    this.frameTimeCounter = document.getElementById('frame-time');
+  constructor(gameEngine, rumorSystem, customerSystem, animationEffects) {
+    this.gameEngine = gameEngine;
+    this.rumorSystem = rumorSystem;
+    this.customerSystem = customerSystem;
+    this.animationEffects = animationEffects;
+    this.cocktailIngredients = {
+      base: null,
+      flavor: null,
+      garnish: null
+    };
 
-    console.log("UI Controller Initialized");
+    this.gameEngine.addEventListener('gameStateChanged', (gameState) => this.updateUI(gameState));
+    this.gameEngine.addEventListener('reputationChanged', (data) => this.animationEffects.showReputationChange(data.change));
   }
 
-  update(gameState) {
-    this.currentDayEl.textContent = gameState.currentDay;
-    this.currentPhaseEl.textContent = `${gameState.currentPhase} Phase`;
-    this.actionPointsEl.textContent = gameState.actionPoints;
-    this.reputationEl.textContent = gameState.reputation;
-    this.earningsEl.textContent = gameState.earnings;
-    this.phaseSwitchBtn.textContent = `Switch to ${gameState.currentPhase === 'day' ? 'Night' : 'Day'}`;
+  initialize() {
+    this.setupDragAndDrop();
+    this.setupEventListeners();
+    this.updateUI(this.gameEngine.gameState);
   }
 
-  bindPhaseSwitch(handler) {
-    this.phaseSwitchBtn.addEventListener('click', handler);
+  setupEventListeners() {
+    // This is a placeholder for other UI event listeners like buttons
   }
 
-  bindSaveGame(handler) {
-    this.saveGameBtn.addEventListener('click', handler);
+  updateUI(gameState) {
+    document.getElementById('action-points-display').textContent = gameState.actionPoints;
+    document.getElementById('reputation-display').textContent = gameState.reputation;
+    // document.getElementById('current-day').textContent = gameState.currentDay;
+
+    const dayPhase = document.getElementById('day-phase');
+    const nightPhase = document.getElementById('night-phase');
+
+    if (gameState.currentPhase === 'day') {
+      dayPhase.classList.remove('hidden');
+      nightPhase.classList.add('hidden');
+    } else {
+      dayPhase.classList.add('hidden');
+      nightPhase.classList.remove('hidden');
+    }
+    this.renderInventory(gameState.inventory);
   }
 
-  bindLoadGame(handler) {
-    this.loadGameBtn.addEventListener('click', handler);
+  renderInventory(inventory) {
+    const inventoryElement = document.getElementById('rumor-inventory');
+    inventoryElement.innerHTML = '<h3>Rumor Inventory</h3>';
+    Object.keys(inventory).forEach(type => {
+        inventory[type].forEach(item => {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'rumor-item';
+            itemEl.textContent = item.name;
+            itemEl.draggable = true;
+            itemEl.dataset.rumorId = item.id;
+            itemEl.dataset.rumorType = type;
+            inventoryElement.appendChild(itemEl);
+        });
+    });
+    this.setupDragAndDrop(); // Re-setup drag and drop for new items
   }
 
-  showLoadingScreen(show) {
-    this.loadingScreen.style.display = show ? 'flex' : 'none';
+  setupDragAndDrop() {
+    document.querySelectorAll('.rumor-item').forEach(item => {
+      item.addEventListener('dragstart', this.handleDragStart.bind(this));
+    });
+    
+    document.querySelectorAll('.rumor-slot').forEach(slot => {
+      slot.addEventListener('dragover', this.handleDragOver.bind(this));
+      slot.addEventListener('drop', this.handleDrop.bind(this));
+      slot.addEventListener('dragleave', (e) => e.target.classList.remove('droppable'));
+    });
   }
 
-  updatePerformance(stats) {
-    if (this.fpsCounter) this.fpsCounter.textContent = stats.fps;
-    if (this.frameTimeCounter) this.frameTimeCounter.textContent = `${stats.frameTime.toFixed(2)}ms`;
+  handleDragStart(event) {
+    event.dataTransfer.setData('text/plain', event.target.dataset.rumorId);
+    event.dataTransfer.effectAllowed = 'move';
   }
 
-  showModal(title, message) {
-    // Implementation for showing a modal dialog
-    console.log(`Modal: ${title} - ${message}`);
-    alert(`${title}\n\n${message}`);
+  handleDragOver(event) {
+    event.preventDefault();
+    event.target.classList.add('droppable');
+  }
+  
+  handleDrop(event) {
+    event.preventDefault();
+    event.target.classList.remove('droppable');
+    const rumorId = event.dataTransfer.getData('text/plain');
+    const slotType = event.target.dataset.slotType; // 'base', 'flavor', 'garnish'
+    
+    if (this.isValidCombination(rumorId, slotType)) {
+      this.placeCocktailIngredient(rumorId, slotType, event.target);
+    }
+  }
+
+  isValidCombination(rumorId, slotType) {
+    if (slotType === 'base' && this.rumorSystem.getBase(rumorId)) return true;
+    if (slotType === 'flavor' && this.rumorSystem.getFlavor(rumorId)) return true;
+    if (slotType === 'garnish' && this.rumorSystem.getGarnish(rumorId)) return true;
+    console.warn(`Invalid combination: rumor ${rumorId} cannot be placed in ${slotType}`);
+    return false;
+  }
+
+  placeCocktailIngredient(rumorId, slotType, targetElement) {
+    const item = this.rumorSystem.getBase(rumorId) || this.rumorSystem.getFlavor(rumorId) || this.rumorSystem.getGarnish(rumorId);
+    if (item) {
+        this.cocktailIngredients[slotType] = item.id;
+        targetElement.textContent = item.name;
+        console.log(`Placed ${item.name} in ${slotType}. Current mix:`, this.cocktailIngredients);
+    }
   }
 }
