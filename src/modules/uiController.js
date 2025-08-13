@@ -821,33 +821,20 @@ export class UIController {
     
     // 要素が見つからない場合は少し待ってから再試行
     if (!customerContainer) {
-      console.warn('Customer container not found, retrying in 200ms...');
-      console.log('Searching for customers-container in night-phase...');
+      console.log('Customer container not found, searching alternatives...');
       
-      // Night phase内で直接検索
-      const nightPhaseContainer = document.querySelector('#night-phase #customers-container');
-      if (nightPhaseContainer) {
-        console.log('Found customers-container via direct search in night-phase');
-        this.renderCustomers(nightPhaseContainer, customers);
+      // 複数の方法で要素を検索
+      customerContainer = document.querySelector('#customers-container') ||
+                         document.querySelector('.customers-container') ||
+                         nightPhase.querySelector('#customers-container') ||
+                         nightPhase.querySelector('.customers-container');
+      
+      if (customerContainer) {
+        console.log('Found customer container using alternative method');
+      } else {
+        console.warn('Customer container not found after exhaustive search');
         return;
       }
-      
-      setTimeout(() => {
-        customerContainer = document.getElementById('customers-container');
-        if (!customerContainer) {
-          // 最後の手段として querySelector を使用
-          customerContainer = document.querySelector('.customers-container');
-          console.log('Using querySelector as fallback:', customerContainer ? 'found' : 'still not found');
-        }
-        
-        if (customerContainer) {
-          this.renderCustomers(customerContainer, customers);
-        } else {
-          console.error('Customer container still not found after retry');
-          console.log('Available elements:', Array.from(document.querySelectorAll('[id*="customer"]')).map(el => el.id));
-        }
-      }, 200);
-      return;
     }
     
     this.renderCustomers(customerContainer, customers);

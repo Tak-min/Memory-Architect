@@ -37,6 +37,9 @@ class MidnightMetropolisMixup {
       this.performanceManager = new PerformanceManager();
       this.animationEffects = new AnimationEffects();
 
+      // システム間の連携設定（UI初期化前に実行）
+      this.setupSystemIntegration();
+
       // UI コントローラーの初期化（他のシステムへの参照が必要）
       this.uiController = new UIController(
         this.gameEngine, 
@@ -46,9 +49,6 @@ class MidnightMetropolisMixup {
 
       // ゲームエンジンにセーブシステムの参照を設定
       this.gameEngine.saveSystem = this.saveSystem;
-
-      // システム間の連携設定
-      this.setupSystemIntegration();
 
       // パフォーマンス監視開始
       this.performanceManager.startMonitoring();
