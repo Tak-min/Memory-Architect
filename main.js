@@ -132,14 +132,25 @@ class MidnightMetropolisMixup {
 
   // 初期ゲーム状態の設定
   setupInitialGameState() {
-    // 初期の噂をインベントリに追加
+    // ゲームをday phaseから開始
+    this.gameEngine.gameState.currentPhase = 'day';
+    
+    // 初期の噂をインベントリに追加（もう少し多めに）
     this.gameEngine.addToInventory('bases', this.rumorSystem.getBase('mayors_cat'));
+    this.gameEngine.addToInventory('bases', this.rumorSystem.getBase('broken_streetlight'));
     this.gameEngine.addToInventory('flavors', this.rumorSystem.getFlavor('joy'));
     this.gameEngine.addToInventory('flavors', this.rumorSystem.getFlavor('anger'));
+    this.gameEngine.addToInventory('flavors', this.rumorSystem.getFlavor('sadness'));
     this.gameEngine.addToInventory('garnishes', this.rumorSystem.getGarnish('witness_testimony'));
+    this.gameEngine.addToInventory('garnishes', this.rumorSystem.getGarnish('photo_evidence'));
 
     // ゲーム開始時間を記録
     this.gameEngine.gameState.gameStartTime = Date.now();
+    
+    console.log('Initial game state set up:', {
+      phase: this.gameEngine.gameState.currentPhase,
+      inventory: this.gameEngine.gameState.inventory
+    });
   }
 
   // ゲーム開始
@@ -179,6 +190,11 @@ class MidnightMetropolisMixup {
     
     // ゲームループ開始
     this.gameEngine.startGameLoop();
+    
+    // 初期UIを更新（day phaseで開始）
+    if (this.uiController.updateUI) {
+      this.uiController.updateUI();
+    }
     
     // ウェルカムメッセージ
     setTimeout(() => {
