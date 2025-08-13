@@ -547,13 +547,13 @@ export class UIController {
     const switchBtn = document.getElementById('phase-switch-btn');
 
     if (this.gameEngine.gameState.currentPhase === 'day') {
-      dayPhase?.classList.remove('hidden');
-      nightPhase?.classList.add('hidden');
-      if (switchBtn) switchBtn.textContent = 'End Day Phase';
+      dayPhase?.classList.add('active');
+      nightPhase?.classList.remove('active');
+      if (switchBtn) switchBtn.textContent = 'Switch to Night';
     } else {
-      dayPhase?.classList.add('hidden');
-      nightPhase?.classList.remove('hidden');
-      if (switchBtn) switchBtn.textContent = 'End Night Phase';
+      dayPhase?.classList.remove('active');
+      nightPhase?.classList.add('active');
+      if (switchBtn) switchBtn.textContent = 'Switch to Day';
     }
   }
 
@@ -606,6 +606,23 @@ export class UIController {
     });
   }
 
+  // Create rumor element for drag and drop
+  createRumorElement(rumor, type) {
+    const rumorDiv = document.createElement('div');
+    rumorDiv.className = 'rumor-item';
+    rumorDiv.draggable = true;
+    rumorDiv.dataset.rumorId = rumor.id;
+    rumorDiv.dataset.rumorType = type;
+    
+    rumorDiv.innerHTML = `
+      <div class="rumor-name">${rumor.name}</div>
+      <div class="rumor-rarity">${rumor.rarity || 'common'}</div>
+      <div class="rumor-effect">Effect: ${rumor.effect || rumor.matchBonus || 'N/A'}</div>
+    `;
+    
+    return rumorDiv;
+  }
+
   // 顧客表示
   displayCurrentCustomer(customer) {
     const customerAvatar = document.getElementById('customer-avatar');
@@ -634,8 +651,10 @@ export class UIController {
   showNightPhase() {
     this.updatePhaseDisplay();
     
-    // Populate rumor board with available rumors
-    this.populateRumorBoard();
+    // Wait for DOM to update before populating rumor board
+    setTimeout(() => {
+      this.populateRumorBoard();
+    }, 100);
     
     const customers = this.customerSystem.generateNightCustomers(this.gameEngine.gameState.reputation);
     this.gameEngine.setCustomers(customers);
@@ -652,10 +671,27 @@ export class UIController {
     const boardGarnishesItems = document.getElementById('board-garnishes-items');
     
     if (!boardBasesItems || !boardFlavorsItems || !boardGarnishesItems) {
-      console.warn('Rumor board items containers not found');
+      console.warn('Rumor board items containers not found, retrying...');
+      // Retry after a short delay
+      setTimeout(() => {
+        const retryBases = document.getElementById('board-bases-items');
+        const retryFlavors = document.getElementById('board-flavors-items');
+        const retryGarnishes = document.getElementById('board-garnishes-items');
+        
+        if (retryBases && retryFlavors && retryGarnishes) {
+          this.populateRumorBoardElements(retryBases, retryFlavors, retryGarnishes);
+        } else {
+          console.error('Rumor board containers still not found after retry');
+        }
+      }, 200);
       return;
     }
 
+    this.populateRumorBoardElements(boardBasesItems, boardFlavorsItems, boardGarnishesItems);
+  }
+
+  // Helper method to populate rumor board elements
+  populateRumorBoardElements(boardBasesItems, boardFlavorsItems, boardGarnishesItems) {
     // Clear existing content
     boardBasesItems.innerHTML = '';
     boardFlavorsItems.innerHTML = '';
@@ -665,22 +701,34 @@ export class UIController {
     const inventory = this.gameEngine.gameState.inventory;
     
     // Add base rumors
-    inventory.bases.forEach(rumor => {
-      const rumorElement = this.createRumorElement(rumor, 'bases');
-      boardBasesItems.appendChild(rumorElement);
-    });
+    if (inventory.bases && inventory.bases.length > 0) {
+      inventory.bases.forEach(rumor => {
+        const rumorElement = this.createRumorElement(rumor, 'bases');
+        boardBasesItems.appendChild(rumorElement);
+      });
+    } else {
+      boardBasesItems.innerHTML = '<div class="no-items">No base rumors available</div>';
+    }
 
     // Add flavors
-    inventory.flavors.forEach(rumor => {
-      const rumorElement = this.createRumorElement(rumor, 'flavors');
-      boardFlavorsItems.appendChild(rumorElement);
-    });
+    if (inventory.flavors && inventory.flavors.length > 0) {
+      inventory.flavors.forEach(rumor => {
+        const rumorElement = this.createRumorElement(rumor, 'flavors');
+        boardFlavorsItems.appendChild(rumorElement);
+      });
+    } else {
+      boardFlavorsItems.innerHTML = '<div class="no-items">No flavors available</div>';
+    }
 
     // Add garnishes
-    inventory.garnishes.forEach(rumor => {
-      const rumorElement = this.createRumorElement(rumor, 'garnishes');
-      boardGarnishesItems.appendChild(rumorElement);
-    });
+    if (inventory.garnishes && inventory.garnishes.length > 0) {
+      inventory.garnishes.forEach(rumor => {
+        const rumorElement = this.createRumorElement(rumor, 'garnishes');
+        boardGarnishesItems.appendChild(rumorElement);
+      });
+    } else {
+      boardGarnishesItems.innerHTML = '<div class="no-items">No garnishes available</div>';
+    }
   }
 
   // メッセージ表示

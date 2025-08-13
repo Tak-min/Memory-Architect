@@ -57,6 +57,11 @@ body {
 .game-phase {
   min-height: 80vh;
   transition: opacity 0.5s ease;
+  display: none;
+}
+
+.game-phase.active {
+  display: block;
 }
 
 .game-phase.hidden {
