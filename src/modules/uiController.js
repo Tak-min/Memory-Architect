@@ -666,27 +666,84 @@ export class UIController {
 
   // Populate rumor board for night phase
   populateRumorBoard() {
+    console.log('Starting populateRumorBoard...');
+    
+    // Check if night phase is active first
+    const nightPhase = document.getElementById('night-phase');
+    if (!nightPhase || !nightPhase.classList.contains('active')) {
+      console.warn('Night phase not active, waiting...');
+      setTimeout(() => this.populateRumorBoard(), 300);
+      return;
+    }
+    
     const boardBasesItems = document.getElementById('board-bases-items');
     const boardFlavorsItems = document.getElementById('board-flavors-items');
     const boardGarnishesItems = document.getElementById('board-garnishes-items');
     
+    console.log('Container search results:', {
+      bases: boardBasesItems ? 'found' : 'NOT FOUND',
+      flavors: boardFlavorsItems ? 'found' : 'NOT FOUND',
+      garnishes: boardGarnishesItems ? 'found' : 'NOT FOUND'
+    });
+    
     if (!boardBasesItems || !boardFlavorsItems || !boardGarnishesItems) {
-      console.warn('Rumor board items containers not found, retrying...');
+      console.warn('Rumor board items containers not found, trying direct search...');
+      
+      // Night phase内で直接検索を試行
+      const directBases = nightPhase.querySelector('#board-bases-items');
+      const directFlavors = nightPhase.querySelector('#board-flavors-items');
+      const directGarnishes = nightPhase.querySelector('#board-garnishes-items');
+      
+      console.log('Direct search in night-phase:', {
+        bases: directBases ? 'found' : 'not found',
+        flavors: directFlavors ? 'found' : 'not found',
+        garnishes: directGarnishes ? 'found' : 'not found'
+      });
+      
+      if (directBases && directFlavors && directGarnishes) {
+        console.log('Found all containers via direct search, proceeding...');
+        this.populateRumorBoardElements(directBases, directFlavors, directGarnishes);
+        return;
+      }
+      
       // Retry after a short delay
       setTimeout(() => {
         const retryBases = document.getElementById('board-bases-items');
         const retryFlavors = document.getElementById('board-flavors-items');
         const retryGarnishes = document.getElementById('board-garnishes-items');
         
-        if (retryBases && retryFlavors && retryGarnishes) {
-          this.populateRumorBoardElements(retryBases, retryFlavors, retryGarnishes);
+        console.log('Retry search results:', {
+          bases: retryBases ? 'found' : 'STILL NOT FOUND',
+          flavors: retryFlavors ? 'found' : 'STILL NOT FOUND',
+          garnishes: retryGarnishes ? 'found' : 'STILL NOT FOUND'
+        });
+        
+        if (!retryBases || !retryFlavors || !retryGarnishes) {
+          // 最後の手段として class名で検索
+          const classBases = document.querySelector('.rumor-items[id*="bases"]');
+          const classFlavors = document.querySelector('.rumor-items[id*="flavors"]');
+          const classGarnishes = document.querySelector('.rumor-items[id*="garnishes"]');
+          
+          console.log('Class-based fallback search:', {
+            bases: classBases ? 'found' : 'not found',
+            flavors: classFlavors ? 'found' : 'not found',
+            garnishes: classGarnishes ? 'found' : 'not found'
+          });
+          
+          if (classBases && classFlavors && classGarnishes) {
+            this.populateRumorBoardElements(classBases, classFlavors, classGarnishes);
+          } else {
+            console.error('Rumor board containers still not found after all attempts');
+            console.log('All elements with "board" in ID:', Array.from(document.querySelectorAll('[id*="board"]')).map(el => ({ id: el.id, visible: el.offsetParent !== null })));
+          }
         } else {
-          console.error('Rumor board containers still not found after retry');
+          this.populateRumorBoardElements(retryBases, retryFlavors, retryGarnishes);
         }
-      }, 200);
+      }, 300);
       return;
     }
 
+    console.log('All containers found immediately, proceeding...');
     this.populateRumorBoardElements(boardBasesItems, boardFlavorsItems, boardGarnishesItems);
   }
 
@@ -751,20 +808,45 @@ export class UIController {
   displayCustomers(customers) {
     console.log('Displaying customers:', customers);
     
+    // Night phaseが確実に表示されているかチェック
+    const nightPhase = document.getElementById('night-phase');
+    if (!nightPhase || !nightPhase.classList.contains('active')) {
+      console.warn('Night phase not active, waiting...');
+      setTimeout(() => this.displayCustomers(customers), 200);
+      return;
+    }
+    
     // DOM要素の取得をより安全に行う
     let customerContainer = document.getElementById('customers-container');
     
     // 要素が見つからない場合は少し待ってから再試行
     if (!customerContainer) {
-      console.warn('Customer container not found, retrying in 100ms...');
+      console.warn('Customer container not found, retrying in 200ms...');
+      console.log('Searching for customers-container in night-phase...');
+      
+      // Night phase内で直接検索
+      const nightPhaseContainer = document.querySelector('#night-phase #customers-container');
+      if (nightPhaseContainer) {
+        console.log('Found customers-container via direct search in night-phase');
+        this.renderCustomers(nightPhaseContainer, customers);
+        return;
+      }
+      
       setTimeout(() => {
         customerContainer = document.getElementById('customers-container');
+        if (!customerContainer) {
+          // 最後の手段として querySelector を使用
+          customerContainer = document.querySelector('.customers-container');
+          console.log('Using querySelector as fallback:', customerContainer ? 'found' : 'still not found');
+        }
+        
         if (customerContainer) {
           this.renderCustomers(customerContainer, customers);
         } else {
           console.error('Customer container still not found after retry');
+          console.log('Available elements:', Array.from(document.querySelectorAll('[id*="customer"]')).map(el => el.id));
         }
-      }, 100);
+      }, 200);
       return;
     }
     
