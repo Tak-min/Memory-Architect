@@ -1,274 +1,113 @@
-// gameEngine.js
-// メインゲームループとフェーズ管理
-import { gameConfig } from '../data/gameData.js';
+import { GameMap } from './gameMap.js';
+import { Player } from './player.js';
+import { InputHandler } from './inputHandler.js';
+import { UIController } from './uiController.js';
+import { RumorSystem } from './rumorSystem.js';
+import { CustomerSystem } from './customerSystem.js';
+import { ReputationSystem } from './reputationSystem.js';
+import { SaveSystem } from './saveSystem.js';
+import { PerformanceManager } from './performanceManager.js';
+import { gameData } from '../data/gameData.js';
+import { mapData } from '../data/mapData.js';
 
 export class GameEngine {
-  constructor() {
+  constructor(canvas, uiController) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.uiController = uiController;
+    this.width = canvas.width;
+    this.height = canvas.height;
+
     this.gameState = {
       currentPhase: 'day', // 'day' or 'night'
-      actionPoints: gameConfig.initialActionPoints,
-      reputation: gameConfig.initialReputation,
-      inventory: {
-        bases: [],
-        flavors: [],
-        garnishes: []
-      },
+      actionPoints: 6,
+      reputation: 50,
+      inventory: [],
       currentDay: 1,
-      cash: 100,
-      unlockedRecipes: [],
-      customers: [],
-      currentCustomerIndex: 0
+      earnings: 0,
     };
-    
-    this.gameEvents = [];
-    this.isRunning = false;
-    this.saveSystem = null; // セーブシステムへの参照
+
+    this.inputHandler = new InputHandler();
+    this.performanceManager = new PerformanceManager();
   }
 
-  // ゲーム開始
-  startGame() {
-    this.isRunning = true;
+  async init() {
+    // Initialize systems
+    this.rumorSystem = new RumorSystem(this);
+    this.customerSystem = new CustomerSystem(this);
+    this.reputationSystem = new ReputationSystem(this);
+    this.saveSystem = new SaveSystem(this);
+
+    // Load game assets and map
+    this.gameMap = new GameMap(mapData, this.ctx);
+    await this.gameMap.loadAssets();
+
+    // Initialize player
+    const startPos = this.gameMap.getStartPosition();
+    this.player = new Player(startPos.x, startPos.y, this.gameMap);
+
+    // Bind events
+    this.uiController.bindPhaseSwitch(this.switchPhase.bind(this));
+    this.uiController.bindSaveGame(this.saveSystem.saveGame.bind(this.saveSystem));
+    this.uiController.bindLoadGame(this.saveSystem.loadGame.bind(this.saveSystem));
+
+    console.log("Game Engine Initialized");
     this.startDayPhase();
-    this.triggerEvent('gameStarted');
   }
 
-  // ゲームループ開始
-  startGameLoop() {
-    console.log('Starting game loop...');
-    this.isRunning = true;
-    this.startDayPhase();
-    
-    // メインゲームループ（30FPSで動作）
-    const gameLoop = () => {
-      if (this.isRunning) {
-        this.update();
-        setTimeout(() => requestAnimationFrame(gameLoop), 1000 / 30);
-      }
-    };
-    
-    requestAnimationFrame(gameLoop);
+  update(deltaTime) {
+    this.performanceManager.update();
+
+    const playerMove = this.inputHandler.getMoveDirection();
+    if (playerMove.x !== 0 || playerMove.y !== 0) {
+      this.player.move(playerMove.x, playerMove.y, deltaTime);
+    }
+
+    this.gameMap.update(deltaTime);
+    this.player.update(deltaTime);
+    this.customerSystem.update(deltaTime);
+    this.reputationSystem.update(deltaTime);
+
+    this.uiController.update({
+        ...this.gameState,
+        fps: this.performanceManager.getFPS()
+    });
   }
 
-  // ゲーム状態更新
-  update() {
-    // ゲーム状態の更新処理
-    // イベント処理、UI更新など
-    this.triggerEvent('gameUpdate', { gameState: this.gameState });
+  draw() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+    this.gameMap.draw(this.player.x, this.player.y);
+    this.player.draw(this.ctx);
   }
 
-  // デイフェーズの開始
   startDayPhase() {
     this.gameState.currentPhase = 'day';
-    this.gameState.actionPoints = gameConfig.initialActionPoints;
-    this.updateUI();
-    this.triggerEvent('dayPhaseStarted', {
-      day: this.gameState.currentDay,
-      actionPoints: this.gameState.actionPoints
-    });
+    this.gameState.actionPoints = 6;
+    console.log(`Day ${this.gameState.currentDay} has begun.`);
+    this.uiController.update(this.gameState);
   }
 
-  // ナイトフェーズの開始  
   startNightPhase() {
     this.gameState.currentPhase = 'night';
-    this.gameState.currentCustomerIndex = 0;
-    
-    // 顧客システムが利用可能な場合、顧客を生成
-    if (this.customerSystem) {
-      this.gameState.customers = this.customerSystem.generateNightCustomers(this.gameState.reputation);
-    } else {
-      console.warn('Customer system not available, generating mock customers');
-      this.gameState.customers = [
-        { name: 'Test Customer', type: 'regular', mood: 'joy', patience: 10 }
-      ];
-    }
-    
-    this.updateUI();
-    this.triggerEvent('nightPhaseStarted', {
-      day: this.gameState.currentDay,
-      customers: this.gameState.customers
-    });
+    console.log("Night has fallen. Time to serve some customers.");
+    this.customerSystem.generateCustomers();
+    this.uiController.update(this.gameState);
   }
 
-  // フェーズ切り替え
   switchPhase() {
     if (this.gameState.currentPhase === 'day') {
       this.startNightPhase();
     } else {
-      this.nextDay();
+      this.gameState.currentDay++;
+      this.startDayPhase();
     }
   }
 
-  // 次の日へ進む
-  nextDay() {
-    this.gameState.currentDay++;
-    this.expireInventoryItems();
-    this.startDayPhase();
-    this.triggerEvent('newDay', { day: this.gameState.currentDay });
-  }
-
-  // アクションポイント消費
-  consumeActionPoints(amount) {
-    if (this.gameState.actionPoints >= amount) {
-      this.gameState.actionPoints -= amount;
-      this.updateUI();
-      
-      // APが0になったら自動的にナイトフェーズへ
-      if (this.gameState.actionPoints <= 0) {
-        setTimeout(() => this.switchPhase(), 1000);
-      }
-      
-      return true;
-    }
-    return false;
-  }
-
-  // 評判の変更
-  changeReputation(amount) {
-    const oldReputation = this.gameState.reputation;
-    this.gameState.reputation = Math.max(
-      gameConfig.minReputation, 
-      Math.min(gameConfig.maxReputation, this.gameState.reputation + amount)
-    );
-    
-    this.updateUI();
-    this.triggerEvent('reputationChanged', {
-      old: oldReputation,
-      new: this.gameState.reputation,
-      change: amount
-    });
-  }
-
-  // インベントリにアイテム追加
-  addToInventory(type, item) {
-    if (this.gameState.inventory[type]) {
-      // 期限切れアイテムを削除
-      this.gameState.inventory[type] = this.gameState.inventory[type].filter(
-        inventoryItem => inventoryItem.expireDay >= this.gameState.currentDay
-      );
-      
-      // 新しいアイテムを追加（期限付き）
-      const inventoryItem = {
-        ...item,
-        acquiredDay: this.gameState.currentDay,
-        expireDay: this.gameState.currentDay + (item.duration || 3)
-      };
-      
-      this.gameState.inventory[type].push(inventoryItem);
-      this.updateUI();
-      this.triggerEvent('itemAdded', { type, item: inventoryItem });
-    }
-  }
-
-  // インベントリアイテムの期限切れ処理
-  expireInventoryItems() {
-    Object.keys(this.gameState.inventory).forEach(type => {
-      const beforeCount = this.gameState.inventory[type].length;
-      this.gameState.inventory[type] = this.gameState.inventory[type].filter(
-        item => item.expireDay >= this.gameState.currentDay
-      );
-      const afterCount = this.gameState.inventory[type].length;
-      
-      if (beforeCount > afterCount) {
-        this.triggerEvent('itemsExpired', { 
-          type, 
-          count: beforeCount - afterCount 
-        });
-      }
-    });
-  }
-
-  // 顧客の設定
-  setCustomers(customers) {
-    this.gameState.customers = customers;
-    this.gameState.currentCustomerIndex = 0;
-  }
-
-  // 次の顧客へ
-  nextCustomer() {
-    this.gameState.currentCustomerIndex++;
-    
-    if (this.gameState.currentCustomerIndex >= this.gameState.customers.length) {
-      // すべての顧客にサービス完了
-      this.switchPhase();
-    } else {
-      this.triggerEvent('nextCustomer', {
-        customer: this.gameState.customers[this.gameState.currentCustomerIndex],
-        index: this.gameState.currentCustomerIndex
-      });
-    }
-  }
-
-  // 現在の顧客を取得
-  getCurrentCustomer() {
-    return this.gameState.customers[this.gameState.currentCustomerIndex] || null;
-  }
-
-  // 特殊レシピの解放
-  unlockRecipe(recipe) {
-    if (!this.gameState.unlockedRecipes.find(r => r.name === recipe.name)) {
-      this.gameState.unlockedRecipes.push(recipe);
-      this.triggerEvent('recipeUnlocked', { recipe });
-    }
-  }
-
-  // 現金の変更
-  changeCash(amount) {
-    this.gameState.cash = Math.max(0, this.gameState.cash + amount);
-    this.updateUI();
-    this.triggerEvent('cashChanged', { 
-      change: amount, 
-      total: this.gameState.cash 
-    });
-  }
-
-  // ゲーム状態のロード
-  loadState(saveData) {
-    Object.assign(this.gameState, saveData);
-    this.updateUI();
-    this.triggerEvent('gameLoaded', saveData);
-  }
-
-  // UI更新要求
-  updateUI() {
-    this.triggerEvent('uiUpdate', this.gameState);
-  }
-
-  // イベントシステム
-  addEventListener(eventType, callback) {
-    if (!this.gameEvents[eventType]) {
-      this.gameEvents[eventType] = [];
-    }
-    this.gameEvents[eventType].push(callback);
-  }
-
-  removeEventListener(eventType, callback) {
-    if (this.gameEvents[eventType]) {
-      this.gameEvents[eventType] = this.gameEvents[eventType].filter(
-        cb => cb !== callback
-      );
-    }
-  }
-
-  triggerEvent(eventType, data = null) {
-    if (this.gameEvents[eventType]) {
-      this.gameEvents[eventType].forEach(callback => {
-        try {
-          callback(data);
-        } catch (error) {
-          console.error(`Event callback error for ${eventType}:`, error);
-        }
-      });
-    }
-  }
-
-  // デバッグ用メソッド
-  getDebugInfo() {
-    return {
-      gameState: this.gameState,
-      eventListeners: Object.keys(this.gameEvents).map(type => ({
-        type,
-        count: this.gameEvents[type]?.length || 0
-      }))
-    };
+  loadState(data) {
+    this.gameState = data.gameState;
+    this.player.x = data.player.x;
+    this.player.y = data.player.y;
+    console.log("Game state loaded.");
+    this.uiController.update(this.gameState);
   }
 }

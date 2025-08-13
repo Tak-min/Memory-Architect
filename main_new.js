@@ -1,29 +1,39 @@
-import GameEngine from './src/modules/gameEngine.js';
+import { GameEngine } from './src/modules/gameEngine.js';
+import { UIController } from './src/modules/uiController.js';
 
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('game-canvas');
   if (!canvas) {
-      console.error('Canvas element not found!');
-      return;
+    console.error('FATAL: Canvas element not found!');
+    return;
   }
-  const ctx = canvas.getContext('2d');
-  canvas.width = 800;
-  canvas.height = 600;
 
-  const game = new GameEngine(canvas.width, canvas.height);
+  // Initialize UI Controller
+  const uiController = new UIController();
   
+  // Initialize Game Engine
+  const gameEngine = new GameEngine(canvas, uiController);
+
+  // --- Main Game Loop ---
   let lastTime = 0;
   function gameLoop(timestamp) {
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
+
+    gameEngine.update(deltaTime);
+    gameEngine.draw();
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    game.update(deltaTime);
-    game.draw(ctx);
-    
+    // Update UI with latest game state
+    uiController.update(gameEngine.gameState);
+
     requestAnimationFrame(gameLoop);
   }
-  
-  gameLoop(0);
+
+  // Start the game
+  uiController.showLoadingScreen(true);
+  gameEngine.init().then(() => {
+    uiController.showLoadingScreen(false);
+    gameLoop(0);
+  });
 });
 

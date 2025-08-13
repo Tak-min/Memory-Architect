@@ -29,17 +29,15 @@ body {
 }
 
 #game-container {
+  position: relative;
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px; /* Adjust as needed */
+  max-height: 800px; /* Adjust as needed */
+  aspect-ratio: 3 / 2;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-}
-
-#canvas-wrapper {
-  position: relative;
-  width: 800px; /* Match canvas width */
-  height: 600px; /* Match canvas height */
   box-shadow: 0 0 30px rgba(108, 92, 231, 0.5);
 }
 
@@ -56,7 +54,7 @@ body {
 }
 
 /* --- UI Overlays --- */
-#game-ui {
+#ui-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -71,64 +69,66 @@ body {
 
 #game-header {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
   background: rgba(28, 27, 58, 0.8);
   backdrop-filter: blur(5px);
-  padding: 0.75rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 10px;
   border: 1px solid var(--primary);
+  pointer-events: all;
 }
 
-.stat {
+.header-left, .header-center, .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.game-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: var(--accent);
+  text-shadow: 0 0 5px var(--accent);
+}
+
+.game-day, .phase-indicator, .stat-item {
   font-family: var(--font-title);
   font-size: 1.1rem;
   color: var(--text-light);
 }
 
-.stat span {
+.stat-label {
+  color: var(--secondary);
+}
+
+#current-day, #current-phase, #action-points-display, #reputation-display, #earnings-display {
   color: var(--accent);
   font-weight: 700;
+  min-width: 20px;
+  display: inline-block;
+  text-align: right;
 }
 
-#dialog-box {
-  background: rgba(28, 27, 58, 0.9);
-  border-top: 3px solid var(--secondary);
-  padding: 1.5rem;
-  margin: 0 auto;
-  width: 95%;
-  max-width: 700px;
-  border-radius: 5px;
-  pointer-events: all; /* Dialog box should be interactive */
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
-}
-
-#dialog-text {
-  font-size: 1.2rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-#dialog-choices {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-#dialog-choices button {
-  pointer-events: all;
-  background: var(--primary);
-  color: var(--text-light);
+.btn {
+  padding: 0.5rem 1rem;
   border: none;
-  padding: 0.8rem;
   border-radius: 5px;
   cursor: pointer;
-  text-align: left;
-  font-size: 1rem;
-  transition: background-color 0.2s;
+  font-family: var(--font-title);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
 }
 
-#dialog-choices button:hover {
-  background: var(--secondary);
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-light);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: #8b7ff0;
+  box-shadow: 0 0 15px var(--primary);
 }
 
 /* --- Modal --- */
@@ -147,7 +147,7 @@ body {
   pointer-events: all;
 }
 
-#modal-content {
+.modal-dialog {
   background: var(--bg-medium);
   padding: 2rem;
   border-radius: 15px;

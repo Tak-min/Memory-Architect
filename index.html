@@ -42,123 +42,13 @@
       </div>
     </header>
 
-    <!-- Day Phase UI -->
-    <div id="day-phase" class="game-phase active">
-      <div class="phase-content">
-        <!-- City Map -->
-        <div id="city-map" class="city-map">
-          <h2 class="section-title">🏙️ City Map</h2>
-          <div class="city-districts">
-            <div class="district" data-district="central_park">
-              <div class="district-header">
-                <h3>� Central Park</h3>
-                <span class="ap-cost">AP: 3</span>
-              </div>
-              <p class="district-description">The time-traveling fountain is here.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="city_hall">
-              <div class="district-header">
-                <h3>🏛️ City Hall Steps</h3>
-                <span class="ap-cost">AP: 2</span>
-              </div>
-              <p class="district-description">Political gossip and the mayor's cat.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="back_alleys">
-              <div class="district-header">
-                <h3>� Back Alleys</h3>
-                <span class="ap-cost">AP: 2</span>
-              </div>
-              <p class="district-description">Shady deals and secret meetings.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="underground_club">
-              <div class="district-header">
-                <h3>� Underground Club</h3>
-                <span class="ap-cost">AP: 2</span>
-              </div>
-              <p class="district-description">The DJ's dark secrets unfold.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="news_agency">
-              <div class="district-header">
-                <h3>📰 News Agency</h3>
-                <span class="ap-cost">AP: 2</span>
-              </div>
-              <p class="district-description">Gather official and unofficial news.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-            <div class="district" data-district="black_market">
-              <div class="district-header">
-                <h3>💰 Black Market</h3>
-                <span class="ap-cost">AP: 1</span>
-              </div>
-              <p class="district-description">Buy rare information and items.</p>
-              <button class="btn btn-secondary visit-btn">Visit</button>
-            </div>
-          </div>
-        </div>
+    <!-- Canvas for game rendering -->
+    <canvas id="game-canvas"></canvas>
 
-        <!-- Rumor Inventory -->
-        <div id="rumor-inventory" class="rumor-inventory">
-          <h2 class="section-title">📚 Rumor Inventory</h2>
-          <div class="inventory-content">
-            <div id="inventory-grid" class="rumor-grid"></div>
-          </div>
-        </div>
-      </div>
+    <!-- UI overlays will be managed by uiController.js -->
+    <div id="ui-overlay">
+      <!-- Modals, notifications, and other non-gameplay UI will go here -->
     </div>
-
-    <!-- Night Phase UI -->
-    <div id="night-phase" class="game-phase">
-      <div class="phase-content">
-        <!-- Bar View -->
-        <div id="bar-view" class="bar-view">
-          <h2 class="section-title">🍸 Bar Counter</h2>
-          <div class="cocktail-creation">
-            <div class="ingredient-slots">
-              <div class="slot" id="base-slot" data-type="base">
-                <div class="slot-label">Base Rumor</div>
-                <div class="rumor-slot" data-slot-type="base"></div>
-              </div>
-              <div class="slot" id="flavor-slot" data-type="flavor">
-                <div class="slot-label">Flavor</div>
-                <div class="rumor-slot" data-slot-type="flavor"></div>
-              </div>
-              <div class="slot" id="garnish-slot" data-type="garnish">
-                <div class="slot-label">Garnish</div>
-                <div class="rumor-slot" data-slot-type="garnish"></div>
-              </div>
-            </div>
-            <div class="cocktail-actions">
-              <button id="create-cocktail-btn" class="btn btn-primary" disabled>🍸 Create Cocktail</button>
-              <button id="clear-slots-btn" class="btn btn-secondary">🗑️ Clear</button>
-            </div>
-            <div id="cocktail-preview" class="cocktail-preview"></div>
-          </div>
-        </div>
-
-        <!-- Customer Queue -->
-        <div id="customer-queue" class="customer-queue">
-          <h2 class="section-title">👥 Waiting Customers</h2>
-          <div class="customers-container" id="customers-container"></div>
-        </div>
-
-        <!-- Rumor Selection for Cocktail -->
-        <div id="rumor-selection-panel" class="rumor-selection-panel hidden">
-          <h2 class="section-title">Select a Rumor</h2>
-          <div id="rumor-selection-content" class="rumor-grid"></div>
-          <button id="cancel-selection-btn" class="btn btn-secondary">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Special Events Display -->
-    <div id="special-events" class="special-events"></div>
-
-    <!-- Notification Area -->
-    <div id="notifications" class="notifications"></div>
 
     <!-- Settings/Save Menu -->
     <div id="game-menu" class="game-menu">
