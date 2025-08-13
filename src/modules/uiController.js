@@ -152,17 +152,17 @@ export class UIController {
       satisfactionMetersDiv.id = 'satisfaction-meters';
       satisfactionMetersDiv.className = 'satisfaction-meters';
       satisfactionMetersDiv.innerHTML = `
-        <h2 class="section-title">📊 満足度予測</h2>
+        <h2 class="section-title">📊 Satisfaction Prediction</h2>
         <div class="satisfaction-container">
           <div id="current-satisfaction" class="satisfaction-meter">
-            <h4>予想満足度</h4>
+            <h4>Predicted Satisfaction</h4>
             <div class="meter-bar">
               <div class="meter-fill" id="satisfaction-fill"></div>
             </div>
             <div id="satisfaction-value">0</div>
           </div>
           <div id="customer-mood-display" class="mood-display">
-            <h4>顧客の気分</h4>
+            <h4>Customer Mood</h4>
             <div id="mood-indicator">😐</div>
           </div>
         </div>
@@ -655,6 +655,42 @@ export class UIController {
     setTimeout(() => {
       messageEl.remove();
     }, 3000);
+  }
+
+  // 顧客リストの表示
+  displayCustomers(customers) {
+    console.log('Displaying customers:', customers);
+    const customerContainer = document.getElementById('customers-container');
+    if (!customerContainer) {
+      console.error('Customer container not found');
+      return;
+    }
+
+    customerContainer.innerHTML = '';
+    
+    if (!customers || customers.length === 0) {
+      customerContainer.innerHTML = '<div class="no-customers">No customers waiting</div>';
+      return;
+    }
+
+    customers.forEach((customer, index) => {
+      const customerDiv = document.createElement('div');
+      customerDiv.className = `customer-card ${customer.type}`;
+      customerDiv.innerHTML = `
+        <div class="customer-info">
+          <div class="customer-name">${customer.name}</div>
+          <div class="customer-type">${customer.type}</div>
+          <div class="customer-mood">${customer.mood}</div>
+          <div class="customer-patience">${customer.patience}/10</div>
+        </div>
+      `;
+      
+      if (index === 0) {
+        customerDiv.classList.add('current-customer');
+      }
+      
+      customerContainer.appendChild(customerDiv);
+    });
   }
 
   // 噂データの取得

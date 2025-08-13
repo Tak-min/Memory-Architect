@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midnight Metropolis Mix-up - カクテルバー経営ゲーム</title>
-  <meta name="description" content="昼は噂を集め、夜は顧客にカクテルを提供する2D経営シミュレーションゲーム">
+  <title>Midnight Metropolis Mix-up - Cocktail Bar Management Game</title>
+  <meta name="description" content="A 2D business simulation game where you collect rumors during the day and serve cocktails to customers at night">
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍸</text></svg>">
 </head>
 <body>
-  <!-- メインゲームコンテナ -->
+  <!-- Main Game Container -->
   <div id="game-container">
-    <!-- ゲームヘッダー -->
+    <!-- Game Header -->
     <header id="game-header">
       <div class="header-left">
         <h1 class="game-title">🌃 Midnight Metropolis Mix-up</h1>
@@ -21,7 +21,7 @@
       <div class="header-center">
         <div class="phase-indicator">
           <span id="current-phase">Day Phase</span>
-          <button id="phase-switch-btn" class="btn btn-primary">夜フェーズへ</button>
+          <button id="phase-switch-btn" class="btn btn-primary">Switch to Night</button>
         </div>
       </div>
       <div class="header-right">
@@ -31,66 +31,66 @@
             <span id="action-points-display">6</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">⭐ 評判:</span>
+            <span class="stat-label">⭐ Reputation:</span>
             <span id="reputation-display">50</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">💰 売上:</span>
+            <span class="stat-label">💰 Earnings:</span>
             <span id="earnings-display">0</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- 昼フェーズ UI -->
+    <!-- Day Phase UI -->
     <div id="day-phase" class="game-phase active">
       <div class="phase-content">
-        <!-- 街マップ -->
+        <!-- City Map -->
         <div id="city-map" class="city-map">
-          <h2 class="section-title">🏙️ 都市マップ</h2>
+          <h2 class="section-title">🏙️ City Map</h2>
           <div class="city-districts">
             <div class="district" data-district="downtown">
               <div class="district-header">
-                <h3>🏢 ダウンタウン</h3>
+                <h3>🏢 Downtown</h3>
                 <span class="ap-cost">AP: 1</span>
               </div>
-              <p class="district-description">ビジネス街での政治的な噂</p>
-              <button class="btn btn-secondary visit-btn">訪問</button>
+              <p class="district-description">Political rumors from business district</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
             </div>
             <div class="district" data-district="port">
               <div class="district-header">
-                <h3>⚓ 港エリア</h3>
+                <h3>⚓ Port Area</h3>
                 <span class="ap-cost">AP: 2</span>
               </div>
-              <p class="district-description">港の労働者からの情報</p>
-              <button class="btn btn-secondary visit-btn">訪問</button>
+              <p class="district-description">Information from dock workers</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
             </div>
             <div class="district" data-district="suburbs">
               <div class="district-header">
-                <h3>🏘️ 郊外</h3>
+                <h3>🏘️ Suburbs</h3>
                 <span class="ap-cost">AP: 1</span>
               </div>
-              <p class="district-description">住民の日常的な噂</p>
-              <button class="btn btn-secondary visit-btn">訪問</button>
+              <p class="district-description">Daily rumors from residents</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
             </div>
             <div class="district" data-district="underground">
               <div class="district-header">
-                <h3>🌌 地下街</h3>
+                <h3>🌌 Underground</h3>
                 <span class="ap-cost">AP: 3</span>
               </div>
-              <p class="district-description">裏の世界の情報</p>
-              <button class="btn btn-secondary visit-btn">訪問</button>
+              <p class="district-description">Information from the underworld</p>
+              <button class="btn btn-secondary visit-btn">Visit</button>
             </div>
           </div>
         </div>
 
-        <!-- 噂インベントリ -->
+        <!-- Rumor Inventory -->
         <div id="rumor-inventory" class="rumor-inventory">
-          <h2 class="section-title">📚 噂インベントリ</h2>
+          <h2 class="section-title">📚 Rumor Inventory</h2>
           <div class="inventory-tabs">
-            <button class="tab-btn active" data-tab="bases">ベース噂</button>
-            <button class="tab-btn" data-tab="flavors">フレーバー</button>
-            <button class="tab-btn" data-tab="garnishes">ガーニッシュ</button>
+            <button class="tab-btn active" data-tab="bases">Base Rumors</button>
+            <button class="tab-btn" data-tab="flavors">Flavors</button>
+            <button class="tab-btn" data-tab="garnishes">Garnishes</button>
           </div>
           <div class="inventory-content">
             <div id="bases-inventory" class="inventory-tab active">
@@ -107,48 +107,48 @@
       </div>
     </div>
 
-    <!-- 夜フェーズ UI -->
+    <!-- Night Phase UI -->
     <div id="night-phase" class="game-phase">
       <div class="phase-content">
-        <!-- バービュー -->
+        <!-- Bar View -->
         <div id="bar-view" class="bar-view">
-          <h2 class="section-title">🍸 バーカウンター</h2>
+          <h2 class="section-title">🍸 Bar Counter</h2>
           <div class="cocktail-creation">
             <div class="ingredient-slots">
               <div class="slot" id="base-slot" data-type="base">
-                <div class="slot-label">ベース噂</div>
+                <div class="slot-label">Base Rumor</div>
                 <div class="slot-content"></div>
               </div>
               <div class="slot" id="flavor-slot" data-type="flavor">
-                <div class="slot-label">フレーバー</div>
+                <div class="slot-label">Flavor</div>
                 <div class="slot-content"></div>
               </div>
               <div class="slot" id="garnish-slot" data-type="garnish">
-                <div class="slot-label">ガーニッシュ</div>
+                <div class="slot-label">Garnish</div>
                 <div class="slot-content"></div>
               </div>
             </div>
             <div class="cocktail-actions">
-              <button id="create-cocktail-btn" class="btn btn-primary" disabled>🍸 カクテル作成</button>
-              <button id="clear-slots-btn" class="btn btn-secondary">🗑️ クリア</button>
+              <button id="create-cocktail-btn" class="btn btn-primary" disabled>🍸 Create Cocktail</button>
+              <button id="clear-slots-btn" class="btn btn-secondary">🗑️ Clear</button>
             </div>
             <div id="cocktail-preview" class="cocktail-preview"></div>
           </div>
         </div>
 
-        <!-- 顧客キュー -->
+        <!-- Customer Queue -->
         <div id="customer-queue" class="customer-queue">
-          <h2 class="section-title">👥 待機中の顧客</h2>
+          <h2 class="section-title">👥 Waiting Customers</h2>
           <div class="customers-container" id="customers-container"></div>
         </div>
 
-        <!-- 噂ボード -->
+        <!-- Rumor Board -->
         <div id="rumor-board" class="rumor-board">
-          <h2 class="section-title">📋 利用可能な噂</h2>
+          <h2 class="section-title">📋 Available Rumors</h2>
           <div class="rumor-board-tabs">
-            <button class="tab-btn active" data-tab="bases">ベース</button>
-            <button class="tab-btn" data-tab="flavors">フレーバー</button>
-            <button class="tab-btn" data-tab="garnishes">ガーニッシュ</button>
+            <button class="tab-btn active" data-tab="bases">Bases</button>
+            <button class="tab-btn" data-tab="flavors">Flavors</button>
+            <button class="tab-btn" data-tab="garnishes">Garnishes</button>
           </div>
           <div class="rumor-board-content">
             <div id="board-bases" class="rumor-board-tab active">
@@ -165,68 +165,68 @@
       </div>
     </div>
 
-    <!-- 特殊イベント表示 -->
+    <!-- Special Events Display -->
     <div id="special-events" class="special-events"></div>
 
-    <!-- 通知エリア -->
+    <!-- Notification Area -->
     <div id="notifications" class="notifications"></div>
 
-    <!-- 設定・保存メニュー -->
+    <!-- Settings/Save Menu -->
     <div id="game-menu" class="game-menu">
       <button id="menu-toggle" class="menu-toggle">⚙️</button>
       <div id="menu-content" class="menu-content">
-        <button id="save-game-btn" class="btn btn-primary">💾 ゲーム保存</button>
-        <button id="load-game-btn" class="btn btn-secondary">📁 ゲーム読込</button>
-        <button id="export-save-btn" class="btn btn-secondary">📤 セーブ出力</button>
-        <button id="import-save-btn" class="btn btn-secondary">📥 セーブ読込</button>
-        <button id="new-game-btn" class="btn btn-danger">🆕 新規ゲーム</button>
-        <button id="toggle-debug-btn" class="btn btn-secondary">🐛 デバッグ</button>
-        <button id="run-tests-btn" class="btn btn-secondary">🧪 テスト実行</button>
+        <button id="save-game-btn" class="btn btn-primary">💾 Save Game</button>
+        <button id="load-game-btn" class="btn btn-secondary">📁 Load Game</button>
+        <button id="export-save-btn" class="btn btn-secondary">📤 Export Save</button>
+        <button id="import-save-btn" class="btn btn-secondary">📥 Import Save</button>
+        <button id="new-game-btn" class="btn btn-danger">🆕 New Game</button>
+        <button id="toggle-debug-btn" class="btn btn-secondary">🐛 Debug</button>
+        <button id="run-tests-btn" class="btn btn-secondary">🧪 Run Tests</button>
       </div>
     </div>
 
-    <!-- デバッグ情報 -->
+    <!-- Debug Information -->
     <div id="debug-info" class="debug-info hidden">
-      <h3>🐛 デバッグ情報</h3>
+      <h3>🐛 Debug Information</h3>
       <div class="debug-content">
         <div class="debug-stats">
           <div>FPS: <span id="fps-counter">60</span></div>
-          <div>フレーム時間: <span id="frame-time">16.67ms</span></div>
-          <div>メモリ使用量: <span id="memory-usage">N/A</span></div>
+          <div>Frame Time: <span id="frame-time">16.67ms</span></div>
+          <div>Memory Usage: <span id="memory-usage">N/A</span></div>
         </div>
         <div class="debug-log" id="debug-log"></div>
       </div>
     </div>
 
-    <!-- ローディング画面 -->
+    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
       <div class="loading-content">
         <div class="loading-spinner"></div>
         <h2>🌃 Midnight Metropolis Mix-up</h2>
-        <p>ゲーム読み込み中...</p>
+        <p>Loading game...</p>
         <div class="loading-bar">
           <div class="loading-progress"></div>
         </div>
       </div>
     </div>
 
-    <!-- ファイルインポート用の隠し要素 -->
+    <!-- Hidden File Import Element -->
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
   </div>
 
-  <!-- モーダルダイアログ -->
+  <!-- Modal Dialog -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 id="modal-title">確認</h3>
+        <h3 id="modal-title">Confirmation</h3>
         <button id="modal-close" class="modal-close">&times;</button>
       </div>
       <div class="modal-body">
-        <p id="modal-message">メッセージ</p>
+        <p id="modal-message">Message</p>
       </div>
       <div class="modal-footer">
         <button id="modal-confirm" class="btn btn-primary">OK</button>
-        <button id="modal-cancel" class="btn btn-secondary">キャンセル</button>
+        <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
       </div>
     </div>
   </div>

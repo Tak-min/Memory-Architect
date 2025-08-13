@@ -32,6 +32,30 @@ export class GameEngine {
     this.triggerEvent('gameStarted');
   }
 
+  // ゲームループ開始
+  startGameLoop() {
+    console.log('Starting game loop...');
+    this.isRunning = true;
+    this.startDayPhase();
+    
+    // メインゲームループ（30FPSで動作）
+    const gameLoop = () => {
+      if (this.isRunning) {
+        this.update();
+        setTimeout(() => requestAnimationFrame(gameLoop), 1000 / 30);
+      }
+    };
+    
+    requestAnimationFrame(gameLoop);
+  }
+
+  // ゲーム状態更新
+  update() {
+    // ゲーム状態の更新処理
+    // イベント処理、UI更新など
+    this.triggerEvent('gameUpdate', { gameState: this.gameState });
+  }
+
   // デイフェーズの開始
   startDayPhase() {
     this.gameState.currentPhase = 'day';
@@ -47,9 +71,21 @@ export class GameEngine {
   startNightPhase() {
     this.gameState.currentPhase = 'night';
     this.gameState.currentCustomerIndex = 0;
+    
+    // 顧客システムが利用可能な場合、顧客を生成
+    if (this.customerSystem) {
+      this.gameState.customers = this.customerSystem.generateNightCustomers(this.gameState.reputation);
+    } else {
+      console.warn('Customer system not available, generating mock customers');
+      this.gameState.customers = [
+        { name: 'Test Customer', type: 'regular', mood: 'joy', patience: 10 }
+      ];
+    }
+    
     this.updateUI();
     this.triggerEvent('nightPhaseStarted', {
-      day: this.gameState.currentDay
+      day: this.gameState.currentDay,
+      customers: this.gameState.customers
     });
   }
 

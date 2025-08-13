@@ -1,5 +1,5 @@
 // test.js
-// ゲームシステムのテストスクリプト
+// Game system test script
 import { RumorSystem } from './rumorSystem.js';
 import { CustomerSystem } from './customerSystem.js';
 import { GameEngine } from './gameEngine.js';
@@ -12,7 +12,7 @@ class GameTester {
     this.gameEngine = new GameEngine();
   }
 
-  // テスト実行
+  // Run tests
   runAllTests() {
     console.log('🧪 Starting Game System Tests...\n');
     
