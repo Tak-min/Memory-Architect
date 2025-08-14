@@ -26,7 +26,7 @@ class UserManager {
         const password = document.getElementById('password').value;
         
         if (!username || !password) {
-            alert('Please enter a username and password.');
+            alert('ユーザー名とパスワードを入力してください。');
             return;
         }
         
@@ -35,7 +35,7 @@ class UserManager {
             this.isGuest = false;
             this.showMainMenu();
         } else {
-            alert('Incorrect username or password.');
+            alert('ユーザー名またはパスワードが正しくありません。');
         }
     }
     
@@ -44,12 +44,12 @@ class UserManager {
         const password = document.getElementById('password').value;
         
         if (!username || !password) {
-            alert('Please enter a username and password.');
+            alert('ユーザー名とパスワードを入力してください。');
             return;
         }
         
         if (this.users[username]) {
-            alert('This username is already taken.');
+            alert('このユーザー名は既に使用されています。');
             return;
         }
         
@@ -72,7 +72,7 @@ class UserManager {
     
     playAsGuest() {
         this.currentUser = null;
-        this.isGuest = false;
+        this.isGuest = true;
         this.showMainMenu();
     }
     
@@ -92,12 +92,12 @@ class UserManager {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('menuOverlay').style.display = 'flex';
         
-        // Update welcome message
+        // ウェルカムメッセージの更新
         const welcomeMsg = document.getElementById('welcomeMessage');
         if (this.isGuest) {
-            welcomeMsg.textContent = 'Guest Play - Some features are limited';
+            welcomeMsg.textContent = 'ゲストプレイ - 一部機能制限あり';
         } else {
-            welcomeMsg.textContent = `Welcome, ${this.currentUser.username}!`;
+            welcomeMsg.textContent = `ようこそ、${this.currentUser.username}さん！`;
         }
         
         // ボタンの表示/非表示
@@ -170,14 +170,14 @@ class UserManager {
                 window.game.currency = this.currentUser.currency;
             }
             
-            // Apply item to the game
+            // アイテムをゲームに適用
             if (window.memoryGame) {
                 window.memoryGame.applyShopItem(itemType);
             }
             
-            alert('Item purchased!');
+            alert('アイテムを購入しました！');
         } else {
-            alert('Not enough Memory Coins.');
+            alert('メモリーコインが不足しています。');
         }
     }
     
@@ -190,18 +190,16 @@ class UserManager {
         
         // プレースホルダーデータ（実際のランキングが少ない場合）
         const placeholderData = [
-            { username: 'Neural Master', score: 100, isPlaceholder: false },
-            { username: 'Memory Architect', score: 32, isPlaceholder: false },
-            { username: 'Synapse Engineer', score: 45, isPlaceholder: false },
-            { username: 'Brain Builder', score: 89, isPlaceholder: false },
-            { username: 'Cognitive Creator', score: 123, isPlaceholder: false },
-            { username: 'Mind Manager', score: 237, isPlaceholder: false },
-            { username: 'Neuron Navigator', score: 512, isPlaceholder: false },
-            { username: 'Circuit Constructor', score: 86, isPlaceholder: false },
-            { username: 'Logic Designer', score: 43, isPlaceholder: false },
-            { username: 'Data Dreamer', score: 38, isPlaceholder: false },
-            { username: 'Crazy gamer', score: 78, isPlaceholder: false },
-            { username: 'Json jaster', score: 68, isPlaceholder: false }
+            { username: 'Neural Master', score: 9500, isPlaceholder: true },
+            { username: 'Memory Architect', score: 8800, isPlaceholder: true },
+            { username: 'Synapse Engineer', score: 7600, isPlaceholder: true },
+            { username: 'Brain Builder', score: 6900, isPlaceholder: true },
+            { username: 'Cognitive Creator', score: 6200, isPlaceholder: true },
+            { username: 'Mind Manager', score: 5800, isPlaceholder: true },
+            { username: 'Neuron Navigator', score: 5400, isPlaceholder: true },
+            { username: 'Circuit Constructor', score: 4900, isPlaceholder: true },
+            { username: 'Logic Designer', score: 4300, isPlaceholder: true },
+            { username: 'Data Dreamer', score: 3800, isPlaceholder: true }
         ];
         
         // 実際のランキングとプレースホルダーを合成
@@ -290,79 +288,79 @@ class UserManager {
     }
 }
 
-// Tutorial Manager Class
+// チュートリアル管理クラス
 class TutorialManager {
     constructor() {
         this.currentStep = 0;
         this.steps = [
             {
-                title: "Welcome to Memory Architect",
+                title: "Memory Architectへようこそ",
                 content: `
                     <div class="tutorial-step">
-                        <h3>🧠 You are a Memory Architect</h3>
-                        <p>In this city, memories are a precious resource. Citizens require specific types of memories to gain satisfaction and happiness.</p>
+                        <h3>🧠 あなたは記憶アーキテクト</h3>
+                        <p>この都市では、記憶が貴重なリソースです。市民は特定の種類の記憶を必要として、満足感と幸福感を得ています。</p>
                     </div>
                 `
             },
             {
-                title: "Understanding Memory Types",
+                title: "記憶の種類を理解する",
                 content: `
                     <div class="tutorial-step">
-                        <h3>💖 Six Memory Types</h3>
-                        <p><strong>Love:</strong> Memories of romance and family<br>
-                        <strong>Knowledge:</strong> Learning and discovery<br>
-                        <strong>Adventure:</strong> Exploration and challenges<br>
-                        <strong>Peace:</strong> Moments of tranquility and calm<br>
-                        <strong>Nostalgia:</strong> Bittersweet memories of the past<br>
-                        <strong>Courage:</strong> Brave and heroic moments</p>
+                        <h3>💖 6つの記憶タイプ</h3>
+                        <p><strong>愛：</strong> ロマンスや家族の記憶<br>
+                        <strong>知識：</strong> 学習と発見<br>
+                        <strong>冒険：</strong> 探検と挑戦<br>
+                        <strong>平和：</strong> 静穏で安らぎの瞬間<br>
+                        <strong>郷愁：</strong> ほろ苦い過去の記憶<br>
+                        <strong>勇気：</strong> 勇敢で英雄的な瞬間</p>
                     </div>
                 `
             },
             {
-                title: "Managing Citizens",
+                title: "市民の管理",
                 content: `
                     <div class="tutorial-step">
-                        <h3>👥 Citizen Behavior</h3>
-                        <p>Citizens appear as colored squares moving through the city. Each citizen needs a specific type of memory.</p>
-                        <p>The <strong>colored icon above a citizen</strong> indicates the required memory type.</p>
-                        <p><strong>The citizen's color indicates their satisfaction:</strong><br>
-                        🟢 Green = Very Satisfied<br>
-                        🟡 Yellow = Moderately Satisfied<br>
-                        🔴 Red = Needs Attention</p>
+                        <h3>👥 市民の行動</h3>
+                        <p>市民は都市を移動する色付きの四角形として表示されます。各市民は特定の種類の記憶を必要としています。</p>
+                        <p><strong>市民の上に表示される色付きアイコン</strong>は、必要な記憶タイプを示しています。</p>
+                        <p><strong>市民の色は満足度を示します：</strong><br>
+                        🟢 緑 = とても満足<br>
+                        🟡 黄 = 普通の満足<br>
+                        🔴 赤 = 注意が必要</p>
                     </div>
                 `
             },
             {
-                title: "Operating Memory Buildings",
+                title: "記憶建物の操作",
                 content: `
                     <div class="tutorial-step">
-                        <h3>🏢 Memory Storage Buildings</h3>
-                        <p>Buildings store and distribute different types of memories.</p>
-                        <p><strong>Click on a building</strong> to transfer memories from your inventory to the building's storage.</p>
-                        <p>The <strong>white bar below a building</strong> indicates its storage level.</p>
-                        <p>Citizens will automatically visit buildings that have the memory type they need.</p>
+                        <h3>🏢 記憶保管建物</h3>
+                        <p>建物は異なる種類の記憶を保管・配布します。</p>
+                        <p><strong>建物をクリック</strong>して、あなたの在庫から建物の保管庫に記憶を転送します。</p>
+                        <p>建物の下部にある<strong>白いバー</strong>は保管レベルを示しています。</p>
+                        <p>市民は必要な記憶タイプを持つ建物を自動的に訪問します。</p>
                     </div>
                 `
             },
             {
-                title: "The Satisfaction Cycle",
+                title: "満足サイクル",
                 content: `
                     <div class="tutorial-step">
-                        <h3>✨ Soul Fulfillment</h3>
-                        <p>When a citizen receives the memory they need, they become satisfied and start to glow beautifully.</p>
-                        <p>After 30 seconds of satisfaction, the fulfilled citizen will dissolve into sparks and ascend, making space for a new soul.</p>
-                        <p><strong>Your Goal:</strong> Help as many citizens as possible achieve fulfillment!</p>
+                        <h3>✨ 魂の充実</h3>
+                        <p>市民が必要な記憶を受け取ると、満足感を得て美しい色で光り始めます。</p>
+                        <p>30秒間満足した後、充実した市民は火花となって溶け、昇天し、新しい魂のためのスペースを作ります。</p>
+                        <p><strong>目標：</strong> できるだけ多くの市民が充実感を得られるよう支援しましょう！</p>
                     </div>
                 `
             },
             {
-                title: "Ready to Start!",
+                title: "始める準備ができました！",
                 content: `
                     <div class="tutorial-step">
-                        <h3>🎮 You're Ready to Go!</h3>
-                        <p>Start by clicking on buildings to distribute memories. Monitor the citizens' satisfaction levels and try to keep everyone happy.</p>
-                        <p>New memories are generated automatically over time, but manage them wisely.</p>
-                        <p><strong>Remember:</strong> Hover over buildings to see helpful tooltips with information!</p>
+                        <h3>🎮 準備完了！</h3>
+                        <p>建物をクリックして記憶を配布することから始めましょう。市民の満足度レベルを監視し、みんなを幸せに保つよう努力してください。</p>
+                        <p>新しい記憶は時間の経過と共に自動的に生成されますが、賢く管理してください。</p>
+                        <p><strong>覚えておいて：</strong> 建物にマウスを合わせると、役立つ情報が表示されるツールチップを見ることができます！</p>
                     </div>
                 `
             }
@@ -392,7 +390,7 @@ class TutorialManager {
         document.querySelector('.tutorial-title').textContent = step.title;
         
         document.getElementById('tutorialPrev').style.display = this.currentStep > 0 ? 'block' : 'none';
-        document.getElementById('tutorialNext').textContent = this.currentStep < this.steps.length - 1 ? 'Next' : 'Start Game!';
+        document.getElementById('tutorialNext').textContent = this.currentStep < this.steps.length - 1 ? '次へ' : 'ゲーム開始！';
     }
     
     nextStep() {
@@ -555,7 +553,7 @@ class MemoryArchitectGame {
     }
     
     startGame() {
-        this.gameStarted = false;
+        this.gameStarted = true;
         this.initializeGame();
     }
     
@@ -604,7 +602,7 @@ class MemoryArchitectGame {
     
     togglePause() {
         this.gamePaused = !this.gamePaused;
-        document.getElementById('pauseBtn').textContent = this.gamePaused ? 'Resume' : 'Pause';
+        document.getElementById('pauseBtn').textContent = this.gamePaused ? '再開' : '一時停止';
     }
     
     showMenu() {
@@ -649,7 +647,7 @@ class MemoryArchitectGame {
             }
         }
         
-        alert(`Progressed for ${Math.floor(seconds / 60)} minutes while offline!`);
+        alert(`オフライン中に${Math.floor(seconds / 60)}分進行しました！`);
     }
     
     applyShopItem(itemType) {
@@ -686,7 +684,7 @@ class MemoryArchitectGame {
         
         // オフライン進行アイテムの場合
         if (config.type === 'offline') {
-            this.offlineProgress = false;
+            this.offlineProgress = true;
             setTimeout(() => {
                 this.offlineProgress = false;
             }, config.duration * 1000);
@@ -710,9 +708,9 @@ class MemoryArchitectGame {
             };
             
             const name = {
-                boost: 'Memory Boost',
-                assistant: 'Assistant',
-                offline: 'Offline Progression'
+                boost: '記憶ブースト',
+                assistant: 'アシスタント',
+                offline: 'オフライン進行'
             };
             
             const timeLeft = Math.ceil(item.remainingTime / 60);
@@ -721,7 +719,7 @@ class MemoryArchitectGame {
                 <div class="active-item-icon">${icon[item.type]}</div>
                 <div class="active-item-info">
                     <div>${name[item.type]}</div>
-                    <div class="active-item-timer">${timeLeft}s</div>
+                    <div class="active-item-timer">${timeLeft}秒</div>
                 </div>
             `;
             
@@ -747,7 +745,7 @@ class MemoryArchitectGame {
                 
                 const memoryName = building.type.charAt(0).toUpperCase() + building.type.slice(1);
                 tooltipText = `${memoryName} 記憶バンク\n保管: ${building.storedMemories}/${building.capacity}\nクリックで記憶を配布`;
-                showTooltip = false;
+                showTooltip = true;
                 break;
             }
         }
@@ -763,7 +761,7 @@ class MemoryArchitectGame {
     }
     
     handleMouseDown(e) {
-        this.mouseDown = false;
+        this.mouseDown = true;
         this.handleClick();
     }
     
@@ -916,7 +914,7 @@ class MemoryArchitectGame {
     }
     
     updateMemoryGeneration() {
-        let generationRate = 90;
+        let generationRate = 360;
         let generationAmount = 2;
         
         // ブーストアイテムの効果を適用
@@ -1027,7 +1025,7 @@ class MemoryArchitectGame {
             targetX: spawnX,
             targetY: spawnY,
             speed: 0.6 + Math.random() * 0.8,
-            needsMemory: false,
+            needsMemory: true,
             memoryType: memoryTypes[Math.floor(Math.random() * memoryTypes.length)],
             satisfaction: 0, // 0%から開始
             lastFed: 0,
@@ -1355,7 +1353,7 @@ window.addEventListener('load', () => {
     if (authForm) {
         authForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            // Trigger login button click event
+            // ログインボタンクリックイベントを発火
             document.getElementById('loginBtn').click();
         });
     }
