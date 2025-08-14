@@ -1,3 +1,221 @@
+// Futuristic Music System Class
+class FuturisticMusicSystem {
+    constructor() {
+        this.audioContext = null;
+        this.isPlaying = false;
+        this.masterGain = null;
+        this.oscillators = [];
+        this.volume = 0.3;
+        this.initializeAudio();
+    }
+    
+    async initializeAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.masterGain = this.audioContext.createGain();
+            this.masterGain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+            this.masterGain.connect(this.audioContext.destination);
+        } catch (error) {
+            console.log('Web Audio API not supported');
+        }
+    }
+    
+    async startMusic() {
+        if (!this.audioContext || this.isPlaying) return;
+        
+        // Resume audio context if suspended (browser policy)
+        if (this.audioContext.state === 'suspended') {
+            await this.audioContext.resume();
+        }
+        
+        this.isPlaying = true;
+        this.createAmbientLayers();
+    }
+    
+    stopMusic() {
+        if (!this.isPlaying) return;
+        
+        this.oscillators.forEach(osc => {
+            try {
+                osc.stop();
+            } catch (e) {}
+        });
+        this.oscillators = [];
+        this.isPlaying = false;
+    }
+    
+    createAmbientLayers() {
+        // Layer 1: Deep bass drone
+        this.createDrone(55, 0.15, 'sawtooth');
+        
+        // Layer 2: Mid-range atmospheric pad
+        this.createAtmosphericPad();
+        
+        // Layer 3: High frequency sparkles
+        this.createSparkles();
+        
+        // Layer 4: Rhythmic pulse
+        this.createRhythmicPulse();
+    }
+    
+    createDrone(frequency, volume, waveType = 'sine') {
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        const filter = this.audioContext.createBiquadFilter();
+        
+        oscillator.type = waveType;
+        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        filter.Q.setValueAtTime(1, this.audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 2);
+        
+        oscillator.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(this.masterGain);
+        
+        oscillator.start();
+        this.oscillators.push(oscillator);
+        
+        // Add subtle frequency modulation
+        const lfo = this.audioContext.createOscillator();
+        const lfoGain = this.audioContext.createGain();
+        lfo.frequency.setValueAtTime(0.1, this.audioContext.currentTime);
+        lfoGain.gain.setValueAtTime(2, this.audioContext.currentTime);
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscillator.frequency);
+        lfo.start();
+        this.oscillators.push(lfo);
+    }
+    
+    createAtmosphericPad() {
+        const frequencies = [220, 329.63, 440, 523.25]; // A major chord
+        
+        frequencies.forEach((freq, index) => {
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            oscillator.type = 'triangle';
+            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(800 + index * 200, this.audioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.08, this.audioContext.currentTime + 3 + index);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.masterGain);
+            
+            oscillator.start();
+            this.oscillators.push(oscillator);
+            
+            // Slow amplitude modulation
+            this.modulateGain(gainNode, 0.05 + index * 0.01, 0.02);
+        });
+    }
+    
+    createSparkles() {
+        const sparkleFreqs = [1760, 2093, 2637, 3136];
+        
+        const createSparkle = () => {
+            if (!this.isPlaying) return;
+            
+            const freq = sparkleFreqs[Math.floor(Math.random() * sparkleFreqs.length)];
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+            
+            filter.type = 'highpass';
+            filter.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+            
+            const attackTime = 0.1;
+            const sustainTime = 0.3;
+            const releaseTime = 0.5;
+            
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.05, this.audioContext.currentTime + attackTime);
+            gainNode.gain.linearRampToValueAtTime(0.03, this.audioContext.currentTime + attackTime + sustainTime);
+            gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + attackTime + sustainTime + releaseTime);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.masterGain);
+            
+            oscillator.start();
+            oscillator.stop(this.audioContext.currentTime + attackTime + sustainTime + releaseTime);
+            
+            // Schedule next sparkle
+            setTimeout(createSparkle, Math.random() * 8000 + 4000);
+        };
+        
+        // Start first sparkle
+        setTimeout(createSparkle, Math.random() * 2000 + 1000);
+    }
+    
+    createRhythmicPulse() {
+        const createPulse = () => {
+            if (!this.isPlaying) return;
+            
+            const oscillator = this.audioContext.createOscillator();
+            const gainNode = this.audioContext.createGain();
+            const filter = this.audioContext.createBiquadFilter();
+            
+            oscillator.type = 'square';
+            oscillator.frequency.setValueAtTime(110, this.audioContext.currentTime);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(300, this.audioContext.currentTime);
+            
+            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.03, this.audioContext.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 0.2);
+            
+            oscillator.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(this.masterGain);
+            
+            oscillator.start();
+            oscillator.stop(this.audioContext.currentTime + 0.2);
+            
+            // Schedule next pulse (every 4 seconds with slight variation)
+            setTimeout(createPulse, 4000 + Math.random() * 1000 - 500);
+        };
+        
+        // Start first pulse
+        setTimeout(createPulse, 8000);
+    }
+    
+    modulateGain(gainNode, frequency, depth) {
+        const lfo = this.audioContext.createOscillator();
+        const lfoGain = this.audioContext.createGain();
+        
+        lfo.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        lfoGain.gain.setValueAtTime(depth, this.audioContext.currentTime);
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(gainNode.gain);
+        
+        lfo.start();
+        this.oscillators.push(lfo);
+    }
+    
+    setVolume(volume) {
+        this.volume = Math.max(0, Math.min(1, volume));
+        if (this.masterGain) {
+            this.masterGain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+        }
+    }
+}
+
 // User Management Class
 class UserManager {
     constructor() {
@@ -429,6 +647,9 @@ class MemoryArchitectGame {
         this.ctx = this.canvas.getContext('2d');
         this.tooltip = document.getElementById('tooltip');
         
+        // Music System
+        this.musicSystem = new FuturisticMusicSystem();
+        
         // ゲーム状態
         this.gameTime = 0;
         this.satisfaction = 0; // Start from 0%
@@ -544,6 +765,22 @@ class MemoryArchitectGame {
         document.getElementById('speed2x').addEventListener('click', () => this.setGameSpeed(2));
         document.getElementById('speed3x').addEventListener('click', () => this.setGameSpeed(3));
         
+        // Music controls
+        document.getElementById('musicVolume').addEventListener('input', (e) => {
+            const volume = e.target.value / 100;
+            this.musicSystem.setVolume(volume);
+        });
+        
+        document.getElementById('musicToggle').addEventListener('click', () => {
+            if (this.musicSystem.isPlaying) {
+                this.musicSystem.stopMusic();
+                document.getElementById('musicToggle').textContent = '🔇';
+            } else {
+                this.musicSystem.startMusic();
+                document.getElementById('musicToggle').textContent = '🔊';
+            }
+        });
+        
         // その他のコントロール
         document.getElementById('pauseBtn').addEventListener('click', () => this.togglePause());
         document.getElementById('menuBtn').addEventListener('click', () => this.showMenu());
@@ -555,6 +792,9 @@ class MemoryArchitectGame {
     startGame() {
         this.gameStarted = true;
         this.initializeGame();
+        
+        // Start futuristic background music
+        this.musicSystem.startMusic();
     }
     
     initializeGame() {
@@ -606,6 +846,10 @@ class MemoryArchitectGame {
     }
     
     showMenu() {
+        // Stop music when returning to menu
+        this.musicSystem.stopMusic();
+        document.getElementById('musicToggle').textContent = '🔇';
+        
         document.getElementById('gameScreen').style.display = 'none';
         document.getElementById('menuOverlay').style.display = 'flex';
     }
