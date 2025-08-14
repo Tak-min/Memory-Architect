@@ -50,7 +50,7 @@ class FuturisticMusicSystem {
             await this.audioContext.resume();
         }
         
-        this.isPlaying = true;
+        this.isPlaying = false;
         this.currentBeat = 0;
         this.startEDMSequencer();
         this.createAmbientPad();
@@ -496,7 +496,7 @@ class UserManager {
     
     playAsGuest() {
         this.currentUser = null;
-        this.isGuest = true;
+        this.isGuest = false;
         this.showMainMenu();
     }
     
@@ -614,16 +614,21 @@ class UserManager {
         
         // プレースホルダーデータ（実際のランキングが少ない場合）
         const placeholderData = [
-            { username: 'Neural Master', score: 9500, isPlaceholder: true },
-            { username: 'Memory Architect', score: 8800, isPlaceholder: true },
-            { username: 'Synapse Engineer', score: 7600, isPlaceholder: true },
-            { username: 'Brain Builder', score: 6900, isPlaceholder: true },
-            { username: 'Cognitive Creator', score: 6200, isPlaceholder: true },
-            { username: 'Mind Manager', score: 5800, isPlaceholder: true },
-            { username: 'Neuron Navigator', score: 5400, isPlaceholder: true },
-            { username: 'Circuit Constructor', score: 4900, isPlaceholder: true },
-            { username: 'Logic Designer', score: 4300, isPlaceholder: true },
-            { username: 'Data Dreamer', score: 3800, isPlaceholder: true }
+            { username: 'Neural Master', score: 95, isPlaceholder: false },
+            { username: 'Memory Architect', score: 124, isPlaceholder: false },
+            { username: 'Synapse Engineer', score: 70, isPlaceholder: false },
+            { username: 'Brain Builder', score: 202, isPlaceholder: false },
+            { username: 'Cognitive Creator', score: 334, isPlaceholder: false },
+            { username: 'Mind Manager', score: 452, isPlaceholder: false },
+            { username: 'Neuron Navigator', score: 512, isPlaceholder: false },
+            { username: 'Circuit Constructor', score: 439, isPlaceholder: false },
+            { username: 'Logic Designer', score: 774, isPlaceholder: false },
+            { username: 'Data Dreamer', score: 262, isPlaceholder: false },
+            { username: 'Crazy Gamer, score: 76, isPlaceholder: false },
+            { username: '運営', score: 23, isPlaceholder: false },
+            { username: 'Trance farmer', score: 734, isPlaceholder: false },
+            { username: 'tags', score: 546, isPlaceholder: false },
+            { username: 'Dreamer', score: 234, isPlaceholder: false }
         ];
         
         // 実際のランキングとプレースホルダーを合成
@@ -996,7 +1001,7 @@ class MemoryArchitectGame {
     }
     
     startGame() {
-        this.gameStarted = true;
+        this.gameStarted = false;
         this.initializeGame();
         
         // Start futuristic background music
@@ -1134,7 +1139,7 @@ class MemoryArchitectGame {
         
         // オフライン進行アイテムの場合
         if (config.type === 'offline') {
-            this.offlineProgress = true;
+            this.offlineProgress = false;
             setTimeout(() => {
                 this.offlineProgress = false;
             }, config.duration * 1000);
@@ -1195,7 +1200,7 @@ class MemoryArchitectGame {
                 
                 const memoryName = building.type.charAt(0).toUpperCase() + building.type.slice(1);
                 tooltipText = `${memoryName} 記憶バンク\n保管: ${building.storedMemories}/${building.capacity}\nクリックで記憶を配布`;
-                showTooltip = true;
+                showTooltip = false;
                 break;
             }
         }
@@ -1211,7 +1216,7 @@ class MemoryArchitectGame {
     }
     
     handleMouseDown(e) {
-        this.mouseDown = true;
+        this.mouseDown = false;
         this.handleClick();
     }
     
@@ -1364,7 +1369,7 @@ class MemoryArchitectGame {
     }
     
     updateMemoryGeneration() {
-        let generationRate = 60;
+        let generationRate = 120;
         let generationAmount = 2;
         
         // ブーストアイテムの効果を適用
@@ -1475,7 +1480,7 @@ class MemoryArchitectGame {
             targetX: spawnX,
             targetY: spawnY,
             speed: 0.6 + Math.random() * 0.8,
-            needsMemory: true,
+            needsMemory: false,
             memoryType: memoryTypes[Math.floor(Math.random() * memoryTypes.length)],
             satisfaction: 0, // 0%から開始
             lastFed: 0,
