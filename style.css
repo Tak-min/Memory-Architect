@@ -94,19 +94,37 @@ body {
     font-weight: 600;
 }
 
+/* ゲーム画面のレイアウト */
+#gameScreen {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.game-content {
+    display: flex;
+    flex: 1;
+    gap: 20px;
+    padding: 20px;
+    overflow: hidden;
+}
+
 /* ゲームコンテナ */
 #gameContainer {
     position: relative;
-    margin: 0 auto;
+    flex: 1;
     background: linear-gradient(45deg, #1a1a2e, #16213e);
     border: 3px solid #00d4ff;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
     overflow: hidden;
+    min-width: 800px;
 }
 
 #gameCanvas {
     display: block;
+    width: 100%;
+    height: 100%;
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
@@ -151,19 +169,28 @@ body {
 
 /* UI パネル */
 .ui-panel {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 8px;
-    padding: 10px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
-    border-top: 2px solid #00d4ff;
+    border: 2px solid #00d4ff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
+}
+
+.memory-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
 }
 
 .memory-stat {
     background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
     border: 1px solid rgba(0, 212, 255, 0.3);
     border-radius: 8px;
-    padding: 8px;
+    padding: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -209,13 +236,18 @@ body {
 }
 
 .game-stats {
-    grid-column: 1 / -1;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
     border: 1px solid rgba(0, 212, 255, 0.5);
     border-radius: 10px;
-    padding: 10px;
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.game-stats > div {
+    text-align: center;
+    flex: 1;
 }
 
 /* オーバーレイ共通スタイル */
@@ -574,6 +606,90 @@ body {
 .ranking-score {
     font-weight: 700;
     color: #00d4ff;
+}
+
+/* 現在のユーザーのランキングアイテム */
+.ranking-item.current-user {
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.15);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.ranking-item.current-user .ranking-position {
+    color: #ff6b6b;
+}
+
+.ranking-item.current-user .ranking-score {
+    color: #ff6b6b;
+}
+
+/* プレースホルダーのランキングアイテム */
+.ranking-item.placeholder {
+    opacity: 0.7;
+    border-style: dashed;
+}
+
+.ranking-item.placeholder .ranking-player {
+    font-style: italic;
+}
+
+/* ランク外のユーザー */
+.ranking-item.not-ranked {
+    margin-top: 15px;
+    border-top: 2px solid rgba(255, 107, 107, 0.3);
+    background: rgba(255, 107, 107, 0.05);
+}
+
+/* PC向けワイドスクリーン対応（16:9 aspect ratio） */
+@media screen and (min-width: 1200px) {
+    .game-screen {
+        min-height: calc(100vh - 80px); /* ヘッダー分を考慮 */
+    }
+    
+    .game-content {
+        max-width: 1600px;
+        margin: 0 auto;
+        gap: 30px;
+    }
+    
+    .gameContainer {
+        max-width: 1200px;
+    }
+    
+    .ui-panel {
+        width: 350px;
+        min-height: 700px;
+    }
+    
+    .memory-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .game-stats {
+        padding: 20px;
+    }
+    
+    .game-controls {
+        padding: 20px;
+    }
+    
+    .control-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* 超ワイドスクリーン対応 */
+@media screen and (min-width: 1600px) {
+    .game-content {
+        max-width: 1800px;
+        gap: 40px;
+    }
+    
+    .ui-panel {
+        width: 400px;
+    }
 }
 
 .ranking-actions {

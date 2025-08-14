@@ -165,6 +165,11 @@ class UserManager {
             this.saveUserData();
             this.updateShopDisplay();
             
+            // ゲーム内通貨も同期
+            if (window.game) {
+                window.game.currency = this.currentUser.currency;
+            }
+            
             // アイテムをゲームに適用
             if (window.memoryGame) {
                 window.memoryGame.applyShopItem(itemType);
@@ -183,23 +188,67 @@ class UserManager {
         // ランキングを降順でソート
         const sortedRankings = [...this.rankings].sort((a, b) => b.score - a.score);
         
-        if (sortedRankings.length === 0) {
-            rankingList.innerHTML = '<p style="text-align: center; color: #a0a8b0;">まだランキングデータがありません</p>';
-            return;
+        // プレースホルダーデータ（実際のランキングが少ない場合）
+        const placeholderData = [
+            { username: 'Neural Master', score: 9500, isPlaceholder: true },
+            { username: 'Memory Architect', score: 8800, isPlaceholder: true },
+            { username: 'Synapse Engineer', score: 7600, isPlaceholder: true },
+            { username: 'Brain Builder', score: 6900, isPlaceholder: true },
+            { username: 'Cognitive Creator', score: 6200, isPlaceholder: true },
+            { username: 'Mind Manager', score: 5800, isPlaceholder: true },
+            { username: 'Neuron Navigator', score: 5400, isPlaceholder: true },
+            { username: 'Circuit Constructor', score: 4900, isPlaceholder: true },
+            { username: 'Logic Designer', score: 4300, isPlaceholder: true },
+            { username: 'Data Dreamer', score: 3800, isPlaceholder: true }
+        ];
+        
+        // 実際のランキングとプレースホルダーを合成
+        const allRankings = [...sortedRankings];
+        
+        // 現在のユーザーを実際のデータから除外してプレースホルダーを追加
+        const currentUserInRanking = sortedRankings.find(r => r.username === this.currentUser?.username);
+        
+        // プレースホルダーデータを追加（実際のデータが10未満の場合）
+        while (allRankings.length < 10) {
+            const placeholderIndex = allRankings.length;
+            if (placeholderIndex < placeholderData.length) {
+                allRankings.push(placeholderData[placeholderIndex]);
+            } else {
+                break;
+            }
         }
         
-        sortedRankings.slice(0, 10).forEach((ranking, index) => {
+        allRankings.slice(0, 10).forEach((ranking, index) => {
             const rankingItem = document.createElement('div');
-            rankingItem.className = `ranking-item ${index < 3 ? 'top3' : ''}`;
+            const isCurrentUser = ranking.username === this.currentUser?.username && !ranking.isPlaceholder;
+            rankingItem.className = `ranking-item ${index < 3 ? 'top3' : ''} ${isCurrentUser ? 'current-user' : ''} ${ranking.isPlaceholder ? 'placeholder' : ''}`;
+            
+            const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
             
             rankingItem.innerHTML = `
-                <div class="ranking-position">${index + 1}</div>
-                <div class="ranking-player">${ranking.username}</div>
-                <div class="ranking-score">${ranking.score}魂</div>
+                <div class="ranking-position">${rankIcon}</div>
+                <div class="ranking-player">
+                    ${ranking.username}
+                    ${isCurrentUser ? ' (あなた)' : ''}
+                    ${ranking.isPlaceholder ? ' 🤖' : ''}
+                </div>
+                <div class="ranking-score">${ranking.score.toLocaleString()}魂</div>
             `;
             
             rankingList.appendChild(rankingItem);
         });
+        
+        // 現在のユーザーがランキングにいない場合、下部に表示
+        if (this.currentUser && !currentUserInRanking) {
+            const userRankingItem = document.createElement('div');
+            userRankingItem.className = 'ranking-item current-user not-ranked';
+            userRankingItem.innerHTML = `
+                <div class="ranking-position">-</div>
+                <div class="ranking-player">${this.currentUser.username} (あなた)</div>
+                <div class="ranking-score">未ランクイン</div>
+            `;
+            rankingList.appendChild(userRankingItem);
+        }
     }
     
     addCurrency(amount) {
@@ -390,6 +439,11 @@ class MemoryArchitectGame {
         this.gameSpeed = 1; // 1x, 2x, 3x
         this.currency = 0;
         this.lastSatisfaction = 0;
+        
+        // ユーザー通貨と同期
+        if (window.userManager && window.userManager.currentUser) {
+            this.currency = window.userManager.currentUser.currency;
+        }
         
         // アクティブアイテム
         this.activeItems = [];
@@ -895,11 +949,14 @@ class MemoryArchitectGame {
         // 満足度が前回より上昇した場合に通貨を獲得
         if (this.satisfaction > this.lastSatisfaction) {
             const gain = Math.floor((this.satisfaction - this.lastSatisfaction) * 0.5);
-            this.currency += gain;
             
             // ユーザーマネージャーに通貨を追加
             if (window.userManager) {
                 window.userManager.addCurrency(gain);
+                // ゲーム内通貨をユーザー通貨と同期
+                this.currency = window.userManager.currentUser.currency;
+            } else {
+                this.currency += gain;
             }
         }
         this.lastSatisfaction = this.satisfaction;
@@ -1263,8 +1320,14 @@ class MemoryArchitectGame {
         document.getElementById('courageCount').textContent = this.memories.courage;
         document.getElementById('satisfaction').textContent = this.satisfaction + '%';
         document.getElementById('gameTime').textContent = Math.floor(this.gameTime / 60) + 's';
-        document.getElementById('dissolvedCount').textContent = this.dissolvedCitizens;
+        document.getElementById('buildingCount').textContent = this.buildings.length;
         document.getElementById('gameCurrency').textContent = this.currency;
+        
+        // ショップが開いている場合、ショップの通貨表示も更新
+        const shopCurrencyElement = document.getElementById('shopCurrency');
+        if (shopCurrencyElement && window.userManager) {
+            shopCurrencyElement.textContent = window.userManager.currentUser.currency;
+        }
         
         // ユーザーマネージャーがある場合、ランキングを更新
         if (window.userManager && this.dissolvedCitizens > 0 && this.gameTime % 1800 === 0) {
