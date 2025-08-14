@@ -496,7 +496,7 @@ class UserManager {
     
     playAsGuest() {
         this.currentUser = null;
-        this.isGuest = false;
+        this.isGuest = true;
         this.showMainMenu();
     }
     
@@ -1001,7 +1001,7 @@ class MemoryArchitectGame {
     }
     
     startGame() {
-        this.gameStarted = false;
+        this.gameStarted = true;
         this.initializeGame();
         
         // Start futuristic background music
@@ -1139,7 +1139,7 @@ class MemoryArchitectGame {
         
         // オフライン進行アイテムの場合
         if (config.type === 'offline') {
-            this.offlineProgress = false;
+            this.offlineProgress = true;
             setTimeout(() => {
                 this.offlineProgress = false;
             }, config.duration * 1000);
@@ -1200,7 +1200,7 @@ class MemoryArchitectGame {
                 
                 const memoryName = building.type.charAt(0).toUpperCase() + building.type.slice(1);
                 tooltipText = `${memoryName} 記憶バンク\n保管: ${building.storedMemories}/${building.capacity}\nクリックで記憶を配布`;
-                showTooltip = false;
+                showTooltip = true;
                 break;
             }
         }
@@ -1216,7 +1216,7 @@ class MemoryArchitectGame {
     }
     
     handleMouseDown(e) {
-        this.mouseDown = false;
+        this.mouseDown = true;
         this.handleClick();
     }
     
@@ -1480,7 +1480,7 @@ class MemoryArchitectGame {
             targetX: spawnX,
             targetY: spawnY,
             speed: 0.6 + Math.random() * 0.8,
-            needsMemory: false,
+            needsMemory: true,
             memoryType: memoryTypes[Math.floor(Math.random() * memoryTypes.length)],
             satisfaction: 0, // 0%から開始
             lastFed: 0,
