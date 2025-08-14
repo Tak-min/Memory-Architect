@@ -1,9 +1,24 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Architect - Premium City Management</title>
+    <title>Memory Arch        <div class="ran            <div id="tutorialContent" class="tutorial-content">
+                <!-- Tutorial content will be dynamically inserted here -->
+            </div>
+            <div class="tutorial-navigation">
+                <button id="tutorialPrev" class="btn btn-secondary">Prev</button>
+                <button id="tutorialNext" class="btn">Next</button>
+                <button id="tutorialSkip" class="btn btn-secondary">Skip</button>
+            </div>el">
+            <h2 class="ranking-title">🏆 Ranking</h2>
+            <div id="rankingList" class="ranking-list">
+                <!-- Ranking data will be dynamically inserted here -->
+            </div>
+            <div class="ranking-actions">
+                <button id="closeRankingBtn" class="btn btn-secondary">Close</button>
+            </div>
+        </div>remium City Management</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,28 +31,28 @@
             <div id="loginForm" class="login-form">
                 <form id="authForm">
                     <div class="form-group">
-                        <label for="username">ユーザー名</label>
-                        <input type="text" id="username" placeholder="ユーザー名を入力" autocomplete="username">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter username" autocomplete="username">
                     </div>
                     <div class="form-group">
-                        <label for="password">パスワード</label>
-                        <input type="password" id="password" placeholder="パスワードを入力" autocomplete="current-password">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
                     </div>
                 </form>
                 <div class="menu-buttons">
-                    <button id="loginBtn" class="btn">ログイン</button>
-                    <button id="registerBtn" class="btn btn-secondary">新規登録</button>
-                    <button id="guestBtn" class="btn btn-guest">ゲストでプレイ</button>
+                    <button id="loginBtn" class="btn">Login</button>
+                    <button id="registerBtn" class="btn btn-secondary">Register</button>
+                    <button id="guestBtn" class="btn btn-guest">Play as Guest</button>
                 </div>
                 <div class="feature-info">
-                    <h3>登録ユーザー特典</h3>
+                    <h3>Registered User Benefits</h3>
                     <ul>
-                        <li>🏆 ランキング参加</li>
-                        <li>🛒 ショップ利用</li>
-                        <li>💾 進行状況保存</li>
-                        <li>🎯 実績システム</li>
+                        <li>🏆 Participate in Rankings</li>
+                        <li>🛒 Access the Shop</li>
+                        <li>💾 Save Your Progress</li>
+                        <li>🎯 Achievement System</li>
                     </ul>
-                    <p class="guest-note">※ ゲストプレイではショップとランキング機能は利用できません</p>
+                    <p class="guest-note">※ Shop and Ranking features are unavailable for guests.</p>
                 </div>
             </div>
         </div>
@@ -49,11 +64,11 @@
             <h1 class="menu-title">Memory Architect</h1>
             <p class="menu-subtitle" id="welcomeMessage">Premium City Management Experience</p>
             <div class="menu-buttons">
-                <button id="startGameBtn" class="btn">ゲーム開始</button>
-                <button id="tutorialBtn" class="btn btn-secondary">チュートリアル</button>
-                <button id="shopBtn" class="btn btn-shop" style="display: none;">ショップ</button>
-                <button id="rankingBtn" class="btn btn-ranking" style="display: none;">ランキング</button>
-                <button id="logoutBtn" class="btn btn-logout">ログアウト</button>
+                <button id="startGameBtn" class="btn">Start Game</button>
+                <button id="tutorialBtn" class="btn btn-secondary">Tutorial</button>
+                <button id="shopBtn" class="btn btn-shop" style="display: none;">Shop</button>
+                <button id="rankingBtn" class="btn btn-ranking" style="display: none;">Ranking</button>
+                <button id="logoutBtn" class="btn btn-logout">Logout</button>
             </div>
         </div>
     </div>
@@ -61,37 +76,37 @@
     <!-- ショップ画面 -->
     <div id="shopOverlay" class="menu-overlay" style="display: none;">
         <div class="shop-panel">
-            <h2 class="shop-title">🛒 メモリーショップ</h2>
+            <h2 class="shop-title">🛒 Memory Shop</h2>
             <div class="currency-display">
-                <span class="currency-label">💰 メモリーコイン:</span>
+                <span class="currency-label">💰 Memory Coins:</span>
                 <span id="shopCurrency" class="currency-amount">0</span>
             </div>
             
             <div class="shop-categories">
                 <div class="shop-category">
-                    <h3>⚡ ブーストアイテム</h3>
+                    <h3>⚡ Boost Items</h3>
                     <div class="shop-items">
                         <div class="shop-item" data-item="memory_boost_5">
                             <div class="item-icon">🧠</div>
                             <div class="item-info">
-                                <h4>記憶生成ブースト (5分)</h4>
-                                <p>記憶生成速度 +50%</p>
+                                <h4>Memory Gen Boost (5 min)</h4>
+                                <p>+50% Memory Generation Speed</p>
                                 <span class="item-price">💰 100</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="memory_boost_10">
                             <div class="item-icon">🧠</div>
                             <div class="item-info">
-                                <h4>記憶生成ブースト (10分)</h4>
-                                <p>記憶生成速度 +50%</p>
+                                <h4>Memory Gen Boost (10 min)</h4>
+                                <p>+50% Memory Generation Speed</p>
                                 <span class="item-price">💰 180</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="memory_boost_30">
                             <div class="item-icon">🧠</div>
                             <div class="item-info">
-                                <h4>記憶生成ブースト (30分)</h4>
-                                <p>記憶生成速度 +50%</p>
+                                <h4>Memory Gen Boost (30 min)</h4>
+                                <p>+50% Memory Generation Speed</p>
                                 <span class="item-price">💰 450</span>
                             </div>
                         </div>
@@ -99,29 +114,29 @@
                 </div>
 
                 <div class="shop-category">
-                    <h3>🤖 アシスタント</h3>
+                    <h3>🤖 Assistants</h3>
                     <div class="shop-items">
                         <div class="shop-item" data-item="assistant_5">
                             <div class="item-icon">🤖</div>
                             <div class="item-info">
-                                <h4>メモリーアシスタント (5分)</h4>
-                                <p>自動で記憶を配布</p>
+                                <h4>Memory Assistant (5 min)</h4>
+                                <p>Distributes memories automatically</p>
                                 <span class="item-price">💰 200</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="assistant_10">
                             <div class="item-icon">🤖</div>
                             <div class="item-info">
-                                <h4>メモリーアシスタント (10分)</h4>
-                                <p>自動で記憶を配布</p>
+                                <h4>Memory Assistant (10 min)</h4>
+                                <p>Distributes memories automatically</p>
                                 <span class="item-price">💰 350</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="assistant_30">
                             <div class="item-icon">🤖</div>
                             <div class="item-info">
-                                <h4>メモリーアシスタント (30分)</h4>
-                                <p>自動で記憶を配布</p>
+                                <h4>Memory Assistant (30 min)</h4>
+                                <p>Distributes memories automatically</p>
                                 <span class="item-price">💰 900</span>
                             </div>
                         </div>
@@ -129,29 +144,29 @@
                 </div>
 
                 <div class="shop-category">
-                    <h3>⏰ オフライン進行</h3>
+                    <h3>⏰ Offline Progression</h3>
                     <div class="shop-items">
                         <div class="shop-item" data-item="offline_1">
                             <div class="item-icon">⏰</div>
                             <div class="item-info">
-                                <h4>オフライン進行 (1時間)</h4>
-                                <p>タブを離れても進行</p>
+                                <h4>Offline Progression (1 hour)</h4>
+                                <p>Progress even when tab is closed</p>
                                 <span class="item-price">💰 300</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="offline_3">
                             <div class="item-icon">⏰</div>
                             <div class="item-info">
-                                <h4>オフライン進行 (3時間)</h4>
-                                <p>タブを離れても進行</p>
+                                <h4>Offline Progression (3 hours)</h4>
+                                <p>Progress even when tab is closed</p>
                                 <span class="item-price">💰 800</span>
                             </div>
                         </div>
                         <div class="shop-item" data-item="offline_5">
                             <div class="item-icon">⏰</div>
                             <div class="item-info">
-                                <h4>オフライン進行 (5時間)</h4>
-                                <p>タブを離れても進行</p>
+                                <h4>Offline Progression (5 hours)</h4>
+                                <p>Progress even when tab is closed</p>
                                 <span class="item-price">💰 1200</span>
                             </div>
                         </div>
@@ -160,7 +175,7 @@
             </div>
             
             <div class="shop-actions">
-                <button id="closeShopBtn" class="btn btn-secondary">閉じる</button>
+                <button id="closeShopBtn" class="btn btn-secondary">Close</button>
             </div>
         </div>
     </div>
@@ -168,12 +183,12 @@
     <!-- ランキング画面 -->
     <div id="rankingOverlay" class="menu-overlay" style="display: none;">
         <div class="ranking-panel">
-            <h2 class="ranking-title">🏆 ランキング</h2>
+            <h2 class="ranking-title">🏆 Ranking</h2>
             <div id="rankingList" class="ranking-list">
                 <!-- ランキングデータが動的に挿入されます -->
             </div>
             <div class="ranking-actions">
-                <button id="closeRankingBtn" class="btn btn-secondary">閉じる</button>
+                <button id="closeRankingBtn" class="btn btn-secondary">Close</button>
             </div>
         </div>
     </div>
@@ -186,9 +201,9 @@
                 <!-- チュートリアルコンテンツが動的に挿入されます -->
             </div>
             <div class="tutorial-navigation">
-                <button id="tutorialPrev" class="btn btn-secondary">前へ</button>
-                <button id="tutorialNext" class="btn">次へ</button>
-                <button id="tutorialSkip" class="btn btn-secondary">スキップ</button>
+                <button id="tutorialPrev" class="btn btn-secondary">Prev</button>
+                <button id="tutorialNext" class="btn">Next</button>
+                <button id="tutorialSkip" class="btn btn-secondary">Skip</button>
             </div>
         </div>
     </div>
@@ -203,14 +218,14 @@
                     <span id="gameCurrency" class="currency-amount">0</span>
                 </div>
                 <div class="speed-controls">
-                    <label>速度:</label>
+                    <label>Speed:</label>
                     <button id="speed1x" class="speed-btn active">1x</button>
                     <button id="speed2x" class="speed-btn">2x</button>
                     <button id="speed3x" class="speed-btn">3x</button>
                 </div>
-                <button id="openShopInGame" class="btn btn-small" style="display: none;">ショップ</button>
-                <button id="pauseBtn" class="btn btn-small">一時停止</button>
-                <button id="menuBtn" class="btn btn-small">メニュー</button>
+                <button id="openShopInGame" class="btn btn-small" style="display: none;">Shop</button>
+                <button id="pauseBtn" class="btn btn-small">Pause</button>
+                <button id="menuBtn" class="btn btn-small">Menu</button>
             </div>
         </header>
         
@@ -273,24 +288,17 @@
                 
                 <div class="game-stats">
                     <div>
-                        <div class="stat-label">市民満足度</div>
+                        <div class="stat-label">Citizen Satisfaction</div>
                         <div class="stat-value" id="satisfaction">0%</div>
                     </div>
                     <div>
-                        <div class="stat-label">経過時間</div>
+                        <div class="stat-label">Time Elapsed</div>
                         <div class="stat-value" id="gameTime">0s</div>
                     </div>
                     <div>
-                        <div class="stat-label">建物数</div>
+                        <div class="stat-label">Buildings</div>
                         <div class="stat-value" id="buildingCount">0</div>
                     </div>
-                </div>
-                
-                <div class="game-controls">
-                    <button id="shopBtn" class="control-btn">🛒 Shop</button>
-                    <button id="rankingBtn" class="control-btn">🏆 Ranking</button>
-                    <button id="tutorialBtn" class="control-btn">📚 Tutorial</button>
-                    <button id="logoutBtn" class="control-btn">🚪 Logout</button>
                 </div>
             </div>
         </div>
@@ -347,7 +355,7 @@
                     <div class="stat-value" id="gameTime">0s</div>
                 </div>
                 <div>
-                    <div class="stat-label">昇天した魂</div>
+                    <div class="stat-label">Ascended Souls</div>
                     <div class="stat-value" id="dissolvedCount">0</div>
                 </div>
             </div>
