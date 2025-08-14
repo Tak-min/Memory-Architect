@@ -145,23 +145,45 @@ class UserManager {
     updateShopDisplay() {
         if (!this.currentUser) return;
         
+        // ゲームから最新の通貨を取得
+        if (window.memoryGame) {
+            this.currentUser.currency = window.memoryGame.currency;
+            this.saveUserData();
+        }
+        
         document.getElementById('shopCurrency').textContent = this.currentUser.currency;
         
         // ショップアイテムにクリックイベントを追加
         document.querySelectorAll('.shop-item').forEach(item => {
             item.removeEventListener('click', this.handleShopItemClick);
             item.addEventListener('click', (e) => this.handleShopItemClick(e));
+            
+            // アイテムの価格チェック
+            const priceText = item.querySelector('.item-price').textContent;
+            const price = parseInt(priceText.replace('💰 ', ''));
+            
+            if (this.currentUser.currency < price) {
+                item.classList.add('disabled');
+            } else {
+                item.classList.remove('disabled');
+            }
         });
     }
     
     handleShopItemClick = (e) => {
         const itemElement = e.currentTarget;
+        if (itemElement.classList.contains('disabled')) return;
+        
         const itemType = itemElement.dataset.item;
         const priceText = itemElement.querySelector('.item-price').textContent;
         const price = parseInt(priceText.replace('💰 ', ''));
         
         if (this.currentUser.currency >= price) {
             this.currentUser.currency -= price;
+            // ゲームの通貨も同期
+            if (window.memoryGame) {
+                window.memoryGame.currency = this.currentUser.currency;
+            }
             this.saveUserData();
             this.updateShopDisplay();
             
@@ -180,26 +202,86 @@ class UserManager {
         const rankingList = document.getElementById('rankingList');
         rankingList.innerHTML = '';
         
-        // ランキングを降順でソート
-        const sortedRankings = [...this.rankings].sort((a, b) => b.score - a.score);
+        // サンプルランキングデータ（実際の実装では本物のプレイヤーデータを使用）
+        const sampleRankings = [
+            { username: 'MemoryMaster', score: 15420, city: '完璧な記憶都市' },
+            { username: 'CityBuilder88', score: 12350, city: '輝く記憶の塔' },
+            { username: 'NightOwl', score: 11200, city: '夜明けの都市' },
+            { username: 'DreamWeaver', score: 9800, city: '夢想の街' },
+            { username: 'UrbanPlanner', score: 8900, city: '調和の都市' },
+            { username: 'SkyReacher', score: 8100, city: '空高い記憶' },
+            { username: 'StarGazer', score: 7650, city: '星見の街' },
+            { username: 'TimeKeeper', score: 7200, city: '時の記憶庫' },
+            { username: 'CloudWalker', score: 6800, city: '雲上の都市' },
+            { username: 'LightBringer', score: 6400, city: '光の記憶' }
+        ];
         
-        if (sortedRankings.length === 0) {
-            rankingList.innerHTML = '<p style="text-align: center; color: #a0a8b0;">まだランキングデータがありません</p>';
-            return;
+        // 実際のランキングデータがない場合はサンプルデータを使用
+        let rankingsToShow = this.rankings.length > 0 ? [...this.rankings].sort((a, b) => b.score - a.score) : sampleRankings;
+        
+        // 現在のユーザーのスコアを計算
+        let currentUserScore = 0;
+        if (this.currentUser) {
+            currentUserScore = (this.currentUser.totalPlayTime || 0) + 
+                             (this.currentUser.currency || 0) + 
+                             (this.currentUser.achievementsUnlocked || 0) * 100;
         }
         
-        sortedRankings.slice(0, 10).forEach((ranking, index) => {
+        rankingsToShow.slice(0, 10).forEach((ranking, index) => {
             const rankingItem = document.createElement('div');
-            rankingItem.className = `ranking-item ${index < 3 ? 'top3' : ''}`;
+            rankingItem.className = 'ranking-item';
+            
+            // 現在のユーザーかどうかチェック
+            const isCurrentUser = this.currentUser && 
+                                 this.currentUser.username === ranking.username;
+            
+            if (isCurrentUser || (index < 3)) {
+                rankingItem.classList.add('top3');
+            }
+            
+            if (isCurrentUser) {
+                rankingItem.classList.add('current-user');
+            }
+            
+            const cityName = ranking.city || 'あなたの記憶都市';
             
             rankingItem.innerHTML = `
                 <div class="ranking-position">${index + 1}</div>
-                <div class="ranking-player">${ranking.username}</div>
-                <div class="ranking-score">${ranking.score}魂</div>
+                <div class="ranking-player">
+                    <div class="username">${ranking.username}${isCurrentUser ? ' (あなた)' : ''}</div>
+                    <div class="city-name">${cityName}</div>
+                </div>
+                <div class="ranking-score">${ranking.score.toLocaleString()}点</div>
             `;
             
             rankingList.appendChild(rankingItem);
         });
+        
+        // 現在のユーザーがランキングに入っていない場合、下部に追加
+        if (this.currentUser && !rankingsToShow.some(r => r.username === this.currentUser.username)) {
+            const estimatedRank = rankingsToShow.filter(r => r.score > currentUserScore).length + 1;
+            
+            if (estimatedRank > 10) {
+                const separatorItem = document.createElement('div');
+                separatorItem.className = 'ranking-separator';
+                separatorItem.innerHTML = '<div style="text-align: center; color: #666;">...</div>';
+                rankingList.appendChild(separatorItem);
+            }
+            
+            const currentUserItem = document.createElement('div');
+            currentUserItem.className = 'ranking-item current-user';
+            
+            currentUserItem.innerHTML = `
+                <div class="ranking-position">${estimatedRank > 10 ? '11+' : estimatedRank}</div>
+                <div class="ranking-player">
+                    <div class="username">${this.currentUser.username} (あなた)</div>
+                    <div class="city-name">あなたの記憶都市</div>
+                </div>
+                <div class="ranking-score">${currentUserScore.toLocaleString()}点</div>
+            `;
+            
+            rankingList.appendChild(currentUserItem);
+        }
     }
     
     addCurrency(amount) {
@@ -897,9 +979,10 @@ class MemoryArchitectGame {
             const gain = Math.floor((this.satisfaction - this.lastSatisfaction) * 0.5);
             this.currency += gain;
             
-            // ユーザーマネージャーに通貨を追加
-            if (window.userManager) {
-                window.userManager.addCurrency(gain);
+            // ユーザーマネージャーに通貨を同期
+            if (window.userManager && window.userManager.currentUser) {
+                window.userManager.currentUser.currency = this.currency;
+                window.userManager.saveUserData();
             }
         }
         this.lastSatisfaction = this.satisfaction;
