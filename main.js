@@ -1364,7 +1364,7 @@ class MemoryArchitectGame {
     }
     
     updateMemoryGeneration() {
-        let generationRate = 360;
+        let generationRate = 60;
         let generationAmount = 2;
         
         // ブーストアイテムの効果を適用
