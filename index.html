@@ -870,7 +870,7 @@
             }
             
             updateMemoryGeneration() {
-                if (this.gameTime % 360 === 0) {
+                if (this.gameTime % 90 === 0) {
                     const types = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
                     const randomType = types[Math.floor(Math.random() * types.length)];
                     this.memories[randomType] = Math.min(50, this.memories[randomType] + 2);
