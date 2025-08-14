@@ -614,21 +614,21 @@ class UserManager {
         
         // プレースホルダーデータ（実際のランキングが少ない場合）
         const placeholderData = [
-            { username: 'Neural Master', score: 95, isPlaceholder: false },
-            { username: 'Memory Architect', score: 124, isPlaceholder: false },
-            { username: 'Synapse Engineer', score: 70, isPlaceholder: false },
-            { username: 'Brain Builder', score: 202, isPlaceholder: false },
-            { username: 'Cognitive Creator', score: 334, isPlaceholder: false },
-            { username: 'Mind Manager', score: 452, isPlaceholder: false },
-            { username: 'Neuron Navigator', score: 512, isPlaceholder: false },
-            { username: 'Circuit Constructor', score: 439, isPlaceholder: false },
-            { username: 'Logic Designer', score: 774, isPlaceholder: false },
-            { username: 'Data Dreamer', score: 262, isPlaceholder: false },
-            { username: 'Crazy Gamer', score: 76, isPlaceholder: false },
-            { username: '運営', score: 23, isPlaceholder: false },
-            { username: 'Trance farmer', score: 734, isPlaceholder: false },
-            { username: 'tags', score: 546, isPlaceholder: false },
-            { username: 'Dreamer', score: 234, isPlaceholder: false }
+            { username: 'Logic Designer', score: 774, isPlaceholder: true },
+            { username: 'Trance farmer', score: 734, isPlaceholder: true },
+            { username: 'tags', score: 546, isPlaceholder: true },
+            { username: 'Neuron Navigator', score: 512, isPlaceholder: true },
+            { username: 'Mind Manager', score: 452, isPlaceholder: true },
+            { username: 'Circuit Constructor', score: 439, isPlaceholder: true },
+            { username: 'Cognitive Creator', score: 334, isPlaceholder: true },
+            { username: 'Data Dreamer', score: 262, isPlaceholder: true },
+            { username: 'Dreamer', score: 234, isPlaceholder: true },
+            { username: 'Brain Builder', score: 202, isPlaceholder: true },
+            { username: 'Memory Architect', score: 124, isPlaceholder: true },
+            { username: 'Neural Master', score: 95, isPlaceholder: true },
+            { username: 'Crazy Gamer', score: 76, isPlaceholder: true },
+            { username: 'Synapse Engineer', score: 70, isPlaceholder: true },
+            { username: '運営', score: 23, isPlaceholder: true }
         ];
         
         // 実際のランキングとプレースホルダーを合成
