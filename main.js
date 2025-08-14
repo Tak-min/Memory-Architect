@@ -1,19 +1,41 @@
-// Futuristic Music System Class
+// Future EDM Music System Class
 class FuturisticMusicSystem {
     constructor() {
         this.audioContext = null;
         this.isPlaying = false;
         this.masterGain = null;
+        this.compressor = null;
         this.oscillators = [];
-        this.volume = 0.3;
+        this.volume = 0.4;
+        this.bpm = 128;
+        this.beatInterval = (60 / this.bpm) * 1000; // milliseconds per beat
+        this.currentBeat = 0;
+        this.sequences = {
+            kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0], // 4/4 kick pattern
+            snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], // snare on beats 2 and 4
+            hihat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0], // 16th note hi-hats
+            bass: [1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0],  // future bass pattern
+            lead: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]   // lead synth accents
+        };
         this.initializeAudio();
     }
     
     async initializeAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Master compressor for EDM punch
+            this.compressor = this.audioContext.createDynamicsCompressor();
+            this.compressor.threshold.setValueAtTime(-24, this.audioContext.currentTime);
+            this.compressor.knee.setValueAtTime(30, this.audioContext.currentTime);
+            this.compressor.ratio.setValueAtTime(12, this.audioContext.currentTime);
+            this.compressor.attack.setValueAtTime(0.003, this.audioContext.currentTime);
+            this.compressor.release.setValueAtTime(0.25, this.audioContext.currentTime);
+            
             this.masterGain = this.audioContext.createGain();
             this.masterGain.gain.setValueAtTime(this.volume, this.audioContext.currentTime);
+            
+            this.compressor.connect(this.masterGain);
             this.masterGain.connect(this.audioContext.destination);
         } catch (error) {
             console.log('Web Audio API not supported');
@@ -29,95 +51,279 @@ class FuturisticMusicSystem {
         }
         
         this.isPlaying = true;
-        this.createAmbientLayers();
+        this.currentBeat = 0;
+        this.startEDMSequencer();
+        this.createAmbientPad();
+        this.createFutureBassline();
     }
     
     stopMusic() {
         if (!this.isPlaying) return;
         
+        this.isPlaying = false;
+        
+        // Stop all active oscillators
         this.oscillators.forEach(osc => {
             try {
                 osc.stop();
-            } catch (e) {}
+            } catch (e) {
+                // Oscillator might already be stopped
+            }
         });
         this.oscillators = [];
-        this.isPlaying = false;
+        
+        // Clear sequencer interval
+        if (this.sequencerInterval) {
+            clearInterval(this.sequencerInterval);
+            this.sequencerInterval = null;
+        }
     }
     
-    createAmbientLayers() {
-        // Layer 1: Deep bass drone
-        this.createDrone(55, 0.15, 'sawtooth');
-        
-        // Layer 2: Mid-range atmospheric pad
-        this.createAtmosphericPad();
-        
-        // Layer 3: High frequency sparkles
-        this.createSparkles();
-        
-        // Layer 4: Rhythmic pulse
-        this.createRhythmicPulse();
+    startEDMSequencer() {
+        this.sequencerInterval = setInterval(() => {
+            const step = this.currentBeat % 16;
+            
+            // Kick drum
+            if (this.sequences.kick[step]) {
+                this.createKick();
+            }
+            
+            // Snare
+            if (this.sequences.snare[step]) {
+                this.createSnare();
+            }
+            
+            // Hi-hat
+            if (this.sequences.hihat[step]) {
+                this.createHiHat();
+            }
+            
+            // Bass
+            if (this.sequences.bass[step]) {
+                this.createBassDrum(step);
+            }
+            
+            // Lead synth
+            if (this.sequences.lead[step]) {
+                this.createLeadSynth(step);
+            }
+            
+            this.currentBeat++;
+        }, this.beatInterval / 4); // 16th note resolution
     }
     
-    createDrone(frequency, volume, waveType = 'sine') {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-        const filter = this.audioContext.createBiquadFilter();
+    createKick() {
+        const kickOsc = this.audioContext.createOscillator();
+        const kickGain = this.audioContext.createGain();
+        const kickFilter = this.audioContext.createBiquadFilter();
         
-        oscillator.type = waveType;
-        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+        kickOsc.type = 'sine';
+        kickOsc.frequency.setValueAtTime(60, this.audioContext.currentTime);
+        kickOsc.frequency.exponentialRampToValueAtTime(30, this.audioContext.currentTime + 0.1);
         
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
-        filter.Q.setValueAtTime(1, this.audioContext.currentTime);
+        kickFilter.type = 'lowpass';
+        kickFilter.frequency.setValueAtTime(100, this.audioContext.currentTime);
         
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-        gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 2);
+        kickGain.gain.setValueAtTime(0.8, this.audioContext.currentTime);
+        kickGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.3);
         
-        oscillator.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(this.masterGain);
+        kickOsc.connect(kickFilter);
+        kickFilter.connect(kickGain);
+        kickGain.connect(this.compressor);
         
-        oscillator.start();
-        this.oscillators.push(oscillator);
+        kickOsc.start(this.audioContext.currentTime);
+        kickOsc.stop(this.audioContext.currentTime + 0.3);
         
-        // Add subtle frequency modulation
+        this.oscillators.push(kickOsc);
+    }
+    
+    createSnare() {
+        // Noise generator for snare
+        const bufferSize = this.audioContext.sampleRate * 0.1;
+        const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+        const output = buffer.getChannelData(0);
+        
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        
+        const snareNoise = this.audioContext.createBufferSource();
+        const snareGain = this.audioContext.createGain();
+        const snareFilter = this.audioContext.createBiquadFilter();
+        
+        snareNoise.buffer = buffer;
+        
+        snareFilter.type = 'highpass';
+        snareFilter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
+        
+        snareGain.gain.setValueAtTime(0.4, this.audioContext.currentTime);
+        snareGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.2);
+        
+        snareNoise.connect(snareFilter);
+        snareFilter.connect(snareGain);
+        snareGain.connect(this.compressor);
+        
+        snareNoise.start(this.audioContext.currentTime);
+        snareNoise.stop(this.audioContext.currentTime + 0.2);
+    }
+    
+    
+    createHiHat() {
+        // High frequency noise for hi-hat
+        const bufferSize = this.audioContext.sampleRate * 0.05;
+        const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+        const output = buffer.getChannelData(0);
+        
+        for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+        }
+        
+        const hihatNoise = this.audioContext.createBufferSource();
+        const hihatGain = this.audioContext.createGain();
+        const hihatFilter = this.audioContext.createBiquadFilter();
+        
+        hihatNoise.buffer = buffer;
+        
+        hihatFilter.type = 'highpass';
+        hihatFilter.frequency.setValueAtTime(8000, this.audioContext.currentTime);
+        
+        hihatGain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+        hihatGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.05);
+        
+        hihatNoise.connect(hihatFilter);
+        hihatFilter.connect(hihatGain);
+        hihatGain.connect(this.compressor);
+        
+        hihatNoise.start(this.audioContext.currentTime);
+        hihatNoise.stop(this.audioContext.currentTime + 0.05);
+    }
+    
+    createBassDrum(step) {
+        const bassOsc = this.audioContext.createOscillator();
+        const bassGain = this.audioContext.createGain();
+        const bassFilter = this.audioContext.createBiquadFilter();
+        
+        const baseFreq = 40 + (step % 4) * 10; // Varying bass notes
+        
+        bassOsc.type = 'sawtooth';
+        bassOsc.frequency.setValueAtTime(baseFreq, this.audioContext.currentTime);
+        
+        bassFilter.type = 'lowpass';
+        bassFilter.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        bassFilter.Q.setValueAtTime(5, this.audioContext.currentTime);
+        
+        bassGain.gain.setValueAtTime(0.6, this.audioContext.currentTime);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.4);
+        
+        bassOsc.connect(bassFilter);
+        bassFilter.connect(bassGain);
+        bassGain.connect(this.compressor);
+        
+        bassOsc.start(this.audioContext.currentTime);
+        bassOsc.stop(this.audioContext.currentTime + 0.4);
+        
+        this.oscillators.push(bassOsc);
+    }
+    
+    createLeadSynth(step) {
+        const leadOsc = this.audioContext.createOscillator();
+        const leadGain = this.audioContext.createGain();
+        const leadFilter = this.audioContext.createBiquadFilter();
+        const delay = this.audioContext.createDelay(0.3);
+        const delayGain = this.audioContext.createGain();
+        
+        const frequencies = [440, 523, 659, 784, 880]; // A, C, E, G, A octave
+        const freq = frequencies[step % frequencies.length];
+        
+        leadOsc.type = 'square';
+        leadOsc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+        
+        leadFilter.type = 'lowpass';
+        leadFilter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
+        leadFilter.Q.setValueAtTime(10, this.audioContext.currentTime);
+        
+        delay.delayTime.setValueAtTime(0.125, this.audioContext.currentTime); // 1/8 note delay
+        delayGain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+        
+        leadGain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+        leadGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.8);
+        
+        leadOsc.connect(leadFilter);
+        leadFilter.connect(leadGain);
+        leadGain.connect(delay);
+        delay.connect(delayGain);
+        delayGain.connect(leadGain);
+        leadGain.connect(this.compressor);
+        
+        leadOsc.start(this.audioContext.currentTime);
+        leadOsc.stop(this.audioContext.currentTime + 0.8);
+        
+        this.oscillators.push(leadOsc);
+    }
+    
+    
+    createAmbientPad() {
+        const pad1 = this.audioContext.createOscillator();
+        const pad2 = this.audioContext.createOscillator();
+        const padGain = this.audioContext.createGain();
+        const padFilter = this.audioContext.createBiquadFilter();
+        
+        pad1.type = 'sawtooth';
+        pad1.frequency.setValueAtTime(220, this.audioContext.currentTime);
+        
+        pad2.type = 'sawtooth';
+        pad2.frequency.setValueAtTime(220.5, this.audioContext.currentTime); // Slight detune for warmth
+        
+        padFilter.type = 'lowpass';
+        padFilter.frequency.setValueAtTime(1500, this.audioContext.currentTime);
+        
+        padGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        padGain.gain.linearRampToValueAtTime(0.15, this.audioContext.currentTime + 2);
+        
+        pad1.connect(padFilter);
+        pad2.connect(padFilter);
+        padFilter.connect(padGain);
+        padGain.connect(this.compressor);
+        
+        pad1.start(this.audioContext.currentTime);
+        pad2.start(this.audioContext.currentTime);
+        
+        this.oscillators.push(pad1, pad2);
+    }
+    
+    createFutureBassline() {
+        const bassOsc = this.audioContext.createOscillator();
+        const bassGain = this.audioContext.createGain();
+        const bassFilter = this.audioContext.createBiquadFilter();
         const lfo = this.audioContext.createOscillator();
         const lfoGain = this.audioContext.createGain();
-        lfo.frequency.setValueAtTime(0.1, this.audioContext.currentTime);
-        lfoGain.gain.setValueAtTime(2, this.audioContext.currentTime);
-        lfo.connect(lfoGain);
-        lfoGain.connect(oscillator.frequency);
-        lfo.start();
-        this.oscillators.push(lfo);
-    }
-    
-    createAtmosphericPad() {
-        const frequencies = [220, 329.63, 440, 523.25]; // A major chord
         
-        frequencies.forEach((freq, index) => {
-            const oscillator = this.audioContext.createOscillator();
-            const gainNode = this.audioContext.createGain();
-            const filter = this.audioContext.createBiquadFilter();
-            
-            oscillator.type = 'triangle';
-            oscillator.frequency.setValueAtTime(freq, this.audioContext.currentTime);
-            
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(800 + index * 200, this.audioContext.currentTime);
-            
-            gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.08, this.audioContext.currentTime + 3 + index);
-            
-            oscillator.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(this.masterGain);
-            
-            oscillator.start();
-            this.oscillators.push(oscillator);
-            
-            // Slow amplitude modulation
-            this.modulateGain(gainNode, 0.05 + index * 0.01, 0.02);
-        });
+        bassOsc.type = 'sawtooth';
+        bassOsc.frequency.setValueAtTime(55, this.audioContext.currentTime); // A1
+        
+        lfo.type = 'sine';
+        lfo.frequency.setValueAtTime(0.5, this.audioContext.currentTime);
+        
+        lfoGain.gain.setValueAtTime(50, this.audioContext.currentTime);
+        
+        bassFilter.type = 'lowpass';
+        bassFilter.frequency.setValueAtTime(300, this.audioContext.currentTime);
+        bassFilter.Q.setValueAtTime(15, this.audioContext.currentTime);
+        
+        bassGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        bassGain.gain.linearRampToValueAtTime(0.4, this.audioContext.currentTime + 1);
+        
+        lfo.connect(lfoGain);
+        lfoGain.connect(bassFilter.frequency);
+        
+        bassOsc.connect(bassFilter);
+        bassFilter.connect(bassGain);
+        bassGain.connect(this.compressor);
+        
+        lfo.start(this.audioContext.currentTime);
+        bassOsc.start(this.audioContext.currentTime);
+        
+        this.oscillators.push(bassOsc, lfo);
     }
     
     createSparkles() {
