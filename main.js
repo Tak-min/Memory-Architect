@@ -602,7 +602,7 @@ class MemoryArchitectGame {
     
     togglePause() {
         this.gamePaused = !this.gamePaused;
-        document.getElementById('pauseBtn').textContent = this.gamePaused ? '再開' : '一時停止';
+        document.getElementById('pauseBtn').textContent = this.gamePaused ? 'pause' : 'pause';
     }
     
     showMenu() {
