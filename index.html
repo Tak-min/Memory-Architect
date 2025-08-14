@@ -26,6 +26,9 @@
             padding: 8px 20px;
             border-bottom: 2px solid #00d4ff;
             box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .game-title {
@@ -33,32 +36,93 @@
             font-weight: 900;
             background: linear-gradient(45deg, #00d4ff, #ff6b6b);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-align: center;
+            -webkit-text-fill-color: transparent;
         }
         
-        #gameContainer {
-            position: relative;
-            margin: 0 auto;
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-            border: 3px solid #00d4ff;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 12px;
+        }
+        
+        .currency-display {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 4px 12px;
             border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
-            overflow: hidden;
+            font-weight: 700;
+        }
+        
+        .game-container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+        
+        .main-game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         #gameCanvas {
-            display: block;
+            flex: 1;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
             background: linear-gradient(135deg, #0d2946 0%, #1e3c72 100%);
         }
         
+        .right-panel {
+            width: 350px;
+            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
+            border-left: 2px solid #00d4ff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-tabs {
+            display: flex;
+            background: #16213e;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: #a0a8b0;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            color: #00d4ff;
+            border-bottom-color: #00d4ff;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
+        }
+        
+        .tab-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+        }
+        
         .ui-panel {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             padding: 10px;
             background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
@@ -103,13 +167,13 @@
         .courage { background: radial-gradient(circle, #dc143c, #b22222); }
         
         .stat-label {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
             color: #a0a8b0;
         }
         
         .stat-value {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 900;
             color: #00d4ff;
         }
@@ -124,66 +188,180 @@
             padding: 10px;
         }
         
-        /* Tutorial Overlay */
-        .tutorial-overlay {
+        .speed-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .speed-btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .speed-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+        }
+        
+        /* Shop Styles */
+        .shop-item {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-item:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .shop-item h4 {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .shop-item p {
+            font-size: 11px;
+            color: #a0a8b0;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .shop-options {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .shop-option {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-family: 'Orbitron', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-option:hover {
+            background: linear-gradient(45deg, #00e6ff, #00aadd);
+            transform: translateY(-1px);
+        }
+        
+        .shop-option:disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        /* Ranking Styles */
+        .ranking-list {
+            list-style: none;
+        }
+        
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .ranking-item.is-user {
+            border-left-color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .ranking-rank {
+            font-weight: 900;
+            color: #ffd700;
+            font-size: 16px;
+            min-width: 30px;
+        }
+        
+        .ranking-name {
+            flex: 1;
+            margin-left: 10px;
+            color: #e0e6ed;
+        }
+        
+        .ranking-score {
+            color: #00d4ff;
+            font-weight: 700;
+        }
+        
+        /* Auth Modal */
+        .auth-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
         }
         
-        .tutorial-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .tutorial-panel {
+        .auth-panel {
             background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
             border: 3px solid #00d4ff;
             border-radius: 20px;
             padding: 30px;
-            max-width: 600px;
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+            max-width: 400px;
             text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
         }
         
-        .tutorial-overlay.active .tutorial-panel {
-            transform: scale(1);
-        }
-        
-        .tutorial-title {
-            font-size: 28px;
+        .auth-title {
+            font-size: 24px;
             font-weight: 900;
             background: linear-gradient(45deg, #00d4ff, #ff6b6b);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
         }
         
-        .tutorial-content {
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            color: #e0e6ed;
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
-        .tutorial-step {
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 4px solid #00d4ff;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 0 8px 8px 0;
+        .auth-input {
+            padding: 12px;
+            border: 1px solid #00d4ff;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e6ed;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+        }
+        
+        .auth-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
         }
         
         .btn {
@@ -215,75 +393,26 @@
             box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
         }
         
-        .tutorial-navigation {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-        
-        /* Menu Overlay */
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-        
-        .menu-panel {
-            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
-            border: 3px solid #00d4ff;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
-        }
-        
-        .menu-title {
-            font-size: 36px;
-            font-weight: 900;
-            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        
-        .menu-subtitle {
-            font-size: 14px;
-            color: #a0a8b0;
-            margin-bottom: 30px;
-        }
-        
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .tutorial-indicator {
-            position: absolute;
-            background: #ff6b6b;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
+        .auth-benefits {
+            text-align: left;
             font-size: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-            animation: bounce 1s infinite;
+            color: #a0a8b0;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #00d4ff;
         }
         
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .auth-benefits h4 {
+            color: #00d4ff;
+            margin-bottom: 8px;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
         }
         
         .building-tooltip {
@@ -297,32 +426,38 @@
             z-index: 100;
             border: 1px solid #00d4ff;
         }
+        
+        .active-effect {
+            background: rgba(0, 255, 127, 0.15);
+            border: 1px solid rgba(0, 255, 127, 0.4);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 11px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
-    <!-- Menu Screen -->
-    <div id="menuOverlay" class="menu-overlay">
-        <div class="menu-panel">
-            <h1 class="menu-title">Memory Architect</h1>
-            <p class="menu-subtitle">Premium City Management Experience</p>
-            <div class="menu-buttons">
-                <button id="startGameBtn" class="btn">Start Game</button>
-                <button id="tutorialBtn" class="btn btn-secondary">Tutorial</button>
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-panel">
+            <h2 class="auth-title">Welcome to Memory Architect</h2>
+            <div class="auth-benefits">
+                <h4>🎮 Register for Premium Features:</h4>
+                <ul>
+                    <li>🏆 Global Rankings & Leaderboards</li>
+                    <li>🛍️ Exclusive Shop Access</li>
+                    <li>💾 Save Your Progress</li>
+                    <li>⚡ Special Power-ups & Boosters</li>
+                </ul>
             </div>
-        </div>
-    </div>
-    
-    <!-- Tutorial Overlay -->
-    <div id="tutorialOverlay" class="tutorial-overlay">
-        <div class="tutorial-panel">
-            <h2 class="tutorial-title">Memory Architect Tutorial</h2>
-            <div id="tutorialContent" class="tutorial-content">
-                <!-- Tutorial content will be inserted here -->
+            <div id="authForm" class="auth-form">
+                <input type="text" id="usernameInput" class="auth-input" placeholder="Enter Username" maxlength="20">
             </div>
-            <div class="tutorial-navigation">
-                <button id="tutorialPrev" class="btn btn-secondary">Previous</button>
-                <button id="tutorialNext" class="btn">Next</button>
-                <button id="tutorialSkip" class="btn btn-secondary">Skip Tutorial</button>
+            <div class="auth-buttons">
+                <button id="registerBtn" class="btn">Register & Play</button>
+                <button id="guestBtn" class="btn btn-secondary">Play as Guest</button>
             </div>
         </div>
     </div>
@@ -330,205 +465,295 @@
     <!-- Game Screen -->
     <div id="gameScreen" style="display: none;">
         <header class="game-header">
-            <h1 class="game-title">🧠 MEMORY ARCHITECT - NEURAL CITY MANAGEMENT 🏙️</h1>
+            <h1 class="game-title">🧠 MEMORY ARCHITECT</h1>
+            <div class="user-info">
+                <div class="currency-display">💰 <span id="currencyAmount">0</span></div>
+                <div id="userDisplay" style="font-size: 12px;">Guest Player</div>
+                <div class="speed-controls">
+                    <span style="font-size: 10px; margin-right: 5px;">Speed:</span>
+                    <button class="speed-btn active" data-speed="1">1x</button>
+                    <button class="speed-btn" data-speed="2">2x</button>
+                    <button class="speed-btn" data-speed="3">3x</button>
+                </div>
+            </div>
         </header>
         
-        <div id="gameContainer">
-            <canvas id="gameCanvas" width="1000" height="700"></canvas>
-            <div id="tooltip" class="building-tooltip" style="display: none;"></div>
-        </div>
-        
-        <div class="ui-panel">
-            <div class="memory-stat">
-                <div class="memory-icon love"></div>
-                <div>
-                    <div class="stat-label">LOVE</div>
-                    <div class="stat-value" id="loveCount">0</div>
+        <div class="game-container">
+            <div class="main-game-area">
+                <canvas id="gameCanvas" width="1200" height="800"></canvas>
+                <div id="tooltip" class="building-tooltip" style="display: none;"></div>
+                
+                <div class="ui-panel">
+                    <div class="memory-stat">
+                        <div class="memory-icon love"></div>
+                        <div>
+                            <div class="stat-label">LOVE</div>
+                            <div class="stat-value" id="loveCount">0</div>
+                        </div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="memory-icon knowledge"></div>
+                        <div>
+                            <div class="stat-label">KNOWLEDGE</div>
+                            <div class="stat-value" id="knowledgeCount">0</div>
+                        </div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="memory-icon adventure"></div>
+                        <div>
+                            <div class="stat-label">ADVENTURE</div>
+                            <div class="stat-value" id="adventureCount">0</div>
+                        </div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="memory-icon peace"></div>
+                        <div>
+                            <div class="stat-label">PEACE</div>
+                            <div class="stat-value" id="peaceCount">0</div>
+                        </div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="memory-icon nostalgia"></div>
+                        <div>
+                            <div class="stat-label">NOSTALGIA</div>
+                            <div class="stat-value" id="nostalgiaCount">0</div>
+                        </div>
+                    </div>
+                    <div class="memory-stat">
+                        <div class="memory-icon courage"></div>
+                        <div>
+                            <div class="stat-label">COURAGE</div>
+                            <div class="stat-value" id="courageCount">0</div>
+                        </div>
+                    </div>
+                    <div class="game-stats">
+                        <div>
+                            <div class="stat-label">SATISFACTION</div>
+                            <div class="stat-value" id="satisfaction">0%</div>
+                        </div>
+                        <div>
+                            <div class="stat-label">TIME</div>
+                            <div class="stat-value" id="gameTime">0s</div>
+                        </div>
+                        <div>
+                            <div class="stat-label">FULFILLED</div>
+                            <div class="stat-value" id="dissolvedCount">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="memory-stat">
-                <div class="memory-icon knowledge"></div>
-                <div>
-                    <div class="stat-label">KNOWLEDGE</div>
-                    <div class="stat-value" id="knowledgeCount">0</div>
+            
+            <div class="right-panel">
+                <div class="panel-tabs">
+                    <button class="tab-button active" data-tab="shop">🛍️ SHOP</button>
+                    <button class="tab-button" data-tab="ranking">🏆 RANKING</button>
+                    <button class="tab-button" data-tab="effects">⚡ EFFECTS</button>
                 </div>
-            </div>
-            <div class="memory-stat">
-                <div class="memory-icon adventure"></div>
-                <div>
-                    <div class="stat-label">ADVENTURE</div>
-                    <div class="stat-value" id="adventureCount">0</div>
-                </div>
-            </div>
-            <div class="memory-stat">
-                <div class="memory-icon peace"></div>
-                <div>
-                    <div class="stat-label">PEACE</div>
-                    <div class="stat-value" id="peaceCount">0</div>
-                </div>
-            </div>
-            <div class="memory-stat">
-                <div class="memory-icon nostalgia"></div>
-                <div>
-                    <div class="stat-label">NOSTALGIA</div>
-                    <div class="stat-value" id="nostalgiaCount">0</div>
-                </div>
-            </div>
-            <div class="memory-stat">
-                <div class="memory-icon courage"></div>
-                <div>
-                    <div class="stat-label">COURAGE</div>
-                    <div class="stat-value" id="courageCount">0</div>
-                </div>
-            </div>
-            <div class="game-stats">
-                <div>
-                    <div class="stat-label">CITIZEN SATISFACTION</div>
-                    <div class="stat-value" id="satisfaction">100%</div>
-                </div>
-                <div>
-                    <div class="stat-label">ELAPSED TIME</div>
-                    <div class="stat-value" id="gameTime">0s</div>
-                </div>
-                <div>
-                    <div class="stat-label">FULFILLED SOULS</div>
-                    <div class="stat-value" id="dissolvedCount">0</div>
+                
+                <div class="tab-content">
+                    <!-- Shop Panel -->
+                    <div id="shopPanel" class="tab-panel active">
+                        <div id="shopContent"></div>
+                    </div>
+                    
+                    <!-- Ranking Panel -->
+                    <div id="rankingPanel" class="tab-panel">
+                        <div id="rankingContent"></div>
+                    </div>
+                    
+                    <!-- Active Effects Panel -->
+                    <div id="effectsPanel" class="tab-panel">
+                        <div id="activeEffects">
+                            <p style="color: #a0a8b0; text-align: center; font-size: 12px;">
+                                No active effects
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        class TutorialManager {
+        class GameAuth {
             constructor() {
-                this.currentStep = 0;
-                this.steps = [
-                    {
-                        title: "Welcome to Memory Architect",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>🧠 You Are the Memory Architect</h3>
-                                <p>In this city, memories are precious resources. Citizens need specific types of memories to feel fulfilled and happy.</p>
-                            </div>
-                        `
-                    },
-                    {
-                        title: "Understanding Memory Types",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>💖 Six Types of Memories</h3>
-                                <p><strong>Love:</strong> Romantic and family memories<br>
-                                <strong>Knowledge:</strong> Learning and discovery<br>
-                                <strong>Adventure:</strong> Exploration and challenges<br>
-                                <strong>Peace:</strong> Tranquil and calming moments<br>
-                                <strong>Nostalgia:</strong> Bittersweet past memories<br>
-                                <strong>Courage:</strong> Brave and heroic moments</p>
-                            </div>
-                        `
-                    },
-                    {
-                        title: "Managing Citizens",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>👥 Citizen Behavior</h3>
-                                <p>Citizens appear as colored squares that move around the city. Each citizen needs a specific type of memory.</p>
-                                <p><strong>Colored icons above citizens</strong> show what memory type they need.</p>
-                                <p><strong>Citizen colors indicate satisfaction:</strong><br>
-                                🟢 Green = Very satisfied<br>
-                                🟡 Yellow = Moderately satisfied<br>
-                                🔴 Red = Needs attention</p>
-                            </div>
-                        `
-                    },
-                    {
-                        title: "Operating Memory Buildings",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>🏢 Memory Storage Buildings</h3>
-                                <p>Buildings store and distribute different types of memories.</p>
-                                <p><strong>Click on buildings</strong> to transfer memories from your inventory to the building's storage.</p>
-                                <p><strong>White bars</strong> at the bottom of buildings show storage levels.</p>
-                                <p>Citizens will automatically visit buildings that have their needed memory type.</p>
-                            </div>
-                        `
-                    },
-                    {
-                        title: "The Fulfillment Cycle",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>✨ Soul Fulfillment</h3>
-                                <p>When citizens receive their needed memories, they become fulfilled and start glowing with beautiful colors.</p>
-                                <p>After 30 seconds of satisfaction, fulfilled citizens dissolve into sparkles and ascend, making room for new souls.</p>
-                                <p><strong>Goal:</strong> Help as many citizens as possible achieve fulfillment!</p>
-                            </div>
-                        `
-                    },
-                    {
-                        title: "Ready to Begin!",
-                        content: `
-                            <div class="tutorial-step">
-                                <h3>🎮 You're Ready!</h3>
-                                <p>Start by clicking on buildings to distribute memories. Watch citizens' satisfaction levels and try to keep everyone happy.</p>
-                                <p>New memories generate automatically over time, but manage them wisely.</p>
-                                <p><strong>Remember:</strong> Hover over buildings to see tooltips with helpful information!</p>
-                            </div>
-                        `
-                    }
-                ];
+                this.isRegistered = false;
+                this.username = '';
+                this.userId = '';
                 this.setupEventListeners();
             }
             
             setupEventListeners() {
-                document.getElementById('tutorialBtn').addEventListener('click', () => this.startTutorial());
-                document.getElementById('tutorialNext').addEventListener('click', () => this.nextStep());
-                document.getElementById('tutorialPrev').addEventListener('click', () => this.previousStep());
-                document.getElementById('tutorialSkip').addEventListener('click', () => this.skipTutorial());
+                document.getElementById('registerBtn').addEventListener('click', () => this.register());
+                document.getElementById('guestBtn').addEventListener('click', () => this.playAsGuest());
             }
             
-            startTutorial() {
-                this.currentStep = 0;
-                document.getElementById('menuOverlay').style.display = 'none';
-                document.getElementById('tutorialOverlay').classList.add('active');
-                this.showStep();
-            }
-            
-            showStep() {
-                const step = this.steps[this.currentStep];
-                const content = document.getElementById('tutorialContent');
-                content.innerHTML = step.content;
+            register() {
+                const username = document.getElementById('usernameInput').value.trim();
                 
-                document.querySelector('.tutorial-title').textContent = step.title;
+                if (!username) {
+                    alert('Please enter a username!');
+                    return;
+                }
                 
-                document.getElementById('tutorialPrev').style.display = this.currentStep > 0 ? 'block' : 'none';
-                document.getElementById('tutorialNext').textContent = this.currentStep < this.steps.length - 1 ? 'Next' : 'Start Game!';
-            }
-            
-            nextStep() {
-                if (this.currentStep < this.steps.length - 1) {
-                    this.currentStep++;
-                    this.showStep();
-                } else {
-                    this.endTutorial();
+                if (username.length < 3) {
+                    alert('Username must be at least 3 characters!');
+                    return;
                 }
+                
+                this.isRegistered = true;
+                this.username = username;
+                this.userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                document.getElementById('userDisplay').textContent = `⭐ ${username}`;
+                this.startGame();
             }
             
-            previousStep() {
-                if (this.currentStep > 0) {
-                    this.currentStep--;
-                    this.showStep();
-                }
+            playAsGuest() {
+                this.isRegistered = false;
+                this.username = 'Guest';
+                this.userId = 'guest_' + Date.now();
+                document.getElementById('userDisplay').textContent = '👤 Guest Player';
+                this.startGame();
             }
             
-            skipTutorial() {
-                this.endTutorial();
-            }
-            
-            endTutorial() {
-                document.getElementById('tutorialOverlay').classList.remove('active');
+            startGame() {
+                document.getElementById('authModal').style.display = 'none';
                 document.getElementById('gameScreen').style.display = 'block';
-                if (window.memoryGame) {
-                    window.memoryGame.startGame();
+                window.memoryGame.initialize(this.isRegistered, this.username, this.userId);
+            }
+        }
+        
+        class ShopManager {
+            constructor(gameInstance) {
+                this.game = gameInstance;
+                this.setupShop();
+            }
+            
+            setupShop() {
+                const shopContent = document.getElementById('shopContent');
+                
+                if (!this.game.auth.isRegistered) {
+                    shopContent.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #a0a8b0;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">🔒 Shop Locked</h3>
+                            <p>Register an account to access the premium shop and boost your city management!</p>
+                        </div>
+                    `;
+                    return;
                 }
+                
+                shopContent.innerHTML = `
+                    <div class="shop-item">
+                        <h4>🚀 Efficiency Booster</h4>
+                        <p>2x memory generation, 1.5x building capacity, and 2x currency earnings.</p>
+                        <div class="shop-options">
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('efficiency', 5, 50)">5min - 50💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('efficiency', 10, 90)">10min - 90💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('efficiency', 30, 200)">30min - 200💰</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item">
+                        <h4>🤖 Memory Assistant</h4>
+                        <p>AI assistant automatically distributes memories to buildings for you.</p>
+                        <div class="shop-options">
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('assistant', 5, 80)">5min - 80💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('assistant', 10, 150)">10min - 150💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('assistant', 30, 350)">30min - 350💰</button>
+                        </div>
+                    </div>
+                    
+                    <div class="shop-item">
+                        <h4>⏰ Offline Progress</h4>
+                        <p>Keep earning progress even when you're away from the game.</p>
+                        <div class="shop-options">
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('offline', 60, 120)">1hr - 120💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('offline', 180, 300)">3hr - 300💰</button>
+                            <button class="shop-option" onclick="window.memoryGame.shop.buyItem('offline', 300, 450)">5hr - 450💰</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            buyItem(type, minutes, cost) {
+                if (this.game.currency < cost) {
+                    alert('Not enough coins!');
+                    return;
+                }
+                
+                this.game.currency -= cost;
+                this.game.addEffect(type, minutes);
+                this.game.updateCurrencyDisplay();
+                alert(`Item purchased successfully!`);
+            }
+        }
+
+        class RankingManager {
+            constructor(gameInstance) {
+                this.game = gameInstance;
+                this.mockData = this.generateMockData();
+            }
+
+            generateMockData() {
+                const names = ["Cortex", "Nexus", "Glitch", "Vector", "Cypher", "Zero", "Echo", "Rogue", "Synth", "Apex"];
+                return names.map((name, i) => ({
+                    userId: `bot_${i}`,
+                    name: name,
+                    score: Math.floor(Math.random() * 50000) + 10000
+                }));
+            }
+
+            updateRankings() {
+                const rankingContent = document.getElementById('rankingContent');
+                if (!this.game.auth.isRegistered) {
+                    rankingContent.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: #a0a8b0;">
+                            <h3 style="color: #00d4ff; margin-bottom: 15px;">🏆 Rankings Locked</h3>
+                            <p>Register an account to compete on the global leaderboards!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const userScore = this.game.calculateScore();
+                const currentUser = {
+                    userId: this.game.auth.userId,
+                    name: this.game.auth.username,
+                    score: userScore
+                };
+
+                const allPlayers = [...this.mockData, currentUser];
+                allPlayers.sort((a, b) => b.score - a.score);
+
+                let rankingHTML = '<ul class="ranking-list">';
+                const top10 = allPlayers.slice(0, 10);
+
+                top10.forEach((player, index) => {
+                    const isUser = player.userId === currentUser.userId;
+                    rankingHTML += `
+                        <li class="ranking-item ${isUser ? 'is-user' : ''}">
+                            <span class="ranking-rank">${index + 1}</span>
+                            <span class="ranking-name">${player.name}</span>
+                            <span class="ranking-score">${player.score.toLocaleString()}</span>
+                        </li>
+                    `;
+                });
+
+                const userRank = allPlayers.findIndex(p => p.userId === currentUser.userId);
+                if (userRank >= 10) {
+                    rankingHTML += `
+                        <li class="ranking-item" style="justify-content: center;">...</li>
+                        <li class="ranking-item is-user">
+                            <span class="ranking-rank">${userRank + 1}</span>
+                            <span class="ranking-name">${currentUser.name}</span>
+                            <span class="ranking-score">${currentUser.score.toLocaleString()}</span>
+                        </li>
+                    `;
+                }
+
+                rankingHTML += '</ul>';
+                rankingContent.innerHTML = rankingHTML;
             }
         }
         
@@ -538,37 +763,51 @@
                 this.ctx = this.canvas.getContext('2d');
                 this.tooltip = document.getElementById('tooltip');
                 
-                // Game state
                 this.gameTime = 0;
-                this.satisfaction = 100;
+                this.satisfaction = 0;
+                this.lastSatisfaction = 0;
                 this.memories = { love: 10, knowledge: 8, adventure: 6, peace: 9, nostalgia: 5, courage: 7 };
                 this.dissolvedCitizens = 0;
+                this.currency = 0;
                 this.gameStarted = false;
+                this.gameSpeed = 1;
                 
-                // Game objects
+                this.auth = null;
+                this.shop = null;
+                this.ranking = null;
+                
                 this.buildings = [];
                 this.citizens = [];
                 this.memoryOrbs = [];
                 this.dissolveEffects = [];
                 this.particles = [];
                 
-                // Mouse state
+                this.activeEffects = {
+                    efficiency: { endTime: 0 },
+                    assistant: { endTime: 0 },
+                    offline: { endTime: 0 }
+                };
+                this.offlineStartTime = null;
+                
                 this.mouseX = 0;
                 this.mouseY = 0;
-                this.mouseDown = false;
                 
                 this.initializeAssets();
                 this.setupEventListeners();
                 this.gameLoop();
             }
             
-            initializeAssets() {
-                // Create pixel art patterns for buildings
-                this.buildingPatterns = {};
-                this.createBuildingPatterns();
+            initialize(isRegistered, username, userId) {
+                this.auth = { isRegistered, username, userId };
+                this.shop = new ShopManager(this);
+                this.ranking = new RankingManager(this);
+                this.gameStarted = true;
+                this.initializeGame();
+                this.switchTab('shop');
             }
             
-            createBuildingPatterns() {
+            initializeAssets() {
+                this.buildingPatterns = {};
                 const memoryTypes = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
                 memoryTypes.forEach(type => {
                     const canvas = document.createElement('canvas');
@@ -582,27 +821,17 @@
             
             drawBuildingPattern(ctx, type) {
                 const colors = this.getMemoryColorPalette(type);
-                
-                // Building base
                 ctx.fillStyle = colors.primary;
                 ctx.fillRect(0, 0, 64, 64);
-                
-                // Building details
                 ctx.fillStyle = colors.secondary;
                 for (let i = 0; i < 4; i++) {
                     for (let j = 0; j < 4; j++) {
-                        if ((i + j) % 2 === 0) {
-                            ctx.fillRect(8 + i * 12, 8 + j * 12, 8, 8);
-                        }
+                        if ((i + j) % 2 === 0) ctx.fillRect(8 + i * 12, 8 + j * 12, 8, 8);
                     }
                 }
-                
-                // Building outline
                 ctx.strokeStyle = colors.accent;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(2, 2, 60, 60);
-                
-                // Memory crystal at top
                 ctx.fillStyle = colors.accent;
                 ctx.fillRect(28, 4, 8, 8);
                 ctx.fillStyle = '#ffffff';
@@ -621,93 +850,111 @@
                 return palettes[type] || palettes.love;
             }
             
-            startGame() {
-                this.gameStarted = true;
-                this.initializeGame();
+            setupEventListeners() {
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                
+                document.querySelectorAll('.speed-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.gameSpeed = parseInt(e.target.dataset.speed);
+                    });
+                });
+                
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.switchTab(e.target.dataset.tab));
+                });
+                
+                document.addEventListener('visibilitychange', () => {
+                    if (this.activeEffects.offline.endTime > Date.now() && document.hidden) {
+                        this.offlineStartTime = Date.now();
+                    } else if (!document.hidden && this.offlineStartTime) {
+                        this.processOfflineProgress();
+                    }
+                });
+            }
+            
+            switchTab(tabName) {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+                
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(tabName + 'Panel').classList.add('active');
             }
             
             initializeGame() {
-                // Initialize buildings with enhanced layout
-                const buildingTypes = [
-                    { type: 'love', capacity: 25 },
-                    { type: 'knowledge', capacity: 22 },
-                    { type: 'adventure', capacity: 18 },
-                    { type: 'peace', capacity: 28 },
-                    { type: 'nostalgia', capacity: 20 },
-                    { type: 'courage', capacity: 16 }
-                ];
-                
-                for (let i = 0; i < 12; i++) {
-                    const x = (i % 4) * 220 + 110;
-                    const y = Math.floor(i / 4) * 200 + 120;
-                    const buildingType = buildingTypes[i % 6];
+                const buildingTypes = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
+                const capacities = { love: 25, knowledge: 22, adventure: 18, peace: 28, nostalgia: 20, courage: 16 };
+
+                for (let i = 0; i < 18; i++) {
+                    const x = (i % 6) * 180 + 100;
+                    const y = Math.floor(i / 6) * 220 + 120;
+                    const type = buildingTypes[i % 6];
                     
                     this.buildings.push({
-                        x, y, width: 64, height: 64,
-                        type: buildingType.type,
+                        x, y, width: 64, height: 64, type,
                         storedMemories: 0,
-                        capacity: buildingType.capacity,
+                        capacity: capacities[type],
                         lastDistribution: 0,
-                        pulseTimer: Math.random() * 120
                     });
                 }
                 
-                // Initialize citizens with enhanced AI
-                for (let i = 0; i < 18; i++) {
-                    this.spawnNewCitizen();
-                }
-                
+                for (let i = 0; i < 25; i++) this.spawnNewCitizen();
                 this.assignNewTargets();
             }
             
-            setupEventListeners() {
-                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-                this.canvas.addEventListener('mouseup', () => this.mouseDown = false);
+            addEffect(type, minutes) {
+                this.activeEffects[type].endTime = Date.now() + (minutes * 60 * 1000);
+                this.updateActiveEffectsDisplay();
+            }
+            
+            updateActiveEffectsDisplay() {
+                const effectsContainer = document.getElementById('activeEffects');
+                let effectsHTML = '';
+                const now = Date.now();
+                let hasActiveEffects = false;
                 
-                document.getElementById('startGameBtn').addEventListener('click', () => {
-                    document.getElementById('menuOverlay').style.display = 'none';
-                    document.getElementById('gameScreen').style.display = 'block';
-                    this.startGame();
+                Object.entries(this.activeEffects).forEach(([type, effect]) => {
+                    if (effect.endTime > now) {
+                        hasActiveEffects = true;
+                        const timeLeft = Math.ceil((effect.endTime - now) / 1000);
+                        const minutes = Math.floor(timeLeft / 60);
+                        const seconds = (timeLeft % 60).toString().padStart(2, '0');
+                        
+                        const icons = { efficiency: '🚀', assistant: '🤖', offline: '⏰' };
+                        const names = { efficiency: 'Efficiency Boost', assistant: 'Auto Assistant', offline: 'Offline Mode' };
+                        
+                        effectsHTML += `<div class="active-effect">${icons[type]} ${names[type]} | Time left: ${minutes}:${seconds}</div>`;
+                    }
                 });
+                
+                effectsContainer.innerHTML = hasActiveEffects ? effectsHTML : '<p style="color: #a0a8b0; text-align: center; font-size: 12px;">No active effects</p>';
             }
             
             handleMouseMove(e) {
                 const rect = this.canvas.getBoundingClientRect();
                 this.mouseX = e.clientX - rect.left;
                 this.mouseY = e.clientY - rect.top;
-                
                 this.updateTooltip();
             }
             
             updateTooltip() {
                 let tooltipText = '';
-                let showTooltip = false;
-                
                 for (const building of this.buildings) {
                     if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
                         this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
                         
                         const memoryName = building.type.charAt(0).toUpperCase() + building.type.slice(1);
-                        tooltipText = `${memoryName} Memory Bank\nStored: ${building.storedMemories}/${building.capacity}\nClick to distribute memories`;
-                        showTooltip = true;
+                        const capacityBoost = this.activeEffects.efficiency.endTime > Date.now() ? 1.5 : 1;
+                        tooltipText = `${memoryName} Bank\nStored: ${building.storedMemories}/${Math.floor(building.capacity * capacityBoost)}\nClick to distribute`;
                         break;
                     }
                 }
-                
-                if (showTooltip) {
-                    this.tooltip.textContent = tooltipText;
-                    this.tooltip.style.display = 'block';
-                    this.tooltip.style.left = (this.mouseX + 10) + 'px';
-                    this.tooltip.style.top = (this.mouseY - 30) + 'px';
-                } else {
-                    this.tooltip.style.display = 'none';
-                }
-            }
-            
-            handleMouseDown(e) {
-                this.mouseDown = true;
-                this.handleClick();
+                this.tooltip.textContent = tooltipText;
+                this.tooltip.style.display = tooltipText ? 'block' : 'none';
+                this.tooltip.style.left = (this.mouseX + 15) + 'px';
+                this.tooltip.style.top = (this.mouseY + 15) + 'px';
             }
             
             handleClick() {
@@ -717,13 +964,14 @@
                         
                         if (this.memories[building.type] > 0) {
                             const distributed = Math.min(3, this.memories[building.type]);
+                            const capacityBoost = this.activeEffects.efficiency.endTime > Date.now() ? 1.5 : 1;
+                            
                             building.storedMemories = Math.min(
-                                building.capacity, 
+                                building.capacity * capacityBoost, 
                                 building.storedMemories + distributed
                             );
                             this.memories[building.type] -= distributed;
                             building.lastDistribution = this.gameTime;
-                            
                             this.createDistributionEffect(building);
                         }
                         break;
@@ -734,15 +982,10 @@
             createDistributionEffect(building) {
                 const colors = this.getMemoryColorPalette(building.type);
                 for (let i = 0; i < 8; i++) {
-                    this.memoryOrbs.push({
-                        x: building.x + building.width/2,
-                        y: building.y + building.height/2,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        color: colors.accent,
-                        life: 45,
-                        maxLife: 45,
-                        size: 2 + Math.random() * 2
+                    this.particles.push({
+                        x: building.x + building.width/2, y: building.y + building.height/2,
+                        vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+                        color: colors.accent, life: 45, maxLife: 45, size: 2 + Math.random() * 2
                     });
                 }
             }
@@ -750,14 +993,23 @@
             update() {
                 if (!this.gameStarted) return;
                 
-                this.gameTime++;
+                for (let i = 0; i < this.gameSpeed; i++) {
+                    this.gameTime++;
+                    this.updateCitizens();
+                    this.updateMemoryGeneration();
+                    this.updateBuildingDecay();
+                    if (this.activeEffects.assistant.endTime > Date.now()) this.runAssistant();
+                }
                 
-                this.updateCitizens();
                 this.updateEffects();
-                this.updateMemoryGeneration();
-                this.updateBuildingDecay();
                 this.updateSatisfaction();
+                this.updateCurrency();
                 this.updateUI();
+                
+                if (this.gameTime % 180 === 0) {
+                    this.updateActiveEffectsDisplay();
+                    if(this.ranking) this.ranking.updateRankings();
+                }
             }
             
             updateCitizens() {
@@ -775,105 +1027,63 @@
                         continue;
                     }
                     
-                    // Movement AI
-                    const dx = citizen.targetX - citizen.x;
-                    const dy = citizen.targetY - citizen.y;
+                    const dx = citizen.targetX - citizen.x, dy = citizen.targetY - citizen.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
                     if (distance > 3) {
                         citizen.x += (dx / distance) * citizen.speed;
                         citizen.y += (dy / distance) * citizen.speed;
-                        citizen.walkCycle = (citizen.walkCycle || 0) + 0.2;
+                        citizen.walkCycle = (citizen.walkCycle + 0.2);
                     } else {
                         const nearBuilding = this.buildings.find(b => 
-                            Math.abs(citizen.x - (b.x + b.width/2)) < 40 &&
-                            Math.abs(citizen.y - (b.y + b.height/2)) < 40 &&
-                            b.type === citizen.memoryType
+                            Math.hypot(citizen.x - (b.x + b.width/2), citizen.y - (b.y + b.height/2)) < 40 &&
+                            b.type === citizen.memoryType && b.storedMemories > 0
                         );
                         
-                        if (nearBuilding && nearBuilding.storedMemories > 0) {
+                        if (nearBuilding) {
                             nearBuilding.storedMemories--;
                             citizen.satisfaction = 100;
                             citizen.needsMemory = false;
                             citizen.lastFed = this.gameTime;
                             citizen.satisfiedUntil = this.gameTime + 1800; // 30 seconds
                             citizen.glowIntensity = 1.0;
-                            
                             this.createSatisfactionEffect(citizen, nearBuilding.type);
                         } else {
                             this.setNewTarget(citizen);
                         }
                     }
                     
-                    // Satisfaction decay
                     if (citizen.satisfiedUntil === 0 && this.gameTime - citizen.lastFed > 1200) {
                         citizen.satisfaction = Math.max(0, citizen.satisfaction - 0.03);
                         citizen.needsMemory = citizen.satisfaction < 65;
                     }
                 }
                 
-                if (this.gameTime % 450 === 0) {
-                    this.assignNewTargets();
-                }
+                if (this.gameTime % 450 === 0) this.assignNewTargets();
             }
             
-            createSatisfactionEffect(citizen, memoryType) {
-                const colors = this.getMemoryColorPalette(memoryType);
-                for (let i = 0; i < 12; i++) {
-                    this.particles.push({
-                        x: citizen.x + 4,
-                        y: citizen.y + 4,
-                        vx: (Math.random() - 0.5) * 6,
-                        vy: (Math.random() - 0.5) * 6 - 2,
-                        color: colors.accent,
-                        life: 80,
-                        maxLife: 80,
-                        size: 1 + Math.random() * 2,
-                        type: 'satisfaction'
-                    });
+            runAssistant() {
+                if (this.gameTime % 120 !== 0) return;
+                for (const building of this.buildings) {
+                    if (this.memories[building.type] > 0 && building.storedMemories < building.capacity) {
+                        const distributed = Math.min(2, this.memories[building.type]);
+                        building.storedMemories = Math.min(building.capacity, building.storedMemories + distributed);
+                        this.memories[building.type] -= distributed;
+                        this.createDistributionEffect(building);
+                    }
                 }
-            }
-            
-            updateEffects() {
-                // Update memory orbs
-                this.memoryOrbs = this.memoryOrbs.filter(orb => {
-                    orb.x += orb.vx;
-                    orb.y += orb.vy;
-                    orb.life--;
-                    orb.vx *= 0.96;
-                    orb.vy *= 0.96;
-                    return orb.life > 0;
-                });
-                
-                // Update particles
-                this.particles = this.particles.filter(particle => {
-                    particle.x += particle.vx;
-                    particle.y += particle.vy;
-                    particle.vy += 0.03; // Gravity
-                    particle.life--;
-                    particle.vx *= 0.98;
-                    return particle.life > 0;
-                });
-                
-                // Update dissolve effects
-                this.dissolveEffects = this.dissolveEffects.filter(effect => {
-                    effect.particles.forEach(p => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.02;
-                        p.alpha -= 0.015;
-                        p.scale *= 0.99;
-                    });
-                    effect.life--;
-                    return effect.life > 0;
-                });
             }
             
             updateMemoryGeneration() {
-                if (this.gameTime % 90 === 0) {
+                const baseInterval = 360;
+                const isBoosted = this.activeEffects.efficiency.endTime > Date.now();
+                const speedMultiplier = isBoosted ? 2 : 1;
+                
+                if (this.gameTime % Math.floor(baseInterval / speedMultiplier) === 0) {
                     const types = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
                     const randomType = types[Math.floor(Math.random() * types.length)];
-                    this.memories[randomType] = Math.min(50, this.memories[randomType] + 2);
+                    const amount = isBoosted ? 3 : 2;
+                    this.memories[randomType] = Math.min(50, this.memories[randomType] + amount);
                 }
             }
             
@@ -885,11 +1095,63 @@
                         }
                     }
                 }
-                
-                // Update building pulse timers
-                for (const building of this.buildings) {
-                    building.pulseTimer++;
+            }
+            
+            updateCurrency() {
+                const satisfactionGained = this.satisfaction - this.lastSatisfaction;
+                if (satisfactionGained > 0) {
+                    const isBoosted = this.activeEffects.efficiency.endTime > Date.now();
+                    const multiplier = isBoosted ? 2 : 1;
+                    this.currency += Math.floor(satisfactionGained * 0.5 * multiplier);
                 }
+                this.lastSatisfaction = this.satisfaction;
+            }
+            
+            processOfflineProgress() {
+                if (!this.offlineStartTime) return;
+                
+                const maxOfflineTime = (this.activeEffects.offline.endTime - this.offlineStartTime);
+                const offlineTime = Math.min(Date.now() - this.offlineStartTime, maxOfflineTime);
+                const offlineMinutes = Math.floor(offlineTime / 60000);
+                
+                if (offlineMinutes > 0) {
+                    const offlineMemories = offlineMinutes * 2;
+                    const offlineCurrency = offlineMinutes * 5;
+                    
+                    Object.keys(this.memories).forEach(type => {
+                        this.memories[type] = Math.min(50, this.memories[type] + Math.floor(offlineMemories / 6));
+                    });
+                    this.currency += offlineCurrency;
+                    
+                    alert(`Welcome back! You earned ${offlineMemories} memories and ${offlineCurrency} coins while offline!`);
+                }
+                this.offlineStartTime = null;
+                this.activeEffects.offline.endTime = 0; // Consume the effect
+            }
+            
+            createSatisfactionEffect(citizen, memoryType) {
+                const colors = this.getMemoryColorPalette(memoryType);
+                for (let i = 0; i < 12; i++) {
+                    this.particles.push({
+                        x: citizen.x + 4, y: citizen.y + 4,
+                        vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 2,
+                        color: colors.accent, life: 80, maxLife: 80, size: 1 + Math.random() * 2,
+                        type: 'satisfaction'
+                    });
+                }
+            }
+            
+            updateEffects() {
+                this.particles = this.particles.filter(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.life--; p.vx *= 0.98;
+                    return p.life > 0;
+                });
+                this.dissolveEffects = this.dissolveEffects.filter(effect => {
+                    effect.particles.forEach(p => {
+                        p.x += p.vx; p.y += p.vy; p.vy += 0.02; p.alpha -= 0.015; p.scale *= 0.99;
+                    });
+                    return --effect.life > 0;
+                });
             }
             
             spawnNewCitizen() {
@@ -897,78 +1159,36 @@
                 const spawnX = Math.random() * (this.canvas.width - 32) + 16;
                 const spawnY = Math.random() * (this.canvas.height - 32) + 16;
                 
-                const newCitizen = {
-                    x: spawnX,
-                    y: spawnY,
-                    targetX: spawnX,
-                    targetY: spawnY,
+                this.citizens.push({
+                    x: spawnX, y: spawnY, targetX: spawnX, targetY: spawnY,
                     speed: 0.6 + Math.random() * 0.8,
                     needsMemory: true,
                     memoryType: memoryTypes[Math.floor(Math.random() * memoryTypes.length)],
                     satisfaction: 45 + Math.random() * 35,
-                    lastFed: 0,
-                    satisfiedUntil: 0,
-                    glowIntensity: 0,
-                    walkCycle: 0
-                };
-                
-                this.citizens.push(newCitizen);
-                this.setNewTarget(newCitizen);
-                
-                // Spawn effect
-                this.createSpawnEffect(spawnX, spawnY);
-            }
-            
-            createSpawnEffect(x, y) {
-                for (let i = 0; i < 6; i++) {
-                    this.particles.push({
-                        x: x + 4,
-                        y: y + 4,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        color: '#ffffff',
-                        life: 30,
-                        maxLife: 30,
-                        size: 1,
-                        type: 'spawn'
-                    });
-                }
+                    lastFed: 0, satisfiedUntil: 0, glowIntensity: 0, walkCycle: 0
+                });
+                this.setNewTarget(this.citizens[this.citizens.length - 1]);
             }
             
             createDissolveEffect(x, y, memoryType) {
                 const colors = this.getMemoryColorPalette(memoryType);
                 const particles = [];
-                
                 for (let i = 0; i < 15; i++) {
                     particles.push({
-                        x: x,
-                        y: y,
-                        vx: (Math.random() - 0.5) * 5,
-                        vy: (Math.random() - 0.5) * 5 - 2,
-                        alpha: 1.0,
-                        scale: 1.0,
-                        color: colors.accent
+                        x, y, vx: (Math.random() - 0.5) * 5, vy: (Math.random() - 0.5) * 5 - 2,
+                        alpha: 1.0, scale: 1.0, color: colors.accent
                     });
                 }
-                
-                this.dissolveEffects.push({
-                    particles: particles,
-                    life: 150
-                });
+                this.dissolveEffects.push({ particles, life: 150 });
             }
             
             assignNewTargets() {
-                for (const citizen of this.citizens) {
-                    this.setNewTarget(citizen);
-                }
+                for (const citizen of this.citizens) this.setNewTarget(citizen);
             }
             
             setNewTarget(citizen) {
                 if (citizen.needsMemory && citizen.satisfiedUntil === 0) {
-                    const targetBuildings = this.buildings.filter(b => 
-                        b.type === citizen.memoryType && b.storedMemories > 0
-                    );
-                    
+                    const targetBuildings = this.buildings.filter(b => b.type === citizen.memoryType && b.storedMemories > 0);
                     if (targetBuildings.length > 0) {
                         const target = targetBuildings[Math.floor(Math.random() * targetBuildings.length)];
                         citizen.targetX = target.x + target.width/2 + (Math.random() - 0.5) * 30;
@@ -985,13 +1205,16 @@
             
             updateSatisfaction() {
                 if (this.citizens.length > 0) {
-                    const averageSatisfaction = this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length;
-                    this.satisfaction = Math.round(averageSatisfaction);
+                    const avg = this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length;
+                    this.satisfaction = Math.round(avg);
                 }
+            }
+
+            calculateScore() {
+                return (this.dissolvedCitizens * 10) + (this.satisfaction * 2) + Math.floor(this.currency * 0.1);
             }
             
             render() {
-                // Clear canvas with animated background
                 const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
                 gradient.addColorStop(0, '#0d2946');
                 gradient.addColorStop(1, '#1e3c72');
@@ -1009,185 +1232,88 @@
             drawAnimatedGrid() {
                 this.ctx.strokeStyle = `rgba(0, 212, 255, ${0.1 + Math.sin(this.gameTime * 0.02) * 0.05})`;
                 this.ctx.lineWidth = 1;
-                
                 for (let x = 0; x < this.canvas.width; x += 50) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(x, 0);
-                    this.ctx.lineTo(x, this.canvas.height);
-                    this.ctx.stroke();
+                    this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, this.canvas.height); this.ctx.stroke();
                 }
-                
                 for (let y = 0; y < this.canvas.height; y += 50) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0, y);
-                    this.ctx.lineTo(this.canvas.width, y);
-                    this.ctx.stroke();
+                    this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(this.canvas.width, y); this.ctx.stroke();
                 }
             }
             
             drawBuildings() {
                 for (const building of this.buildings) {
                     const pattern = this.buildingPatterns[building.type];
+                    const timeSinceDist = this.gameTime - building.lastDistribution;
+                    const scale = timeSinceDist < 30 ? 1.0 + Math.sin(timeSinceDist * 0.3) * 0.05 : 1.0;
                     
-                    // Pulse effect for buildings with recent activity
-                    const timeSinceDistribution = this.gameTime - building.lastDistribution;
-                    let scale = 1.0;
-                    if (timeSinceDistribution < 30) {
-                        scale = 1.0 + Math.sin(timeSinceDistribution * 0.3) * 0.05;
-                    }
-                    
-                    // Draw building shadow
-                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                    this.ctx.fillRect(building.x + 3, building.y + 3, building.width * scale, building.height * scale);
-                    
-                    // Draw building
                     this.ctx.save();
                     this.ctx.translate(building.x + building.width/2, building.y + building.height/2);
                     this.ctx.scale(scale, scale);
                     this.ctx.drawImage(pattern, -building.width/2, -building.height/2);
                     this.ctx.restore();
                     
-                    // Draw storage indicator with enhanced visuals
-                    const fillRatio = building.storedMemories / building.capacity;
-                    const barWidth = building.width - 8;
-                    const barHeight = 6;
-                    const barX = building.x + 4;
-                    const barY = building.y + building.height + 5;
+                    const isBoosted = this.activeEffects.efficiency.endTime > Date.now();
+                    const capacity = building.capacity * (isBoosted ? 1.5 : 1);
+                    const fillRatio = building.storedMemories / capacity;
+                    const barX = building.x + 4, barY = building.y + building.height + 5;
+                    const barWidth = building.width - 8, barHeight = 6;
                     
-                    // Storage bar background
                     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
                     this.ctx.fillRect(barX, barY, barWidth, barHeight);
-                    
-                    // Storage bar fill with gradient
                     if (fillRatio > 0) {
                         const colors = this.getMemoryColorPalette(building.type);
-                        const gradient = this.ctx.createLinearGradient(barX, barY, barX + barWidth * fillRatio, barY);
-                        gradient.addColorStop(0, colors.primary);
-                        gradient.addColorStop(1, colors.accent);
-                        this.ctx.fillStyle = gradient;
+                        this.ctx.fillStyle = colors.primary;
                         this.ctx.fillRect(barX, barY, barWidth * fillRatio, barHeight);
                     }
-                    
-                    // Storage bar outline
                     this.ctx.strokeStyle = '#ffffff';
                     this.ctx.lineWidth = 1;
                     this.ctx.strokeRect(barX, barY, barWidth, barHeight);
-                    
-                    // Hover effect
-                    if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
-                        this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
-                        this.ctx.strokeStyle = '#00d4ff';
-                        this.ctx.lineWidth = 3;
-                        this.ctx.shadowColor = '#00d4ff';
-                        this.ctx.shadowBlur = 10;
-                        this.ctx.strokeRect(building.x - 2, building.y - 2, building.width + 4, building.height + 4);
-                        this.ctx.shadowBlur = 0;
-                    }
                 }
             }
             
             drawCitizens() {
                 for (const citizen of this.citizens) {
-                    // Enhanced citizen rendering with walking animation
-                    const walkOffset = Math.sin(citizen.walkCycle || 0) * 1;
+                    const walkOffset = Math.sin(citizen.walkCycle) * 1;
                     
+                    this.ctx.shadowBlur = 0;
                     if (citizen.glowIntensity > 0) {
-                        // Satisfied citizen with glow effect
                         const colors = this.getMemoryColorPalette(citizen.memoryType);
                         this.ctx.shadowColor = colors.accent;
                         this.ctx.shadowBlur = 15 * citizen.glowIntensity;
                         this.ctx.fillStyle = colors.primary;
                     } else {
-                        // Regular citizen with satisfaction-based coloring
-                        this.ctx.shadowBlur = 0;
-                        if (citizen.satisfaction > 75) {
-                            this.ctx.fillStyle = '#00ff88';
-                        } else if (citizen.satisfaction > 45) {
-                            this.ctx.fillStyle = '#ffdd00';
-                        } else {
-                            this.ctx.fillStyle = '#ff4757';
-                        }
+                        this.ctx.fillStyle = citizen.satisfaction > 75 ? '#00ff88' : citizen.satisfaction > 45 ? '#ffdd00' : '#ff4757';
                     }
                     
-                    // Draw citizen body (enhanced pixel art)
                     this.ctx.fillRect(citizen.x, citizen.y + walkOffset, 10, 10);
-                    
-                    // Reset shadow
                     this.ctx.shadowBlur = 0;
                     
-                    // Draw citizen outline
-                    this.ctx.strokeStyle = '#ffffff';
-                    this.ctx.lineWidth = 1;
-                    this.ctx.strokeRect(citizen.x, citizen.y + walkOffset, 10, 10);
-                    
-                    // Draw eyes (cute detail)
-                    this.ctx.fillStyle = '#ffffff';
-                    this.ctx.fillRect(citizen.x + 2, citizen.y + 2 + walkOffset, 2, 2);
-                    this.ctx.fillRect(citizen.x + 6, citizen.y + 2 + walkOffset, 2, 2);
-                    
-                    // Draw memory need indicator (only when needed and not satisfied)
                     if (citizen.needsMemory && citizen.satisfiedUntil === 0) {
                         const colors = this.getMemoryColorPalette(citizen.memoryType);
                         this.ctx.fillStyle = colors.primary;
-                        this.ctx.fillRect(citizen.x - 1, citizen.y - 8, 6, 6);
+                        this.ctx.fillRect(citizen.x + 2, citizen.y - 8, 6, 6);
                         this.ctx.strokeStyle = '#ffffff';
-                        this.ctx.lineWidth = 1;
-                        this.ctx.strokeRect(citizen.x - 1, citizen.y - 8, 6, 6);
+                        this.ctx.strokeRect(citizen.x + 2, citizen.y - 8, 6, 6);
                     }
                 }
             }
             
             drawEffects() {
-                // Draw memory orbs
-                for (const orb of this.memoryOrbs) {
-                    const alpha = orb.life / orb.maxLife;
-                    this.ctx.save();
-                    this.ctx.globalAlpha = alpha;
-                    this.ctx.fillStyle = orb.color;
-                    this.ctx.shadowColor = orb.color;
-                    this.ctx.shadowBlur = 8;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(orb.x, orb.y, orb.size, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    this.ctx.restore();
+                this.ctx.save();
+                for (const p of this.particles) {
+                    this.ctx.globalAlpha = p.life / p.maxLife;
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
                 }
-                
-                // Draw particles
-                for (const particle of this.particles) {
-                    const alpha = particle.life / particle.maxLife;
-                    this.ctx.save();
-                    this.ctx.globalAlpha = alpha;
-                    this.ctx.fillStyle = particle.color;
-                    
-                    if (particle.type === 'satisfaction') {
-                        this.ctx.shadowColor = particle.color;
-                        this.ctx.shadowBlur = 5;
-                    }
-                    
-                    this.ctx.fillRect(
-                        particle.x - particle.size/2,
-                        particle.y - particle.size/2,
-                        particle.size,
-                        particle.size
-                    );
-                    this.ctx.restore();
-                }
-                
-                // Draw dissolve effects
                 for (const effect of this.dissolveEffects) {
-                    for (const particle of effect.particles) {
-                        this.ctx.save();
-                        this.ctx.globalAlpha = particle.alpha;
-                        this.ctx.fillStyle = particle.color;
-                        this.ctx.shadowColor = particle.color;
-                        this.ctx.shadowBlur = 3;
-                        
-                        const size = 4 * particle.scale;
-                        this.ctx.fillRect(particle.x - size/2, particle.y - size/2, size, size);
-                        this.ctx.restore();
+                    for (const p of effect.particles) {
+                        this.ctx.globalAlpha = p.alpha;
+                        this.ctx.fillStyle = p.color;
+                        const size = 4 * p.scale;
+                        this.ctx.fillRect(p.x - size/2, p.y - size/2, size, size);
                     }
                 }
+                this.ctx.restore();
             }
             
             updateUI() {
@@ -1200,6 +1326,11 @@
                 document.getElementById('satisfaction').textContent = this.satisfaction + '%';
                 document.getElementById('gameTime').textContent = Math.floor(this.gameTime / 60) + 's';
                 document.getElementById('dissolvedCount').textContent = this.dissolvedCitizens;
+                this.updateCurrencyDisplay();
+            }
+
+            updateCurrencyDisplay() {
+                document.getElementById('currencyAmount').textContent = this.currency.toLocaleString();
             }
             
             gameLoop() {
@@ -1209,10 +1340,9 @@
             }
         }
         
-        // Initialize the game
         window.addEventListener('load', () => {
-            const tutorialManager = new TutorialManager();
             window.memoryGame = new MemoryArchitectGame();
+            window.gameAuth = new GameAuth();
         });
     </script>
 </body>
