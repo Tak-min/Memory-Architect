@@ -624,7 +624,7 @@ class UserManager {
             { username: 'Circuit Constructor', score: 439, isPlaceholder: false },
             { username: 'Logic Designer', score: 774, isPlaceholder: false },
             { username: 'Data Dreamer', score: 262, isPlaceholder: false },
-            { username: 'Crazy Gamer, score: 76, isPlaceholder: false },
+            { username: 'Crazy Gamer', score: 76, isPlaceholder: false },
             { username: '運営', score: 23, isPlaceholder: false },
             { username: 'Trance farmer', score: 734, isPlaceholder: false },
             { username: 'tags', score: 546, isPlaceholder: false },
