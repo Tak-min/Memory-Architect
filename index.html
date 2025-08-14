@@ -1,295 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Architect - Premium City Management</title>
+    <title>Midnight Metropolis Memory Mix-up</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
-        
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            color: #e0e6ed;
-            font-family: 'Orbitron', monospace;
-            overflow: hidden;
-            height: 100vh;
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e94560;
+            overflow-x: hidden;
+            min-height: 100vh;
         }
-        
-        .game-header {
-            background: linear-gradient(90deg, #2d3561 0%, #1e2749 100%);
-            padding: 8px 20px;
-            border-bottom: 2px solid #00d4ff;
-            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .game-title {
-            font-size: 18px;
-            font-weight: 900;
-            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 12px;
-        }
-        
-        .currency-display {
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-weight: 700;
-        }
-        
-        .game-container {
-            display: flex;
-            height: calc(100vh - 54px); /* Adjusted for header height */
-        }
-        
-        .main-game-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        
-        #gameCanvas {
-            width: 100%;
-            height: 100%;
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
-            background: linear-gradient(135deg, #0d2946 0%, #1e3c72 100%);
-        }
-        
-        .right-panel {
-            width: 350px;
-            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
-            border-left: 2px solid #00d4ff;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .panel-tabs {
-            display: flex;
-            background: #16213e;
-        }
-        
-        .tab-button {
-            flex: 1;
-            padding: 10px;
-            background: transparent;
-            border: none;
-            color: #a0a8b0;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-        
-        .tab-button.active {
-            color: #00d4ff;
-            border-bottom-color: #00d4ff;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 212, 255, 0.05));
-        }
-        
-        .tab-content {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-        }
-        
-        .tab-panel {
-            display: none;
-        }
-        
-        .tab-panel.active {
-            display: block;
-        }
-        
-        .ui-panel {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 8px;
-            padding: 10px;
-            background: linear-gradient(135deg, rgba(30, 39, 73, 0.8) 0%, rgba(45, 53, 97, 0.8) 100%);
-            border-top: 2px solid #00d4ff;
-        }
-        
-        .memory-stat {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 8px;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .memory-icon {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            box-shadow: 0 0 8px currentColor;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .love { background: radial-gradient(circle, #ff69b4, #ff1493); }
-        .knowledge { background: radial-gradient(circle, #4169e1, #0000cd); }
-        .adventure { background: radial-gradient(circle, #ff8c00, #ff6347); }
-        .peace { background: radial-gradient(circle, #98fb98, #00ff7f); }
-        .nostalgia { background: radial-gradient(circle, #dda0dd, #9370db); }
-        .courage { background: radial-gradient(circle, #dc143c, #b22222); }
-        
-        .stat-label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #a0a8b0;
-        }
-        
-        .stat-value {
-            font-size: 12px;
-            font-weight: 900;
-            color: #00d4ff;
-        }
-        
-        .game-stats {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-around;
-            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
-            border: 1px solid rgba(0, 212, 255, 0.5);
-            border-radius: 10px;
-            padding: 10px;
-        }
-        
-        .speed-controls {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-        
-        .speed-btn {
-            background: linear-gradient(45deg, #00d4ff, #0099cc);
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-family: 'Orbitron', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .speed-btn.active {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
-        }
-        
-        /* Shop Styles */
-        .shop-item {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .shop-item h4 {
-            color: #00d4ff;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        
-        .shop-item p {
-            font-size: 11px;
-            color: #a0a8b0;
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        
-        .shop-options {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-        
-        .shop-option {
-            background: linear-gradient(45deg, #00d4ff, #0099cc);
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-family: 'Orbitron', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        
-        /* Ranking Styles */
-        .ranking-list {
-            list-style: none;
-        }
-        
-        .ranking-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
-            border-radius: 8px;
-            border-left: 4px solid #00d4ff;
-        }
-        
-        .ranking-item.is-user {
-            border-left-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-        }
-        
-        .ranking-rank {
-            font-weight: 900;
-            color: #ffd700;
-            font-size: 16px;
-            min-width: 30px;
-        }
-        
-        .ranking-name {
-            flex: 1;
-            margin-left: 10px;
-            color: #e0e6ed;
-        }
-        
-        .ranking-score {
-            color: #00d4ff;
-            font-weight: 700;
-        }
-        
-        /* Auth Modal */
-        .auth-modal {
+
+        /* 認証画面 */
+        .auth-screen {
             position: fixed;
             top: 0;
             left: 0;
@@ -301,704 +32,1085 @@
             align-items: center;
             z-index: 1000;
         }
-        
-        .auth-panel {
-            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
-            border: 3px solid #00d4ff;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
+
+        .auth-modal {
+            background: linear-gradient(135deg, #16213e, #0f3460);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 2px solid #e94560;
             text-align: center;
-            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+            max-width: 500px;
+            width: 90%;
         }
-        
-        .auth-title {
-            font-size: 24px;
-            font-weight: 900;
-            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
+
+        .auth-modal h2 {
+            color: #f39c12;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
         }
-        
-        .auth-form {
+
+        .auth-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .auth-btn {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e94560;
+            background: transparent;
+            color: #e94560;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .auth-btn:hover {
+            background: #e94560;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .premium-info {
+            background: rgba(249, 156, 18, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 1px solid #f39c12;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            color: #f39c12;
+            text-shadow: 0 0 10px #f39c12;
+        }
+
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(249, 156, 18, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #f39c12;
+        }
+
+        .coin-icon {
+            color: #f39c12;
+            font-size: 1.2rem;
+        }
+
+        .currency-amount {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .speed-btn {
+            padding: 0.3rem 0.6rem;
+            border: 1px solid #e94560;
+            background: transparent;
+            color: #e94560;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .speed-btn.active {
+            background: #e94560;
+            color: white;
+        }
+
+        .satisfaction-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .satisfaction-bar {
+            width: 100px;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .satisfaction-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71);
+            transition: width 0.3s;
+        }
+
+        /* メインゲーム画面 */
+        .game-container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .game-area {
+            flex: 1;
+            padding: 1rem;
+            overflow: hidden;
+        }
+
+        .buildings-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            height: 100%;
+            max-height: 600px;
+        }
+
+        .building {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #e94560;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .auth-input {
-            padding: 12px;
-            border: 1px solid #00d4ff;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            color: #e0e6ed;
-            font-family: 'Orbitron', monospace;
-            font-size: 14px;
-        }
-        
-        .btn {
-            background: linear-gradient(45deg, #00d4ff, #0099cc);
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
-        }
-        
-        .auth-benefits {
-            text-align: left;
-            font-size: 12px;
-            color: #a0a8b0;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 10px;
-            border-left: 4px solid #00d4ff;
-        }
-        
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
+            align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 120px;
         }
-        
-        .building-tooltip {
+
+        .building:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        .building-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .building-info {
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        .memory-indicator {
             position: absolute;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
+            top: 5px;
+            right: 5px;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* 右パネル */
+        .right-panel {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 2px solid #e94560;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid #e94560;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 0.8rem;
+            background: transparent;
+            border: none;
+            color: #e94560;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .panel-tab.active {
+            border-bottom-color: #f39c12;
+            color: #f39c12;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        /* ショップ */
+        .shop-category {
+            margin-bottom: 2rem;
+        }
+
+        .shop-category h3 {
+            color: #f39c12;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f39c12;
+            padding-bottom: 0.5rem;
+        }
+
+        .shop-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .shop-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
             border-radius: 8px;
-            font-size: 12px;
+            border: 1px solid #e94560;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shop-item:hover {
+            background: rgba(233, 69, 96, 0.1);
+            transform: translateX(5px);
+        }
+
+        .shop-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .shop-item-name {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .shop-item-price {
+            color: #2ecc71;
+            font-size: 0.9rem;
+        }
+
+        .shop-item-desc {
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        .shop-item-duration {
+            font-size: 0.7rem;
+            color: #e94560;
+            margin-top: 0.2rem;
+        }
+
+        /* ランキング */
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ranking-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #e94560;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ranking-item.player {
+            background: rgba(249, 156, 18, 0.2);
+            border-color: #f39c12;
+            box-shadow: 0 0 10px rgba(249, 156, 18, 0.3);
+        }
+
+        .ranking-rank {
+            font-weight: bold;
+            color: #f39c12;
+            min-width: 30px;
+        }
+
+        .ranking-player {
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+
+        .ranking-score {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        /* アクティブエフェクト */
+        .active-effects {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .effect-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid #2ecc71;
+        }
+
+        .effect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .effect-name {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .effect-timer {
+            color: #f39c12;
+            font-size: 0.9rem;
+        }
+
+        .effect-desc {
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        .effect-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .effect-progress-fill {
+            height: 100%;
+            background: #2ecc71;
+            transition: width 0.1s;
+        }
+
+        /* パーティクルシステム */
+        .particle {
+            position: absolute;
             pointer-events: none;
-            z-index: 100;
-            border: 1px solid #00d4ff;
+            font-size: 1rem;
+            animation: float-up 2s ease-out forwards;
         }
-        
-        .active-effect {
-            background: rgba(0, 255, 127, 0.15);
-            border: 1px solid #00ff7f;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 8px;
-            font-size: 12px;
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
         }
+
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .buildings-grid {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+            }
+            
+            .right-panel {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+            }
+            
+            .right-panel {
+                width: 100%;
+                height: 300px;
+            }
+            
+            .buildings-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(6, 1fr);
+            }
+        }
+
+        /* メモリータイプ */
+        .memory-happiness { color: #f39c12; }
+        .memory-skill { color: #3498db; }
+        .memory-emotion { color: #e74c3c; }
+        .memory-knowledge { color: #2ecc71; }
+        .memory-experience { color: #9b59b6; }
     </style>
 </head>
 <body>
-    <!-- Authentication Modal -->
-    <div id="authModal" class="auth-modal">
-        <div class="auth-panel">
-            <h2 class="auth-title">Welcome to Memory Architect</h2>
-            <div class="auth-benefits">
-                <h4>Register for Premium Features:</h4>
-                <ul>
-                    <li>🏆 Global Rankings & Leaderboards</li>
-                    <li>🛍️ Exclusive Shop Access</li>
-                    <li>💾 Save Your Progress</li>
+    <!-- 認証画面 -->
+    <div class="auth-screen" id="authScreen">
+        <div class="auth-modal">
+            <h2>🌃 Midnight Metropolis Memory Mix-up</h2>
+            <p>記憶アーキテクトとして都市の記憶を管理しましょう</p>
+            
+            <div class="premium-info">
+                <h4>🎮 プレミアム機能</h4>
+                <ul style="text-align: left; margin-top: 0.5rem;">
+                    <li>🏆 グローバルランキング参加</li>
+                    <li>🛍️ 全ショップアイテム利用可能</li>
+                    <li>💾 進捗自動保存</li>
+                    <li>⏰ オフライン進行機能</li>
                 </ul>
             </div>
-            <div class="auth-buttons">
-                <button id="registerBtn" class="btn">Register</button>
-                <button id="guestBtn" class="btn btn-secondary">Play as Guest</button>
+            
+            <div class="auth-options">
+                <button class="auth-btn" onclick="startGame(false)">
+                    🎭 ゲストでプレイ<br>
+                    <small>基本機能のみ</small>
+                </button>
+                <button class="auth-btn" onclick="startGame(true)">
+                    👤 ユーザー登録<br>
+                    <small>全機能利用可能</small>
+                </button>
             </div>
         </div>
     </div>
-    
-    <!-- Game Screen -->
-    <div id="gameScreen" style="display: none;">
-        <header class="game-header">
-            <h1 class="game-title">🧠 MEMORY ARCHITECT</h1>
-            <div class="user-info">
-                <div class="currency-display">💰 <span id="currencyAmount">0</span></div>
-                <div id="userDisplay">Guest Player</div>
-                <div class="speed-controls">
-                    <button class="speed-btn active" data-speed="1">1x</button>
-                    <button class="speed-btn" data-speed="2">2x</button>
-                    <button class="speed-btn" data-speed="3">3x</button>
+
+    <!-- メインゲーム画面 -->
+    <div class="game-screen" id="gameScreen" style="display: none;">
+        <!-- ヘッダー -->
+        <div class="header">
+            <div class="header-left">
+                <div class="game-title">🌃 Memory Metropolis</div>
+                <div class="currency-display">
+                    <span class="coin-icon">🪙</span>
+                    <span class="currency-amount" id="currencyAmount">0</span>
                 </div>
-            </div>
-        </header>
-        
-        <div class="game-container">
-            <div class="main-game-area">
-                <canvas id="gameCanvas"></canvas>
-                <div id="tooltip" class="building-tooltip" style="display: none;"></div>
-                <div class="ui-panel">
-                    <!-- Memory stats will be dynamically inserted here -->
-                    <div class="game-stats">
-                        <div>
-                            <div class="stat-label">SATISFACTION</div>
-                            <div class="stat-value" id="satisfaction">0%</div>
-                        </div>
-                        <div>
-                            <div class="stat-label">TIME</div>
-                            <div class="stat-value" id="gameTime">0s</div>
-                        </div>
-                        <div>
-                            <div class="stat-label">FULFILLED</div>
-                            <div class="stat-value" id="dissolvedCount">0</div>
-                        </div>
+                <div class="satisfaction-display">
+                    <span>満足度:</span>
+                    <div class="satisfaction-bar">
+                        <div class="satisfaction-fill" id="satisfactionFill" style="width: 0%"></div>
                     </div>
+                    <span id="satisfactionPercent">0%</span>
                 </div>
             </div>
-            
+            <div class="header-controls">
+                <div class="speed-control">
+                    <span>速度:</span>
+                    <button class="speed-btn active" onclick="setGameSpeed(1)">1x</button>
+                    <button class="speed-btn" onclick="setGameSpeed(2)">2x</button>
+                    <button class="speed-btn" onclick="setGameSpeed(3)">3x</button>
+                </div>
+                <div id="userInfo"></div>
+            </div>
+        </div>
+
+        <!-- メインゲームエリア -->
+        <div class="game-container">
+            <div class="game-area">
+                <div class="buildings-grid" id="buildingsGrid">
+                    <!-- 建物は動的に生成 -->
+                </div>
+            </div>
+
+            <!-- 右パネル -->
             <div class="right-panel">
                 <div class="panel-tabs">
-                    <button class="tab-button active" data-tab="shop">🛍️ SHOP</button>
-                    <button class="tab-button" data-tab="ranking">🏆 RANKING</button>
-                    <button class="tab-button" data-tab="effects">⚡ EFFECTS</button>
+                    <button class="panel-tab active" onclick="switchTab('shop')">🛍️ ショップ</button>
+                    <button class="panel-tab" onclick="switchTab('ranking')">🏆 ランキング</button>
+                    <button class="panel-tab" onclick="switchTab('effects')">⚡ エフェクト</button>
                 </div>
-                
-                <div class="tab-content">
-                    <div id="shopPanel" class="tab-panel active"></div>
-                    <div id="rankingPanel" class="tab-panel"></div>
-                    <div id="effectsPanel" class="tab-panel"></div>
+
+                <div class="panel-content">
+                    <!-- ショップタブ -->
+                    <div id="shopTab" class="tab-content">
+                        <div class="shop-category">
+                            <h3>🚀 効率ブースター</h3>
+                            <div class="shop-items">
+                                <div class="shop-item" onclick="buyItem('boost', 5, 50)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">クイックブースト</span>
+                                        <span class="shop-item-price">🪙50</span>
+                                    </div>
+                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
+                                    <div class="shop-item-duration">持続時間: 5分</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('boost', 10, 90)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">パワーブースト</span>
+                                        <span class="shop-item-price">🪙90</span>
+                                    </div>
+                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
+                                    <div class="shop-item-duration">持続時間: 10分</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('boost', 30, 200)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">メガブースト</span>
+                                        <span class="shop-item-price">🪙200</span>
+                                    </div>
+                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
+                                    <div class="shop-item-duration">持続時間: 30分</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shop-category">
+                            <h3>🤖 メモリーアシスタント</h3>
+                            <div class="shop-items">
+                                <div class="shop-item" onclick="buyItem('assistant', 5, 75)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">AI アシスト S</span>
+                                        <span class="shop-item-price">🪙75</span>
+                                    </div>
+                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
+                                    <div class="shop-item-duration">持続時間: 5分</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('assistant', 10, 130)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">AI アシスト M</span>
+                                        <span class="shop-item-price">🪙130</span>
+                                    </div>
+                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
+                                    <div class="shop-item-duration">持続時間: 10分</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('assistant', 30, 300)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">AI アシスト L</span>
+                                        <span class="shop-item-price">🪙300</span>
+                                    </div>
+                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
+                                    <div class="shop-item-duration">持続時間: 30分</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="shop-category">
+                            <h3>⏰ オフライン進行</h3>
+                            <div class="shop-items">
+                                <div class="shop-item" onclick="buyItem('offline', 60, 100)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">オフライン進行 S</span>
+                                        <span class="shop-item-price">🪙100</span>
+                                    </div>
+                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
+                                    <div class="shop-item-duration">持続時間: 1時間</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('offline', 180, 250)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">オフライン進行 M</span>
+                                        <span class="shop-item-price">🪙250</span>
+                                    </div>
+                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
+                                    <div class="shop-item-duration">持続時間: 3時間</div>
+                                </div>
+                                <div class="shop-item" onclick="buyItem('offline', 300, 400)">
+                                    <div class="shop-item-header">
+                                        <span class="shop-item-name">オフライン進行 L</span>
+                                        <span class="shop-item-price">🪙400</span>
+                                    </div>
+                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
+                                    <div class="shop-item-duration">持続時間: 5時間</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ランキングタブ -->
+                    <div id="rankingTab" class="tab-content" style="display: none;">
+                        <div class="ranking-list" id="rankingList">
+                            <div class="ranking-item">
+                                <span class="ranking-rank">1</span>
+                                <span class="ranking-player">MemoryMaster</span>
+                                <span class="ranking-score">15,420</span>
+                            </div>
+                            <div class="ranking-item">
+                                <span class="ranking-rank">2</span>
+                                <span class="ranking-player">CityArchitect</span>
+                                <span class="ranking-score">12,890</span>
+                            </div>
+                            <div class="ranking-item">
+                                <span class="ranking-rank">3</span>
+                                <span class="ranking-player">NightBuilder</span>
+                                <span class="ranking-score">11,230</span>
+                            </div>
+                            <!-- 動的に生成される -->
+                        </div>
+                    </div>
+
+                    <!-- エフェクトタブ -->
+                    <div id="effectsTab" class="tab-content" style="display: none;">
+                        <div class="active-effects" id="activeEffects">
+                            <p style="color: #888; text-align: center;">アクティブなエフェクトはありません</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        class GameAuth {
-            constructor(game) {
-                this.game = game;
-                this.modal = document.getElementById('authModal');
-                this.setupEventListeners();
-            }
+        // ゲーム状態
+        let gameState = {
+            isRegistered: false,
+            playerId: null,
+            currency: 0,
+            satisfaction: 0,
+            buildings: [],
+            activeEffects: [],
+            gameSpeed: 1,
+            lastUpdate: Date.now(),
+            isOffline: false
+        };
+
+        // メモリータイプ定義
+        const memoryTypes = {
+            happiness: { icon: '😊', color: '#f39c12', name: '幸福' },
+            skill: { icon: '🛠️', color: '#3498db', name: '技能' },
+            emotion: { icon: '❤️', color: '#e74c3c', name: '感情' },
+            knowledge: { icon: '📚', color: '#2ecc71', name: '知識' },
+            experience: { icon: '🌟', color: '#9b59b6', name: '経験' }
+        };
+
+        // ランキングデータ（サンプル）
+        let rankingData = [
+            { id: 'MemoryMaster', score: 15420 },
+            { id: 'CityArchitect', score: 12890 },
+            { id: 'NightBuilder', score: 11230 },
+            { id: 'DreamWeaver', score: 9800 },
+            { id: 'ThoughtKeeper', score: 8750 },
+            { id: 'MindPalace', score: 7650 },
+            { id: 'RecallWizard', score: 6890 },
+            { id: 'MemoryBank', score: 5340 },
+            { id: 'CognitiveCorp', score: 4120 },
+            { id: 'BrainStorm', score: 3450 }
+        ];
+
+        // ゲーム開始
+        function startGame(isRegistered) {
+            gameState.isRegistered = isRegistered;
             
-            setupEventListeners() {
-                document.getElementById('registerBtn').addEventListener('click', () => this.register());
-                document.getElementById('guestBtn').addEventListener('click', () => this.playAsGuest());
+            if (isRegistered) {
+                gameState.playerId = 'Player_' + Math.random().toString(36).substr(2, 9);
+                document.getElementById('userInfo').innerHTML = `👤 ${gameState.playerId}`;
+                // ランキングに追加
+                rankingData.push({ id: gameState.playerId, score: 0 });
+            } else {
+                document.getElementById('userInfo').innerHTML = '🎭 ゲスト';
             }
+
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
             
-            register() {
-                const username = prompt("Please enter your username (at least 3 characters):");
-                if (username && username.trim().length >= 3) {
-                    const userId = 'user_' + Date.now();
-                    this.game.initialize(true, username.trim(), userId);
-                    this.modal.style.display = 'none';
-                } else {
-                    alert("Invalid username. Please try again.");
-                }
-            }
+            initializeGame();
+        }
+
+        // ゲーム初期化
+        function initializeGame() {
+            createBuildings();
+            startGameLoop();
             
-            playAsGuest() {
-                this.game.initialize(false, 'Guest', 'guest');
-                this.modal.style.display = 'none';
+            // オフライン進行チェック
+            if (gameState.isRegistered) {
+                checkOfflineProgress();
             }
         }
 
-        class ShopManager {
-            constructor(game) {
-                this.game = game;
-                this.panel = document.getElementById('shopPanel');
-                this.items = {
-                    efficiency: { name: '🚀 Efficiency Booster', desc: '2x memory generation, 1.5x building capacity, 2x currency income.', options: [{t:5,c:50},{t:10,c:90},{t:30,c:200}] },
-                    assistant: { name: '🤖 Memory Assistant', desc: 'AI automatically distributes memories to buildings.', options: [{t:5,c:80},{t:10,c:150},{t:30,c:350}] },
-                    offline: { name: '⏰ Offline Progress', desc: 'Game continues to run while tab is inactive.', options: [{t:1,c:120},{t:3,c:300},{t:5,c:450}] }
-                };
-            }
-
-            render() {
-                if (!this.game.auth.isRegistered) {
-                    this.panel.innerHTML = `<p style="color: #a0a8b0; text-align: center;">Register to access the shop!</p>`;
-                    return;
-                }
-                let html = '';
-                for (const [id, item] of Object.entries(this.items)) {
-                    html += `<div class="shop-item"><h4>${item.name}</h4><p>${item.desc}</p><div class="shop-options">`;
-                    item.options.forEach(opt => {
-                        const unit = id === 'offline' ? 'hr' : 'min';
-                        html += `<button class="shop-option" data-item="${id}" data-time="${opt.t}" data-cost="${opt.c}">${opt.t}${unit} - ${opt.c}💰</button>`;
-                    });
-                    html += `</div></div>`;
-                }
-                this.panel.innerHTML = html;
-                this.setupEventListeners();
-            }
-
-            setupEventListeners() {
-                this.panel.querySelectorAll('.shop-option').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const { item, time, cost } = e.target.dataset;
-                        this.purchase(item, parseInt(time), parseInt(cost));
-                    });
-                });
-            }
-
-            purchase(itemId, time, cost) {
-                if (this.game.currency < cost) {
-                    alert('Not enough coins!');
-                    return;
-                }
-                this.game.currency -= cost;
-                const duration = itemId === 'offline' ? time * 60 : time; // convert hours to minutes
-                this.game.addEffect(itemId, duration);
-                alert(`${this.items[itemId].name} purchased for ${duration} minutes!`);
-            }
-        }
-
-        class RankingManager {
-            constructor(game) {
-                this.game = game;
-                this.panel = document.getElementById('rankingPanel');
-                // Simulate a global ranking list
-                this.rankings = [
-                    { name: 'CyberDreamer', score: 15000 },
-                    { name: 'NeuroMancer', score: 12500 },
-                    { name: 'GigaMind', score: 11000 },
-                    { name: 'DataSaint', score: 9800 },
-                    { name: 'PixelPioneer', score: 8500 },
-                    { name: 'CircuitSage', score: 7200 },
-                    { name: 'LogicLord', score: 6800 },
-                    { name: 'BitWizard', score: 5900 },
-                    { name: 'SynthSavant', score: 5100 },
-                    { name: 'CodeConduit', score: 4500 }
-                ];
-            }
-
-            calculateScore() {
-                return Math.floor(this.game.dissolvedCitizens * 10 + this.game.satisfaction * 2 + this.game.currency * 0.1);
-            }
-
-            updateAndRender() {
-                if (!this.game.auth.isRegistered) {
-                    this.panel.innerHTML = `<p style="color: #a0a8b0; text-align: center;">Register to compete in rankings!</p>`;
-                    return;
-                }
-
-                const userScore = this.calculateScore();
-                const userName = this.game.auth.username;
-                const userId = this.game.auth.userId;
-
-                // Update or add user to rankings
-                const userIndex = this.rankings.findIndex(r => r.id === userId);
-                if (userIndex > -1) {
-                    this.rankings[userIndex].score = userScore;
-                } else {
-                    this.rankings.push({ id: userId, name: userName, score: userScore });
-                }
-
-                this.rankings.sort((a, b) => b.score - a.score);
-
-                let html = '<ul class="ranking-list">';
-                let userInTop10 = false;
-                this.rankings.slice(0, 10).forEach((player, index) => {
-                    const isUser = player.id === userId;
-                    if (isUser) userInTop10 = true;
-                    html += `<li class="ranking-item ${isUser ? 'is-user' : ''}">
-                        <span class="ranking-rank">${index + 1}</span>
-                        <span class="ranking-name">${player.name}</span>
-                        <span class="ranking-score">${player.score}</span>
-                    </li>`;
-                });
-
-                if (!userInTop10) {
-                    const userRankIndex = this.rankings.findIndex(r => r.id === userId);
-                    if (userRankIndex > -1) {
-                        html += `<li class="ranking-item is-user" style="margin-top: 15px;">
-                            <span class="ranking-rank">${userRankIndex + 1}</span>
-                            <span class="ranking-name">${this.rankings[userRankIndex].name}</span>
-                            <span class="ranking-score">${this.rankings[userRankIndex].score}</span>
-                        </li>`;
-                    }
-                }
-                html += '</ul>';
-                this.panel.innerHTML = html;
-            }
-        }
-
-        class MemoryArchitectGame {
-            constructor() {
-                this.canvas = document.getElementById('gameCanvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.tooltip = document.getElementById('tooltip');
-                this.gameStarted = false;
-            }
-
-            initialize(isRegistered, username, userId) {
-                this.auth = { isRegistered, username, userId };
-                this.gameTime = 0;
-                this.satisfaction = 0;
-                this.memories = { love: 10, knowledge: 8, adventure: 6, peace: 9, nostalgia: 5, courage: 7 };
-                this.dissolvedCitizens = 0;
-                this.currency = 0;
-                this.gameSpeed = 1;
-                this.buildings = [];
-                this.citizens = [];
-                this.particles = [];
-                this.activeEffects = {};
-                this.lastSatisfaction = 0;
-                this.offlineStartTime = null;
-
-                this.shop = new ShopManager(this);
-                this.ranking = new RankingManager(this);
-                
-                this.setupUI();
-                this.resizeCanvas();
-                this.initializeGameObjects();
-                this.setupEventListeners();
-                
-                this.gameStarted = true;
-                document.getElementById('gameScreen').style.display = 'block';
-                this.gameLoop();
-            }
-
-            setupUI() {
-                document.getElementById('userDisplay').textContent = this.auth.isRegistered ? `⭐ ${this.auth.username}` : '👤 Guest';
-                const uiPanel = document.querySelector('.ui-panel');
-                let memoryStatsHTML = '';
-                Object.keys(this.memories).forEach(type => {
-                    memoryStatsHTML += `<div class="memory-stat">
-                        <div class="memory-icon ${type}"></div>
-                        <div>
-                            <div class="stat-label">${type.toUpperCase()}</div>
-                            <div class="stat-value" id="${type}Count">${this.memories[type]}</div>
-                        </div>
-                    </div>`;
-                });
-                uiPanel.insertAdjacentHTML('afterbegin', memoryStatsHTML);
-                this.shop.render();
-                this.ranking.updateAndRender();
-            }
-
-            resizeCanvas() {
-                const mainArea = document.querySelector('.main-game-area');
-                this.canvas.width = mainArea.clientWidth;
-                this.canvas.height = mainArea.clientHeight;
-            }
-
-            initializeGameObjects() {
-                const buildingTypes = Object.keys(this.memories);
-                const gridCols = 6;
-                const gridRows = 3;
-                for (let i = 0; i < gridCols * gridRows; i++) {
-                    const col = i % gridCols;
-                    const row = Math.floor(i / gridCols);
-                    this.buildings.push({
-                        x: (col + 0.5) * (this.canvas.width / gridCols),
-                        y: (row + 0.5) * (this.canvas.height / (gridRows + 1)), // +1 to leave space for UI
-                        width: 64, height: 64,
-                        type: buildingTypes[i % buildingTypes.length],
-                        storedMemories: 0,
-                        capacity: 20,
-                    });
-                }
-                for (let i = 0; i < 20; i++) this.spawnNewCitizen();
-            }
-
-            setupEventListeners() {
-                window.addEventListener('resize', () => this.resizeCanvas());
-                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-                this.canvas.addEventListener('click', (e) => this.handleClick(e));
-                
-                document.querySelectorAll('.speed-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-                        e.target.classList.add('active');
-                        this.gameSpeed = parseInt(e.target.dataset.speed);
-                    });
-                });
-
-                document.querySelectorAll('.tab-button').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const tabName = e.target.dataset.tab;
-                        document.querySelectorAll('.tab-button, .tab-panel').forEach(el => el.classList.remove('active'));
-                        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-                        document.getElementById(tabName + 'Panel').classList.add('active');
-                    });
-                });
-
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden && this.activeEffects.offline && this.activeEffects.offline.endTime > Date.now()) {
-                        this.offlineStartTime = Date.now();
-                    } else if (!document.hidden && this.offlineStartTime) {
-                        const offlineDuration = (Date.now() - this.offlineStartTime) / 1000; // in seconds
-                        const offlineEarnings = Math.floor(offlineDuration / 60) * 10; // 10 coins per minute
-                        this.currency += offlineEarnings;
-                        alert(`Welcome back! You earned ${offlineEarnings} coins while you were away.`);
-                        this.offlineStartTime = null;
-                    }
-                });
-            }
-
-            addEffect(itemId, durationMinutes) {
-                this.activeEffects[itemId] = {
-                    endTime: Date.now() + durationMinutes * 60 * 1000
-                };
-            }
-
-            isEffectActive(itemId) {
-                return this.activeEffects[itemId] && this.activeEffects[itemId].endTime > Date.now();
-            }
-
-            gameLoop() {
-                if (!this.gameStarted) return;
-                this.update();
-                this.render();
-                requestAnimationFrame(() => this.gameLoop());
-            }
-
-            update() {
-                for (let i = 0; i < this.gameSpeed; i++) {
-                    this.gameTime++;
-                    this.updateCitizens();
-                    this.updateMemoryGeneration();
-                    if (this.isEffectActive('assistant')) this.runAssistant();
-                }
-                this.updateParticles();
-                this.updateSatisfactionAndCurrency();
-                this.updateUI();
-            }
-
-            render() {
-                this.ctx.fillStyle = '#0d2946';
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                this.drawGrid();
-                this.particles.forEach(p => this.drawParticle(p));
-                this.buildings.forEach(b => this.drawBuilding(b));
-                this.citizens.forEach(c => this.drawCitizen(c));
-            }
-
-            updateCitizens() {
-                this.citizens.forEach((citizen, i) => {
-                    if (citizen.satisfiedUntil && this.gameTime > citizen.satisfiedUntil) {
-                        this.dissolvedCitizens++;
-                        this.citizens.splice(i, 1);
-                        this.spawnNewCitizen();
-                        return;
-                    }
-                    if (citizen.satisfiedUntil) return;
-
-                    const dx = citizen.target.x - citizen.x;
-                    const dy = citizen.target.y - citizen.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-
-                    if (dist < 10) {
-                        if (citizen.target.storedMemories > 0) {
-                            citizen.target.storedMemories--;
-                            citizen.satisfaction = 100;
-                            citizen.satisfiedUntil = this.gameTime + 1800; // 30 seconds
-                            this.createEffect(citizen.x, citizen.y, this.getMemoryColor(citizen.memoryType));
-                        } else {
-                            this.setNewTarget(citizen);
-                        }
-                    } else {
-                        citizen.x += dx / dist * citizen.speed;
-                        citizen.y += dy / dist * citizen.speed;
-                    }
-                });
-            }
+        // 建物生成
+        function createBuildings() {
+            const grid = document.getElementById('buildingsGrid');
+            grid.innerHTML = '';
             
-            updateMemoryGeneration() {
-                const interval = this.isEffectActive('efficiency') ? 180 : 360;
-                if (this.gameTime % interval === 0) {
-                    const type = Object.keys(this.memories)[Math.floor(Math.random() * 6)];
-                    this.memories[type]++;
-                }
-            }
-
-            runAssistant() {
-                if (this.gameTime % 60 === 0) {
-                    this.buildings.forEach(b => {
-                        if (this.memories[b.type] > 0 && b.storedMemories < b.capacity * (this.isEffectActive('efficiency') ? 1.5 : 1)) {
-                            this.memories[b.type]--;
-                            b.storedMemories++;
-                        }
-                    });
-                }
-            }
-
-            updateParticles() {
-                this.particles = this.particles.filter(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.life--;
-                    return p.life > 0;
-                });
-            }
-
-            updateSatisfactionAndCurrency() {
-                if (this.citizens.length > 0) {
-                    this.satisfaction = Math.round(this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length);
-                }
-                if (this.satisfaction > this.lastSatisfaction) {
-                    const gain = this.satisfaction - this.lastSatisfaction;
-                    const multiplier = this.isEffectActive('efficiency') ? 2 : 1;
-                    this.currency += gain * multiplier;
-                }
-                this.lastSatisfaction = this.satisfaction;
-            }
-
-            updateUI() {
-                Object.keys(this.memories).forEach(type => {
-                    document.getElementById(`${type}Count`).textContent = this.memories[type];
-                });
-                document.getElementById('satisfaction').textContent = `${this.satisfaction}%`;
-                document.getElementById('gameTime').textContent = `${Math.floor(this.gameTime / 60)}s`;
-                document.getElementById('dissolvedCount').textContent = this.dissolvedCitizens;
-                document.getElementById('currencyAmount').textContent = this.currency;
-
-                if (this.gameTime % 60 === 0) {
-                    this.ranking.updateAndRender();
-                    this.updateActiveEffectsUI();
-                }
-            }
-
-            updateActiveEffectsUI() {
-                const panel = document.getElementById('effectsPanel');
-                let html = '';
-                let hasEffects = false;
-                for (const [id, effect] of Object.entries(this.activeEffects)) {
-                    if (effect.endTime > Date.now()) {
-                        hasEffects = true;
-                        const timeLeft = Math.ceil((effect.endTime - Date.now()) / 1000);
-                        html += `<div class="active-effect">${this.shop.items[id].name}: ${Math.floor(timeLeft/60)}m ${timeLeft%60}s</div>`;
-                    }
-                }
-                panel.innerHTML = hasEffects ? html : `<p style="color: #a0a8b0; text-align: center;">No active effects.</p>`;
-            }
-
-            handleMouseMove(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                const building = this.getBuildingAt(mouseX, mouseY);
-                if (building) {
-                    this.tooltip.style.display = 'block';
-                    this.tooltip.style.left = `${e.clientX}px`;
-                    this.tooltip.style.top = `${e.clientY - 30}px`;
-                    const capacity = building.capacity * (this.isEffectActive('efficiency') ? 1.5 : 1);
-                    this.tooltip.textContent = `${building.type.toUpperCase()}: ${building.storedMemories}/${Math.floor(capacity)}`;
-                } else {
-                    this.tooltip.style.display = 'none';
-                }
-            }
-
-            handleClick(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                const building = this.getBuildingAt(mouseX, mouseY);
-                if (building && this.memories[building.type] > 0) {
-                    const capacity = building.capacity * (this.isEffectActive('efficiency') ? 1.5 : 1);
-                    if (building.storedMemories < capacity) {
-                        this.memories[building.type]--;
-                        building.storedMemories++;
-                    }
-                }
-            }
-
-            getBuildingAt(x, y) {
-                return this.buildings.find(b => x > b.x - b.width/2 && x < b.x + b.width/2 && y > b.y - b.height/2 && y < b.y + b.height/2);
-            }
-
-            spawnNewCitizen() {
-                const memoryType = Object.keys(this.memories)[Math.floor(Math.random() * 6)];
-                const citizen = {
-                    x: Math.random() * this.canvas.width,
-                    y: Math.random() * this.canvas.height,
-                    speed: 0.5 + Math.random() * 0.5,
-                    memoryType: memoryType,
+            const types = Object.keys(memoryTypes);
+            
+            for (let i = 0; i < 18; i++) {
+                const building = document.createElement('div');
+                building.className = 'building';
+                building.dataset.index = i;
+                
+                const type = types[i % types.length];
+                const memoryType = memoryTypes[type];
+                
+                const buildingData = {
+                    type: type,
+                    memories: 0,
+                    maxMemories: 10,
                     satisfaction: 0,
-                    satisfiedUntil: null,
+                    residents: Math.floor(Math.random() * 5) + 3
                 };
-                this.setNewTarget(citizen);
-                this.citizens.push(citizen);
-            }
-
-            setNewTarget(citizen) {
-                const targetBuildings = this.buildings.filter(b => b.type === citizen.memoryType && b.storedMemories > 0);
-                if (targetBuildings.length > 0) {
-                    citizen.target = targetBuildings[Math.floor(Math.random() * targetBuildings.length)];
-                } else {
-                    // Wander
-                    citizen.target = { x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height };
-                }
-            }
-
-            createEffect(x, y, color) {
-                for (let i = 0; i < 20; i++) {
-                    this.particles.push({
-                        x, y,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        life: 50,
-                        color: color
-                    });
-                }
-            }
-            
-            getMemoryColor(type) {
-                const colors = {
-                    love: '#ff69b4', knowledge: '#4169e1', adventure: '#ff8c00',
-                    peace: '#98fb98', nostalgia: '#dda0dd', courage: '#dc143c'
-                };
-                return colors[type];
-            }
-
-            drawGrid() {
-                this.ctx.strokeStyle = 'rgba(0, 212, 255, 0.1)';
-                for (let x = 0; x < this.canvas.width; x += 50) {
-                    this.ctx.beginPath(); this.ctx.moveTo(x, 0); this.ctx.lineTo(x, this.canvas.height); this.ctx.stroke();
-                }
-                for (let y = 0; y < this.canvas.height; y += 50) {
-                    this.ctx.beginPath(); this.ctx.moveTo(0, y); this.ctx.lineTo(this.canvas.width, y); this.ctx.stroke();
-                }
-            }
-
-            drawBuilding(b) {
-                this.ctx.fillStyle = this.getMemoryColor(b.type);
-                this.ctx.fillRect(b.x - b.width/2, b.y - b.height/2, b.width, b.height);
-                this.ctx.strokeStyle = '#fff';
-                this.ctx.strokeRect(b.x - b.width/2, b.y - b.height/2, b.width, b.height);
-                // Storage bar
-                const capacity = b.capacity * (this.isEffectActive('efficiency') ? 1.5 : 1);
-                const fillRatio = b.storedMemories / capacity;
-                this.ctx.fillStyle = '#333';
-                this.ctx.fillRect(b.x - b.width/2, b.y + b.height/2 + 5, b.width, 5);
-                this.ctx.fillStyle = '#0f0';
-                this.ctx.fillRect(b.x - b.width/2, b.y + b.height/2 + 5, b.width * fillRatio, 5);
-            }
-
-            drawCitizen(c) {
-                if (c.satisfiedUntil) {
-                    this.ctx.fillStyle = this.getMemoryColor(c.memoryType);
-                    this.ctx.globalAlpha = (c.satisfiedUntil - this.gameTime) / 1800;
-                } else {
-                    this.ctx.fillStyle = `rgb(${255 * (1 - c.satisfaction/100)}, ${255 * (c.satisfaction/100)}, 0)`;
-                }
-                this.ctx.beginPath();
-                this.ctx.arc(c.x, c.y, 5, 0, Math.PI * 2);
-                this.ctx.fill();
-                this.ctx.globalAlpha = 1;
-                // Memory need icon
-                if (!c.satisfiedUntil) {
-                    this.ctx.fillStyle = this.getMemoryColor(c.memoryType);
-                    this.ctx.fillRect(c.x - 3, c.y - 12, 6, 6);
-                }
-            }
-
-            drawParticle(p) {
-                this.ctx.globalAlpha = p.life / 50;
-                this.ctx.fillStyle = p.color;
-                this.ctx.fillRect(p.x, p.y, 2, 2);
-                this.ctx.globalAlpha = 1;
+                
+                gameState.buildings[i] = buildingData;
+                
+                building.innerHTML = `
+                    <div class="building-icon" style="color: ${memoryType.color}">
+                        ${memoryType.icon}
+                    </div>
+                    <div class="building-info">
+                        <div>${memoryType.name}記憶庫</div>
+                        <div>住民: ${buildingData.residents}</div>
+                    </div>
+                    <div class="memory-indicator">
+                        <span id="memory-${i}">${buildingData.memories}/${buildingData.maxMemories}</span>
+                    </div>
+                `;
+                
+                building.addEventListener('click', () => clickBuilding(i));
+                grid.appendChild(building);
             }
         }
+
+        // 建物クリック
+        function clickBuilding(index) {
+            const building = gameState.buildings[index];
+            const memoryBoost = hasActiveEffect('boost') ? 1.5 : 1;
+            const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
+            
+            if (building.memories < building.maxMemories * capacityBoost) {
+                building.memories += Math.ceil(1 * memoryBoost * gameState.gameSpeed);
+                building.memories = Math.min(building.memories, building.maxMemories * capacityBoost);
+                updateBuildingDisplay(index);
+                
+                // パーティクル効果
+                createParticle(event.target, memoryTypes[building.type].icon);
+            }
+        }
+
+        // 建物表示更新
+        function updateBuildingDisplay(index) {
+            const building = gameState.buildings[index];
+            const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
+            const maxCapacity = Math.floor(building.maxMemories * capacityBoost);
+            
+            document.getElementById(`memory-${index}`).textContent = 
+                `${building.memories}/${maxCapacity}`;
+        }
+
+        // パーティクル生成
+        function createParticle(element, icon) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.textContent = icon;
+            particle.style.left = Math.random() * 50 + 'px';
+            particle.style.top = Math.random() * 50 + 'px';
+            
+            element.appendChild(particle);
+            
+            setTimeout(() => {
+                if (particle.parentNode) {
+                    particle.parentNode.removeChild(particle);
+                }
+            }, 2000);
+        }
+
+        // ゲームスピード設定
+        function setGameSpeed(speed) {
+            gameState.gameSpeed = speed;
+            
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            
+            if (tabName === 'ranking') {
+                updateRanking();
+            }
+        }
+
+        // アイテム購入
+        function buyItem(type, duration, price) {
+            if (!gameState.isRegistered && type !== 'boost') {
+                alert('この機能は登録ユーザーのみ利用可能です');
+                return;
+            }
+            
+            if (gameState.currency >= price) {
+                gameState.currency -= price;
+                addActiveEffect(type, duration);
+                updateCurrencyDisplay();
+                updateActiveEffects();
+            } else {
+                alert('通貨が不足しています');
+            }
+        }
+
+        // アクティブエフェクト追加
+        function addActiveEffect(type, duration) {
+            const effects = {
+                boost: { name: '効率ブースター', desc: '記憶生成×1.5、建物容量×1.5、通貨収入×2', icon: '🚀' },
+                assistant: { name: 'メモリーアシスタント', desc: '自動記憶配布、完全AI管理', icon: '🤖' },
+                offline: { name: 'オフライン進行', desc: 'タブ切り替え時も進行継続', icon: '⏰' }
+            };
+            
+            const effect = {
+                type: type,
+                name: effects[type].name,
+                desc: effects[type].desc,
+                icon: effects[type].icon,
+                duration: duration * 60, // 分を秒に変換
+                startTime: Date.now()
+            };
+            
+            // 同じタイプのエフェクトを削除
+            gameState.activeEffects = gameState.activeEffects.filter(e => e.type !== type);
+            gameState.activeEffects.push(effect);
+        }
+
+        // アクティブエフェクト確認
+        function hasActiveEffect(type) {
+            return gameState.activeEffects.some(effect => effect.type === type);
+        }
+
+        // アクティブエフェクト更新
+        function updateActiveEffects() {
+            const container = document.getElementById('activeEffects');
+            
+            if (gameState.activeEffects.length === 0) {
+                container.innerHTML = '<p style="color: #888; text-align: center;">アクティブなエフェクトはありません</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            gameState.activeEffects.forEach((effect, index) => {
+                const now = Date.now();
+                const elapsed = (now - effect.startTime) / 1000;
+                const remaining = Math.max(0, effect.duration - elapsed);
+                const progress = Math.max(0, (effect.duration - elapsed) / effect.duration * 100);
+                
+                if (remaining <= 0) {
+                    gameState.activeEffects.splice(index, 1);
+                    return;
+                }
+                
+                const minutes = Math.floor(remaining / 60);
+                const seconds = Math.floor(remaining % 60);
+                
+                const effectElement = document.createElement('div');
+                effectElement.className = 'effect-item';
+                effectElement.innerHTML = `
+                    <div class="effect-header">
+                        <span class="effect-name">${effect.icon} ${effect.name}</span>
+                        <span class="effect-timer">${minutes}:${seconds.toString().padStart(2, '0')}</span>
+                    </div>
+                    <div class="effect-desc">${effect.desc}</div>
+                    <div class="effect-progress">
+                        <div class="effect-progress-fill" style="width: ${progress}%"></div>
+                    </div>
+                `;
+                
+                container.appendChild(effectElement);
+            });
+        }
+
+        // 通貨表示更新
+        function updateCurrencyDisplay() {
+            document.getElementById('currencyAmount').textContent = Math.floor(gameState.currency);
+        }
+
+        // 満足度表示更新
+        function updateSatisfactionDisplay() {
+            const satisfactionPercent = Math.floor(gameState.satisfaction);
+            document.getElementById('satisfactionFill').style.width = satisfactionPercent + '%';
+            document.getElementById('satisfactionPercent').textContent = satisfactionPercent + '%';
+        }
+
+        // スコア計算
+        function calculateScore() {
+            let satisfiedResidents = 0;
+            gameState.buildings.forEach(building => {
+                if (building.memories >= building.residents) {
+                    satisfiedResidents += building.residents;
+                }
+            });
+            
+            return satisfiedResidents * 10 + gameState.satisfaction * 2 + gameState.currency * 0.1;
+        }
+
+        // ランキング更新
+        function updateRanking() {
+            if (!gameState.isRegistered) {
+                document.getElementById('rankingList').innerHTML = 
+                    '<p style="color: #888; text-align: center;">ランキングは登録ユーザーのみ利用可能です</p>';
+                return;
+            }
+            
+            // プレイヤーのスコア更新
+            const playerScore = calculateScore();
+            const playerIndex = rankingData.findIndex(entry => entry.id === gameState.playerId);
+            if (playerIndex !== -1) {
+                rankingData[playerIndex].score = playerScore;
+            }
+            
+            // ソート
+            rankingData.sort((a, b) => b.score - a.score);
+            
+            // 表示更新
+            const container = document.getElementById('rankingList');
+            container.innerHTML = '';
+            
+            // トップ10 + プレイヤー
+            const displayData = rankingData.slice(0, 10);
+            const playerRank = rankingData.findIndex(entry => entry.id === gameState.playerId) + 1;
+            
+            displayData.forEach((entry, index) => {
+                const isPlayer = entry.id === gameState.playerId;
+                const rankElement = document.createElement('div');
+                rankElement.className = isPlayer ? 'ranking-item player' : 'ranking-item';
+                rankElement.innerHTML = `
+                    <span class="ranking-rank">${index + 1}</span>
+                    <span class="ranking-player">${entry.id}</span>
+                    <span class="ranking-score">${Math.floor(entry.score)}</span>
+                `;
+                container.appendChild(rankElement);
+            });
+            
+            // プレイヤーが10位以下の場合は別途表示
+            if (playerRank > 10) {
+                const separatorElement = document.createElement('div');
+                separatorElement.innerHTML = '<hr style="margin: 0.5rem 0; border-color: #e94560;">';
+                container.appendChild(separatorElement);
+                
+                const playerEntry = rankingData.find(entry => entry.id === gameState.playerId);
+                const playerElement = document.createElement('div');
+                playerElement.className = 'ranking-item player';
+                playerElement.innerHTML = `
+                    <span class="ranking-rank">${playerRank}</span>
+                    <span class="ranking-player">${playerEntry.id}</span>
+                    <span class="ranking-score">${Math.floor(playerEntry.score)}</span>
+                `;
+                container.appendChild(playerElement);
+            }
+        }
+
+        // オフライン進行チェック
+        function checkOfflineProgress() {
+            const lastSave = localStorage.getItem('lastSaveTime');
+            if (lastSave) {
+                const offlineTime = (Date.now() - parseInt(lastSave)) / 1000; // 秒
+                if (offlineTime > 60) { // 1分以上オフライン
+                    const offlineMinutes = Math.floor(offlineTime / 60);
+                    const offlineReward = Math.floor(offlineMinutes * 10); // 分あたり10通貨
+                    
+                    gameState.currency += offlineReward;
+                    alert(`おかえりなさい！\nオフライン時間: ${offlineMinutes}分\n獲得通貨: ${offlineReward}`);
+                }
+            }
+        }
+
+        // ゲーム保存
+        function saveGame() {
+            if (gameState.isRegistered) {
+                localStorage.setItem('gameState', JSON.stringify(gameState));
+                localStorage.setItem('lastSaveTime', Date.now().toString());
+            }
+        }
+
+        // AI自動管理
+        function autoManageMemories() {
+            if (!hasActiveEffect('assistant')) return;
+            
+            gameState.buildings.forEach((building, index) => {
+                const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
+                const maxCapacity = Math.floor(building.maxMemories * capacityBoost);
+                
+                if (building.memories < maxCapacity) {
+                    building.memories = Math.min(building.memories + 1, maxCapacity);
+                    updateBuildingDisplay(index);
+                }
+            });
+        }
+
+        // メインゲームループ
+        function startGameLoop() {
+            setInterval(() => {
+                const now = Date.now();
+                const deltaTime = (now - gameState.lastUpdate) / 1000 * gameState.gameSpeed;
+                gameState.lastUpdate = now;
+                
+                // AI自動管理
+                autoManageMemories();
+                
+                // 満足度計算
+                let totalSatisfaction = 0;
+                let satisfiedBuildings = 0;
+                
+                gameState.buildings.forEach(building => {
+                    if (building.memories >= building.residents) {
+                        building.satisfaction = 100;
+                        satisfiedBuildings++;
+                    } else {
+                        building.satisfaction = (building.memories / building.residents) * 100;
+                    }
+                    totalSatisfaction += building.satisfaction;
+                });
+                
+                gameState.satisfaction = totalSatisfaction / gameState.buildings.length;
+                
+                // 通貨獲得（満足度ベース）
+                const currencyMultiplier = hasActiveEffect('boost') ? 2 : 1;
+                const currencyGain = (gameState.satisfaction / 100) * deltaTime * 10 * currencyMultiplier;
+                gameState.currency += currencyGain;
+                
+                // 表示更新
+                updateCurrencyDisplay();
+                updateSatisfactionDisplay();
+                updateActiveEffects();
+                
+                // 定期保存
+                if (Math.random() < 0.01) { // 1%の確率で保存
+                    saveGame();
+                }
+                
+            }, 100); // 100ms間隔
+        }
+
+        // ページ離脱時の保存
+        window.addEventListener('beforeunload', saveGame);
         
-        window.addEventListener('load', () => {
-            const game = new MemoryArchitectGame();
-            new GameAuth(game);
+        // ページ非表示時のオフラインモード
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && hasActiveEffect('offline')) {
+                gameState.isOffline = true;
+            } else {
+                gameState.isOffline = false;
+            }
         });
     </script>
 </body>
