@@ -14,14 +14,16 @@
             <p class="menu-subtitle">Premium City Management Experience</p>
             
             <div id="loginForm" class="login-form">
-                <div class="form-group">
-                    <label for="username">ユーザー名</label>
-                    <input type="text" id="username" placeholder="ユーザー名を入力">
-                </div>
-                <div class="form-group">
-                    <label for="password">パスワード</label>
-                    <input type="password" id="password" placeholder="パスワードを入力">
-                </div>
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="username">ユーザー名</label>
+                        <input type="text" id="username" placeholder="ユーザー名を入力" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">パスワード</label>
+                        <input type="password" id="password" placeholder="パスワードを入力" autocomplete="current-password">
+                    </div>
+                </form>
                 <div class="menu-buttons">
                     <button id="loginBtn" class="btn">ログイン</button>
                     <button id="registerBtn" class="btn btn-secondary">新規登録</button>

@@ -951,7 +951,7 @@ class MemoryArchitectGame {
             const gain = Math.floor((this.satisfaction - this.lastSatisfaction) * 0.5);
             
             // ユーザーマネージャーに通貨を追加
-            if (window.userManager) {
+            if (window.userManager && window.userManager.currentUser) {
                 window.userManager.addCurrency(gain);
                 // ゲーム内通貨をユーザー通貨と同期
                 this.currency = window.userManager.currentUser.currency;
@@ -1325,12 +1325,12 @@ class MemoryArchitectGame {
         
         // ショップが開いている場合、ショップの通貨表示も更新
         const shopCurrencyElement = document.getElementById('shopCurrency');
-        if (shopCurrencyElement && window.userManager) {
+        if (shopCurrencyElement && window.userManager && window.userManager.currentUser) {
             shopCurrencyElement.textContent = window.userManager.currentUser.currency;
         }
         
         // ユーザーマネージャーがある場合、ランキングを更新
-        if (window.userManager && this.dissolvedCitizens > 0 && this.gameTime % 1800 === 0) {
+        if (window.userManager && window.userManager.currentUser && this.dissolvedCitizens > 0 && this.gameTime % 1800 === 0) {
             window.userManager.updateRanking(this.dissolvedCitizens);
         }
     }
@@ -1347,4 +1347,14 @@ window.addEventListener('load', () => {
     window.userManager = new UserManager();
     window.tutorialManager = new TutorialManager();
     window.memoryGame = new MemoryArchitectGame();
+    
+    // フォームのsubmitイベントを処理
+    const authForm = document.getElementById('authForm');
+    if (authForm) {
+        authForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // ログインボタンクリックイベントを発火
+            document.getElementById('loginBtn').click();
+        });
+    }
 });
