@@ -3,1115 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midnight Metropolis Memory Mix-up</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            color: #e94560;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* 認証画面 */
-        .auth-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .auth-modal {
-            background: linear-gradient(135deg, #16213e, #0f3460);
-            padding: 2rem;
-            border-radius: 15px;
-            border: 2px solid #e94560;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .auth-modal h2 {
-            color: #f39c12;
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
-        }
-
-        .auth-options {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .auth-btn {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid #e94560;
-            background: transparent;
-            color: #e94560;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        .auth-btn:hover {
-            background: #e94560;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .premium-info {
-            background: rgba(249, 156, 18, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-            border: 1px solid #f39c12;
-        }
-
-        /* ヘッダー */
-        .header {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #e94560;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .game-title {
-            font-size: 1.5rem;
-            color: #f39c12;
-            text-shadow: 0 0 10px #f39c12;
-        }
-
-        .currency-display {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(249, 156, 18, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid #f39c12;
-        }
-
-        .coin-icon {
-            color: #f39c12;
-            font-size: 1.2rem;
-        }
-
-        .currency-amount {
-            color: #f39c12;
-            font-weight: bold;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .speed-btn {
-            padding: 0.3rem 0.6rem;
-            border: 1px solid #e94560;
-            background: transparent;
-            color: #e94560;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .speed-btn.active {
-            background: #e94560;
-            color: white;
-        }
-
-        .satisfaction-display {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .satisfaction-bar {
-            width: 100px;
-            height: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .satisfaction-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71);
-            transition: width 0.3s;
-        }
-
-        /* メインゲーム画面 */
-        .game-container {
-            display: flex;
-            height: calc(100vh - 80px);
-        }
-
-        .game-area {
-            flex: 1;
-            padding: 1rem;
-            overflow: hidden;
-        }
-
-        .buildings-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 10px;
-            height: 100%;
-            max-height: 600px;
-        }
-
-        .building {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid #e94560;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
-            min-height: 120px;
-        }
-
-        .building:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(233, 69, 96, 0.3);
-        }
-
-        .building-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .building-info {
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        .memory-indicator {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            font-size: 0.7rem;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
-        /* 右パネル */
-        .right-panel {
-            width: 300px;
-            background: rgba(0, 0, 0, 0.2);
-            border-left: 2px solid #e94560;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-tabs {
-            display: flex;
-            border-bottom: 1px solid #e94560;
-        }
-
-        .panel-tab {
-            flex: 1;
-            padding: 0.8rem;
-            background: transparent;
-            border: none;
-            color: #e94560;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            font-size: 0.9rem;
-        }
-
-        .panel-tab.active {
-            border-bottom-color: #f39c12;
-            color: #f39c12;
-        }
-
-        .panel-content {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-        }
-
-        /* ショップ */
-        .shop-category {
-            margin-bottom: 2rem;
-        }
-
-        .shop-category h3 {
-            color: #f39c12;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #f39c12;
-            padding-bottom: 0.5rem;
-        }
-
-        .shop-items {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .shop-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid #e94560;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .shop-item:hover {
-            background: rgba(233, 69, 96, 0.1);
-            transform: translateX(5px);
-        }
-
-        .shop-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.3rem;
-        }
-
-        .shop-item-name {
-            color: #f39c12;
-            font-weight: bold;
-        }
-
-        .shop-item-price {
-            color: #2ecc71;
-            font-size: 0.9rem;
-        }
-
-        .shop-item-desc {
-            font-size: 0.8rem;
-            color: #bbb;
-        }
-
-        .shop-item-duration {
-            font-size: 0.7rem;
-            color: #e94560;
-            margin-top: 0.2rem;
-        }
-
-        /* ランキング */
-        .ranking-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .ranking-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid #e94560;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ranking-item.player {
-            background: rgba(249, 156, 18, 0.2);
-            border-color: #f39c12;
-            box-shadow: 0 0 10px rgba(249, 156, 18, 0.3);
-        }
-
-        .ranking-rank {
-            font-weight: bold;
-            color: #f39c12;
-            min-width: 30px;
-        }
-
-        .ranking-player {
-            flex: 1;
-            margin: 0 0.5rem;
-        }
-
-        .ranking-score {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        /* アクティブエフェクト */
-        .active-effects {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .effect-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid #2ecc71;
-        }
-
-        .effect-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.3rem;
-        }
-
-        .effect-name {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .effect-timer {
-            color: #f39c12;
-            font-size: 0.9rem;
-        }
-
-        .effect-desc {
-            font-size: 0.8rem;
-            color: #bbb;
-        }
-
-        .effect-progress {
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-        }
-
-        .effect-progress-fill {
-            height: 100%;
-            background: #2ecc71;
-            transition: width 0.1s;
-        }
-
-        /* パーティクルシステム */
-        .particle {
-            position: absolute;
-            pointer-events: none;
-            font-size: 1rem;
-            animation: float-up 2s ease-out forwards;
-        }
-
-        @keyframes float-up {
-            0% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-        }
-
-        /* レスポンシブ */
-        @media (max-width: 1024px) {
-            .buildings-grid {
-                grid-template-columns: repeat(4, 1fr);
-                grid-template-rows: repeat(4, 1fr);
-            }
-            
-            .right-panel {
-                width: 250px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .game-container {
-                flex-direction: column;
-            }
-            
-            .right-panel {
-                width: 100%;
-                height: 300px;
-            }
-            
-            .buildings-grid {
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: repeat(6, 1fr);
-            }
-        }
-
-        /* メモリータイプ */
-        .memory-happiness { color: #f39c12; }
-        .memory-skill { color: #3498db; }
-        .memory-emotion { color: #e74c3c; }
-        .memory-knowledge { color: #2ecc71; }
-        .memory-experience { color: #9b59b6; }
-    </style>
+    <title>Memory Architect - Premium City Management</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 認証画面 -->
-    <div class="auth-screen" id="authScreen">
-        <div class="auth-modal">
-            <h2>🌃 Midnight Metropolis Memory Mix-up</h2>
-            <p>記憶アーキテクトとして都市の記憶を管理しましょう</p>
+    <!-- ログイン/登録画面 -->
+    <div id="loginOverlay" class="menu-overlay">
+        <div class="menu-panel">
+            <h1 class="menu-title">Memory Architect</h1>
+            <p class="menu-subtitle">Premium City Management Experience</p>
             
-            <div class="premium-info">
-                <h4>🎮 プレミアム機能</h4>
-                <ul style="text-align: left; margin-top: 0.5rem;">
-                    <li>🏆 グローバルランキング参加</li>
-                    <li>🛍️ 全ショップアイテム利用可能</li>
-                    <li>💾 進捗自動保存</li>
-                    <li>⏰ オフライン進行機能</li>
-                </ul>
-            </div>
-            
-            <div class="auth-options">
-                <button class="auth-btn" onclick="startGame(false)">
-                    🎭 ゲストでプレイ<br>
-                    <small>基本機能のみ</small>
-                </button>
-                <button class="auth-btn" onclick="startGame(true)">
-                    👤 ユーザー登録<br>
-                    <small>全機能利用可能</small>
-                </button>
+            <div id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" placeholder="ユーザー名を入力">
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" placeholder="パスワードを入力">
+                </div>
+                <div class="menu-buttons">
+                    <button id="loginBtn" class="btn">ログイン</button>
+                    <button id="registerBtn" class="btn btn-secondary">新規登録</button>
+                    <button id="guestBtn" class="btn btn-guest">ゲストでプレイ</button>
+                </div>
+                <div class="feature-info">
+                    <h3>登録ユーザー特典</h3>
+                    <ul>
+                        <li>🏆 ランキング参加</li>
+                        <li>🛒 ショップ利用</li>
+                        <li>💾 進行状況保存</li>
+                        <li>🎯 実績システム</li>
+                    </ul>
+                    <p class="guest-note">※ ゲストプレイではショップとランキング機能は利用できません</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- メインゲーム画面 -->
-    <div class="game-screen" id="gameScreen" style="display: none;">
-        <!-- ヘッダー -->
-        <div class="header">
-            <div class="header-left">
-                <div class="game-title">🌃 Memory Metropolis</div>
-                <div class="currency-display">
-                    <span class="coin-icon">🪙</span>
-                    <span class="currency-amount" id="currencyAmount">0</span>
-                </div>
-                <div class="satisfaction-display">
-                    <span>満足度:</span>
-                    <div class="satisfaction-bar">
-                        <div class="satisfaction-fill" id="satisfactionFill" style="width: 0%"></div>
+    <!-- メインメニュー画面 -->
+    <div id="menuOverlay" class="menu-overlay" style="display: none;">
+        <div class="menu-panel">
+            <h1 class="menu-title">Memory Architect</h1>
+            <p class="menu-subtitle" id="welcomeMessage">Premium City Management Experience</p>
+            <div class="menu-buttons">
+                <button id="startGameBtn" class="btn">ゲーム開始</button>
+                <button id="tutorialBtn" class="btn btn-secondary">チュートリアル</button>
+                <button id="shopBtn" class="btn btn-shop" style="display: none;">ショップ</button>
+                <button id="rankingBtn" class="btn btn-ranking" style="display: none;">ランキング</button>
+                <button id="logoutBtn" class="btn btn-logout">ログアウト</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ショップ画面 -->
+    <div id="shopOverlay" class="menu-overlay" style="display: none;">
+        <div class="shop-panel">
+            <h2 class="shop-title">🛒 メモリーショップ</h2>
+            <div class="currency-display">
+                <span class="currency-label">💰 メモリーコイン:</span>
+                <span id="shopCurrency" class="currency-amount">0</span>
+            </div>
+            
+            <div class="shop-categories">
+                <div class="shop-category">
+                    <h3>⚡ ブーストアイテム</h3>
+                    <div class="shop-items">
+                        <div class="shop-item" data-item="memory_boost_5">
+                            <div class="item-icon">🧠</div>
+                            <div class="item-info">
+                                <h4>記憶生成ブースト (5分)</h4>
+                                <p>記憶生成速度 +50%</p>
+                                <span class="item-price">💰 100</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="memory_boost_10">
+                            <div class="item-icon">🧠</div>
+                            <div class="item-info">
+                                <h4>記憶生成ブースト (10分)</h4>
+                                <p>記憶生成速度 +50%</p>
+                                <span class="item-price">💰 180</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="memory_boost_30">
+                            <div class="item-icon">🧠</div>
+                            <div class="item-info">
+                                <h4>記憶生成ブースト (30分)</h4>
+                                <p>記憶生成速度 +50%</p>
+                                <span class="item-price">💰 450</span>
+                            </div>
+                        </div>
                     </div>
-                    <span id="satisfactionPercent">0%</span>
+                </div>
+
+                <div class="shop-category">
+                    <h3>🤖 アシスタント</h3>
+                    <div class="shop-items">
+                        <div class="shop-item" data-item="assistant_5">
+                            <div class="item-icon">🤖</div>
+                            <div class="item-info">
+                                <h4>メモリーアシスタント (5分)</h4>
+                                <p>自動で記憶を配布</p>
+                                <span class="item-price">💰 200</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="assistant_10">
+                            <div class="item-icon">🤖</div>
+                            <div class="item-info">
+                                <h4>メモリーアシスタント (10分)</h4>
+                                <p>自動で記憶を配布</p>
+                                <span class="item-price">💰 350</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="assistant_30">
+                            <div class="item-icon">🤖</div>
+                            <div class="item-info">
+                                <h4>メモリーアシスタント (30分)</h4>
+                                <p>自動で記憶を配布</p>
+                                <span class="item-price">💰 900</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shop-category">
+                    <h3>⏰ オフライン進行</h3>
+                    <div class="shop-items">
+                        <div class="shop-item" data-item="offline_1">
+                            <div class="item-icon">⏰</div>
+                            <div class="item-info">
+                                <h4>オフライン進行 (1時間)</h4>
+                                <p>タブを離れても進行</p>
+                                <span class="item-price">💰 300</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="offline_3">
+                            <div class="item-icon">⏰</div>
+                            <div class="item-info">
+                                <h4>オフライン進行 (3時間)</h4>
+                                <p>タブを離れても進行</p>
+                                <span class="item-price">💰 800</span>
+                            </div>
+                        </div>
+                        <div class="shop-item" data-item="offline_5">
+                            <div class="item-icon">⏰</div>
+                            <div class="item-info">
+                                <h4>オフライン進行 (5時間)</h4>
+                                <p>タブを離れても進行</p>
+                                <span class="item-price">💰 1200</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <div class="shop-actions">
+                <button id="closeShopBtn" class="btn btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ランキング画面 -->
+    <div id="rankingOverlay" class="menu-overlay" style="display: none;">
+        <div class="ranking-panel">
+            <h2 class="ranking-title">🏆 ランキング</h2>
+            <div id="rankingList" class="ranking-list">
+                <!-- ランキングデータが動的に挿入されます -->
+            </div>
+            <div class="ranking-actions">
+                <button id="closeRankingBtn" class="btn btn-secondary">閉じる</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- チュートリアル画面 -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div class="tutorial-panel">
+            <h2 class="tutorial-title">Memory Architect Tutorial</h2>
+            <div id="tutorialContent" class="tutorial-content">
+                <!-- チュートリアルコンテンツが動的に挿入されます -->
+            </div>
+            <div class="tutorial-navigation">
+                <button id="tutorialPrev" class="btn btn-secondary">前へ</button>
+                <button id="tutorialNext" class="btn">次へ</button>
+                <button id="tutorialSkip" class="btn btn-secondary">スキップ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ゲーム画面 -->
+    <div id="gameScreen" style="display: none;">
+        <header class="game-header">
+            <h1 class="game-title">🧠 MEMORY ARCHITECT - NEURAL CITY MANAGEMENT 🏙️</h1>
             <div class="header-controls">
-                <div class="speed-control">
-                    <span>速度:</span>
-                    <button class="speed-btn active" onclick="setGameSpeed(1)">1x</button>
-                    <button class="speed-btn" onclick="setGameSpeed(2)">2x</button>
-                    <button class="speed-btn" onclick="setGameSpeed(3)">3x</button>
+                <div class="currency-display-game">
+                    <span class="currency-label">💰</span>
+                    <span id="gameCurrency" class="currency-amount">0</span>
                 </div>
-                <div id="userInfo"></div>
+                <div class="speed-controls">
+                    <label>速度:</label>
+                    <button id="speed1x" class="speed-btn active">1x</button>
+                    <button id="speed2x" class="speed-btn">2x</button>
+                    <button id="speed3x" class="speed-btn">3x</button>
+                </div>
+                <button id="openShopInGame" class="btn btn-small" style="display: none;">ショップ</button>
+                <button id="pauseBtn" class="btn btn-small">一時停止</button>
+                <button id="menuBtn" class="btn btn-small">メニュー</button>
+            </div>
+        </header>
+        
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="1200" height="700"></canvas>
+            <div id="tooltip" class="building-tooltip" style="display: none;"></div>
+            
+            <!-- アクティブアイテム表示 -->
+            <div id="activeItems" class="active-items">
+                <!-- アクティブなアイテムが表示されます -->
             </div>
         </div>
-
-        <!-- メインゲームエリア -->
-        <div class="game-container">
-            <div class="game-area">
-                <div class="buildings-grid" id="buildingsGrid">
-                    <!-- 建物は動的に生成 -->
+        
+        <div class="ui-panel">
+            <div class="memory-stat">
+                <div class="memory-icon love"></div>
+                <div>
+                    <div class="stat-label">LOVE</div>
+                    <div class="stat-value" id="loveCount">0</div>
                 </div>
             </div>
-
-            <!-- 右パネル -->
-            <div class="right-panel">
-                <div class="panel-tabs">
-                    <button class="panel-tab active" onclick="switchTab('shop')">🛍️ ショップ</button>
-                    <button class="panel-tab" onclick="switchTab('ranking')">🏆 ランキング</button>
-                    <button class="panel-tab" onclick="switchTab('effects')">⚡ エフェクト</button>
+            <div class="memory-stat">
+                <div class="memory-icon knowledge"></div>
+                <div>
+                    <div class="stat-label">KNOWLEDGE</div>
+                    <div class="stat-value" id="knowledgeCount">0</div>
                 </div>
-
-                <div class="panel-content">
-                    <!-- ショップタブ -->
-                    <div id="shopTab" class="tab-content">
-                        <div class="shop-category">
-                            <h3>🚀 効率ブースター</h3>
-                            <div class="shop-items">
-                                <div class="shop-item" onclick="buyItem('boost', 5, 50)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">クイックブースト</span>
-                                        <span class="shop-item-price">🪙50</span>
-                                    </div>
-                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
-                                    <div class="shop-item-duration">持続時間: 5分</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('boost', 10, 90)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">パワーブースト</span>
-                                        <span class="shop-item-price">🪙90</span>
-                                    </div>
-                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
-                                    <div class="shop-item-duration">持続時間: 10分</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('boost', 30, 200)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">メガブースト</span>
-                                        <span class="shop-item-price">🪙200</span>
-                                    </div>
-                                    <div class="shop-item-desc">記憶生成速度×1.5、建物容量×1.5、通貨収入×2</div>
-                                    <div class="shop-item-duration">持続時間: 30分</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="shop-category">
-                            <h3>🤖 メモリーアシスタント</h3>
-                            <div class="shop-items">
-                                <div class="shop-item" onclick="buyItem('assistant', 5, 75)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">AI アシスト S</span>
-                                        <span class="shop-item-price">🪙75</span>
-                                    </div>
-                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
-                                    <div class="shop-item-duration">持続時間: 5分</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('assistant', 10, 130)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">AI アシスト M</span>
-                                        <span class="shop-item-price">🪙130</span>
-                                    </div>
-                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
-                                    <div class="shop-item-duration">持続時間: 10分</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('assistant', 30, 300)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">AI アシスト L</span>
-                                        <span class="shop-item-price">🪙300</span>
-                                    </div>
-                                    <div class="shop-item-desc">自動記憶配布、完全AI管理</div>
-                                    <div class="shop-item-duration">持続時間: 30分</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="shop-category">
-                            <h3>⏰ オフライン進行</h3>
-                            <div class="shop-items">
-                                <div class="shop-item" onclick="buyItem('offline', 60, 100)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">オフライン進行 S</span>
-                                        <span class="shop-item-price">🪙100</span>
-                                    </div>
-                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
-                                    <div class="shop-item-duration">持続時間: 1時間</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('offline', 180, 250)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">オフライン進行 M</span>
-                                        <span class="shop-item-price">🪙250</span>
-                                    </div>
-                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
-                                    <div class="shop-item-duration">持続時間: 3時間</div>
-                                </div>
-                                <div class="shop-item" onclick="buyItem('offline', 300, 400)">
-                                    <div class="shop-item-header">
-                                        <span class="shop-item-name">オフライン進行 L</span>
-                                        <span class="shop-item-price">🪙400</span>
-                                    </div>
-                                    <div class="shop-item-desc">タブ切り替え時も進行継続、オフライン収益計算</div>
-                                    <div class="shop-item-duration">持続時間: 5時間</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ランキングタブ -->
-                    <div id="rankingTab" class="tab-content" style="display: none;">
-                        <div class="ranking-list" id="rankingList">
-                            <div class="ranking-item">
-                                <span class="ranking-rank">1</span>
-                                <span class="ranking-player">MemoryMaster</span>
-                                <span class="ranking-score">15,420</span>
-                            </div>
-                            <div class="ranking-item">
-                                <span class="ranking-rank">2</span>
-                                <span class="ranking-player">CityArchitect</span>
-                                <span class="ranking-score">12,890</span>
-                            </div>
-                            <div class="ranking-item">
-                                <span class="ranking-rank">3</span>
-                                <span class="ranking-player">NightBuilder</span>
-                                <span class="ranking-score">11,230</span>
-                            </div>
-                            <!-- 動的に生成される -->
-                        </div>
-                    </div>
-
-                    <!-- エフェクトタブ -->
-                    <div id="effectsTab" class="tab-content" style="display: none;">
-                        <div class="active-effects" id="activeEffects">
-                            <p style="color: #888; text-align: center;">アクティブなエフェクトはありません</p>
-                        </div>
-                    </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon adventure"></div>
+                <div>
+                    <div class="stat-label">ADVENTURE</div>
+                    <div class="stat-value" id="adventureCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon peace"></div>
+                <div>
+                    <div class="stat-label">PEACE</div>
+                    <div class="stat-value" id="peaceCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon nostalgia"></div>
+                <div>
+                    <div class="stat-label">NOSTALGIA</div>
+                    <div class="stat-value" id="nostalgiaCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon courage"></div>
+                <div>
+                    <div class="stat-label">COURAGE</div>
+                    <div class="stat-value" id="courageCount">0</div>
+                </div>
+            </div>
+            <div class="game-stats">
+                <div>
+                    <div class="stat-label">市民満足度</div>
+                    <div class="stat-value" id="satisfaction">0%</div>
+                </div>
+                <div>
+                    <div class="stat-label">経過時間</div>
+                    <div class="stat-value" id="gameTime">0s</div>
+                </div>
+                <div>
+                    <div class="stat-label">昇天した魂</div>
+                    <div class="stat-value" id="dissolvedCount">0</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // ゲーム状態
-        let gameState = {
-            isRegistered: false,
-            playerId: null,
-            currency: 0,
-            satisfaction: 0,
-            buildings: [],
-            activeEffects: [],
-            gameSpeed: 1,
-            lastUpdate: Date.now(),
-            isOffline: false
-        };
-
-        // メモリータイプ定義
-        const memoryTypes = {
-            happiness: { icon: '😊', color: '#f39c12', name: '幸福' },
-            skill: { icon: '🛠️', color: '#3498db', name: '技能' },
-            emotion: { icon: '❤️', color: '#e74c3c', name: '感情' },
-            knowledge: { icon: '📚', color: '#2ecc71', name: '知識' },
-            experience: { icon: '🌟', color: '#9b59b6', name: '経験' }
-        };
-
-        // ランキングデータ（サンプル）
-        let rankingData = [
-            { id: 'MemoryMaster', score: 15420 },
-            { id: 'CityArchitect', score: 12890 },
-            { id: 'NightBuilder', score: 11230 },
-            { id: 'DreamWeaver', score: 9800 },
-            { id: 'ThoughtKeeper', score: 8750 },
-            { id: 'MindPalace', score: 7650 },
-            { id: 'RecallWizard', score: 6890 },
-            { id: 'MemoryBank', score: 5340 },
-            { id: 'CognitiveCorp', score: 4120 },
-            { id: 'BrainStorm', score: 3450 }
-        ];
-
-        // ゲーム開始
-        function startGame(isRegistered) {
-            gameState.isRegistered = isRegistered;
-            
-            if (isRegistered) {
-                gameState.playerId = 'Player_' + Math.random().toString(36).substr(2, 9);
-                document.getElementById('userInfo').innerHTML = `👤 ${gameState.playerId}`;
-                // ランキングに追加
-                rankingData.push({ id: gameState.playerId, score: 0 });
-            } else {
-                document.getElementById('userInfo').innerHTML = '🎭 ゲスト';
-            }
-
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'block';
-            
-            initializeGame();
-        }
-
-        // ゲーム初期化
-        function initializeGame() {
-            createBuildings();
-            startGameLoop();
-            
-            // オフライン進行チェック
-            if (gameState.isRegistered) {
-                checkOfflineProgress();
-            }
-        }
-
-        // 建物生成
-        function createBuildings() {
-            const grid = document.getElementById('buildingsGrid');
-            grid.innerHTML = '';
-            
-            const types = Object.keys(memoryTypes);
-            
-            for (let i = 0; i < 18; i++) {
-                const building = document.createElement('div');
-                building.className = 'building';
-                building.dataset.index = i;
-                
-                const type = types[i % types.length];
-                const memoryType = memoryTypes[type];
-                
-                const buildingData = {
-                    type: type,
-                    memories: 0,
-                    maxMemories: 10,
-                    satisfaction: 0,
-                    residents: Math.floor(Math.random() * 5) + 3
-                };
-                
-                gameState.buildings[i] = buildingData;
-                
-                building.innerHTML = `
-                    <div class="building-icon" style="color: ${memoryType.color}">
-                        ${memoryType.icon}
-                    </div>
-                    <div class="building-info">
-                        <div>${memoryType.name}記憶庫</div>
-                        <div>住民: ${buildingData.residents}</div>
-                    </div>
-                    <div class="memory-indicator">
-                        <span id="memory-${i}">${buildingData.memories}/${buildingData.maxMemories}</span>
-                    </div>
-                `;
-                
-                building.addEventListener('click', () => clickBuilding(i));
-                grid.appendChild(building);
-            }
-        }
-
-        // 建物クリック
-        function clickBuilding(index) {
-            const building = gameState.buildings[index];
-            const memoryBoost = hasActiveEffect('boost') ? 1.5 : 1;
-            const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
-            
-            if (building.memories < building.maxMemories * capacityBoost) {
-                building.memories += Math.ceil(1 * memoryBoost * gameState.gameSpeed);
-                building.memories = Math.min(building.memories, building.maxMemories * capacityBoost);
-                updateBuildingDisplay(index);
-                
-                // パーティクル効果
-                createParticle(event.target, memoryTypes[building.type].icon);
-            }
-        }
-
-        // 建物表示更新
-        function updateBuildingDisplay(index) {
-            const building = gameState.buildings[index];
-            const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
-            const maxCapacity = Math.floor(building.maxMemories * capacityBoost);
-            
-            document.getElementById(`memory-${index}`).textContent = 
-                `${building.memories}/${maxCapacity}`;
-        }
-
-        // パーティクル生成
-        function createParticle(element, icon) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.textContent = icon;
-            particle.style.left = Math.random() * 50 + 'px';
-            particle.style.top = Math.random() * 50 + 'px';
-            
-            element.appendChild(particle);
-            
-            setTimeout(() => {
-                if (particle.parentNode) {
-                    particle.parentNode.removeChild(particle);
-                }
-            }, 2000);
-        }
-
-        // ゲームスピード設定
-        function setGameSpeed(speed) {
-            gameState.gameSpeed = speed;
-            
-            document.querySelectorAll('.speed-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
-
-        // タブ切り替え
-        function switchTab(tabName) {
-            document.querySelectorAll('.panel-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName + 'Tab').style.display = 'block';
-            
-            if (tabName === 'ranking') {
-                updateRanking();
-            }
-        }
-
-        // アイテム購入
-        function buyItem(type, duration, price) {
-            if (!gameState.isRegistered && type !== 'boost') {
-                alert('この機能は登録ユーザーのみ利用可能です');
-                return;
-            }
-            
-            if (gameState.currency >= price) {
-                gameState.currency -= price;
-                addActiveEffect(type, duration);
-                updateCurrencyDisplay();
-                updateActiveEffects();
-            } else {
-                alert('通貨が不足しています');
-            }
-        }
-
-        // アクティブエフェクト追加
-        function addActiveEffect(type, duration) {
-            const effects = {
-                boost: { name: '効率ブースター', desc: '記憶生成×1.5、建物容量×1.5、通貨収入×2', icon: '🚀' },
-                assistant: { name: 'メモリーアシスタント', desc: '自動記憶配布、完全AI管理', icon: '🤖' },
-                offline: { name: 'オフライン進行', desc: 'タブ切り替え時も進行継続', icon: '⏰' }
-            };
-            
-            const effect = {
-                type: type,
-                name: effects[type].name,
-                desc: effects[type].desc,
-                icon: effects[type].icon,
-                duration: duration * 60, // 分を秒に変換
-                startTime: Date.now()
-            };
-            
-            // 同じタイプのエフェクトを削除
-            gameState.activeEffects = gameState.activeEffects.filter(e => e.type !== type);
-            gameState.activeEffects.push(effect);
-        }
-
-        // アクティブエフェクト確認
-        function hasActiveEffect(type) {
-            return gameState.activeEffects.some(effect => effect.type === type);
-        }
-
-        // アクティブエフェクト更新
-        function updateActiveEffects() {
-            const container = document.getElementById('activeEffects');
-            
-            if (gameState.activeEffects.length === 0) {
-                container.innerHTML = '<p style="color: #888; text-align: center;">アクティブなエフェクトはありません</p>';
-                return;
-            }
-            
-            container.innerHTML = '';
-            
-            gameState.activeEffects.forEach((effect, index) => {
-                const now = Date.now();
-                const elapsed = (now - effect.startTime) / 1000;
-                const remaining = Math.max(0, effect.duration - elapsed);
-                const progress = Math.max(0, (effect.duration - elapsed) / effect.duration * 100);
-                
-                if (remaining <= 0) {
-                    gameState.activeEffects.splice(index, 1);
-                    return;
-                }
-                
-                const minutes = Math.floor(remaining / 60);
-                const seconds = Math.floor(remaining % 60);
-                
-                const effectElement = document.createElement('div');
-                effectElement.className = 'effect-item';
-                effectElement.innerHTML = `
-                    <div class="effect-header">
-                        <span class="effect-name">${effect.icon} ${effect.name}</span>
-                        <span class="effect-timer">${minutes}:${seconds.toString().padStart(2, '0')}</span>
-                    </div>
-                    <div class="effect-desc">${effect.desc}</div>
-                    <div class="effect-progress">
-                        <div class="effect-progress-fill" style="width: ${progress}%"></div>
-                    </div>
-                `;
-                
-                container.appendChild(effectElement);
-            });
-        }
-
-        // 通貨表示更新
-        function updateCurrencyDisplay() {
-            document.getElementById('currencyAmount').textContent = Math.floor(gameState.currency);
-        }
-
-        // 満足度表示更新
-        function updateSatisfactionDisplay() {
-            const satisfactionPercent = Math.floor(gameState.satisfaction);
-            document.getElementById('satisfactionFill').style.width = satisfactionPercent + '%';
-            document.getElementById('satisfactionPercent').textContent = satisfactionPercent + '%';
-        }
-
-        // スコア計算
-        function calculateScore() {
-            let satisfiedResidents = 0;
-            gameState.buildings.forEach(building => {
-                if (building.memories >= building.residents) {
-                    satisfiedResidents += building.residents;
-                }
-            });
-            
-            return satisfiedResidents * 10 + gameState.satisfaction * 2 + gameState.currency * 0.1;
-        }
-
-        // ランキング更新
-        function updateRanking() {
-            if (!gameState.isRegistered) {
-                document.getElementById('rankingList').innerHTML = 
-                    '<p style="color: #888; text-align: center;">ランキングは登録ユーザーのみ利用可能です</p>';
-                return;
-            }
-            
-            // プレイヤーのスコア更新
-            const playerScore = calculateScore();
-            const playerIndex = rankingData.findIndex(entry => entry.id === gameState.playerId);
-            if (playerIndex !== -1) {
-                rankingData[playerIndex].score = playerScore;
-            }
-            
-            // ソート
-            rankingData.sort((a, b) => b.score - a.score);
-            
-            // 表示更新
-            const container = document.getElementById('rankingList');
-            container.innerHTML = '';
-            
-            // トップ10 + プレイヤー
-            const displayData = rankingData.slice(0, 10);
-            const playerRank = rankingData.findIndex(entry => entry.id === gameState.playerId) + 1;
-            
-            displayData.forEach((entry, index) => {
-                const isPlayer = entry.id === gameState.playerId;
-                const rankElement = document.createElement('div');
-                rankElement.className = isPlayer ? 'ranking-item player' : 'ranking-item';
-                rankElement.innerHTML = `
-                    <span class="ranking-rank">${index + 1}</span>
-                    <span class="ranking-player">${entry.id}</span>
-                    <span class="ranking-score">${Math.floor(entry.score)}</span>
-                `;
-                container.appendChild(rankElement);
-            });
-            
-            // プレイヤーが10位以下の場合は別途表示
-            if (playerRank > 10) {
-                const separatorElement = document.createElement('div');
-                separatorElement.innerHTML = '<hr style="margin: 0.5rem 0; border-color: #e94560;">';
-                container.appendChild(separatorElement);
-                
-                const playerEntry = rankingData.find(entry => entry.id === gameState.playerId);
-                const playerElement = document.createElement('div');
-                playerElement.className = 'ranking-item player';
-                playerElement.innerHTML = `
-                    <span class="ranking-rank">${playerRank}</span>
-                    <span class="ranking-player">${playerEntry.id}</span>
-                    <span class="ranking-score">${Math.floor(playerEntry.score)}</span>
-                `;
-                container.appendChild(playerElement);
-            }
-        }
-
-        // オフライン進行チェック
-        function checkOfflineProgress() {
-            const lastSave = localStorage.getItem('lastSaveTime');
-            if (lastSave) {
-                const offlineTime = (Date.now() - parseInt(lastSave)) / 1000; // 秒
-                if (offlineTime > 60) { // 1分以上オフライン
-                    const offlineMinutes = Math.floor(offlineTime / 60);
-                    const offlineReward = Math.floor(offlineMinutes * 10); // 分あたり10通貨
-                    
-                    gameState.currency += offlineReward;
-                    alert(`おかえりなさい！\nオフライン時間: ${offlineMinutes}分\n獲得通貨: ${offlineReward}`);
-                }
-            }
-        }
-
-        // ゲーム保存
-        function saveGame() {
-            if (gameState.isRegistered) {
-                localStorage.setItem('gameState', JSON.stringify(gameState));
-                localStorage.setItem('lastSaveTime', Date.now().toString());
-            }
-        }
-
-        // AI自動管理
-        function autoManageMemories() {
-            if (!hasActiveEffect('assistant')) return;
-            
-            gameState.buildings.forEach((building, index) => {
-                const capacityBoost = hasActiveEffect('boost') ? 1.5 : 1;
-                const maxCapacity = Math.floor(building.maxMemories * capacityBoost);
-                
-                if (building.memories < maxCapacity) {
-                    building.memories = Math.min(building.memories + 1, maxCapacity);
-                    updateBuildingDisplay(index);
-                }
-            });
-        }
-
-        // メインゲームループ
-        function startGameLoop() {
-            setInterval(() => {
-                const now = Date.now();
-                const deltaTime = (now - gameState.lastUpdate) / 1000 * gameState.gameSpeed;
-                gameState.lastUpdate = now;
-                
-                // AI自動管理
-                autoManageMemories();
-                
-                // 満足度計算
-                let totalSatisfaction = 0;
-                let satisfiedBuildings = 0;
-                
-                gameState.buildings.forEach(building => {
-                    if (building.memories >= building.residents) {
-                        building.satisfaction = 100;
-                        satisfiedBuildings++;
-                    } else {
-                        building.satisfaction = (building.memories / building.residents) * 100;
-                    }
-                    totalSatisfaction += building.satisfaction;
-                });
-                
-                gameState.satisfaction = totalSatisfaction / gameState.buildings.length;
-                
-                // 通貨獲得（満足度ベース）
-                const currencyMultiplier = hasActiveEffect('boost') ? 2 : 1;
-                const currencyGain = (gameState.satisfaction / 100) * deltaTime * 10 * currencyMultiplier;
-                gameState.currency += currencyGain;
-                
-                // 表示更新
-                updateCurrencyDisplay();
-                updateSatisfactionDisplay();
-                updateActiveEffects();
-                
-                // 定期保存
-                if (Math.random() < 0.01) { // 1%の確率で保存
-                    saveGame();
-                }
-                
-            }, 100); // 100ms間隔
-        }
-
-        // ページ離脱時の保存
-        window.addEventListener('beforeunload', saveGame);
-        
-        // ページ非表示時のオフラインモード
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && hasActiveEffect('offline')) {
-                gameState.isOffline = true;
-            } else {
-                gameState.isOffline = false;
-            }
-        });
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>
