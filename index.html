@@ -1,247 +1,884 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>都市記憶管理ゲーム - Memory City</title>
+    <title>Memory Architect - Premium City Management</title>
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background: #1a1a2e;
-            color: #eee;
-            font-family: monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e6ed;
+            font-family: 'Orbitron', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .game-header {
+            background: linear-gradient(90deg, #2d3561 0%, #1e2749 100%);
+            padding: 8px 20px;
+            border-bottom: 2px solid #00d4ff;
+            box-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .game-title {
+            font-size: 18px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
         }
         
         #gameContainer {
             position: relative;
-            margin: 20px;
-            border: 2px solid #16213e;
-            border-radius: 8px;
+            margin: 0 auto;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            border: 3px solid #00d4ff;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
             overflow: hidden;
         }
         
         #gameCanvas {
             display: block;
-            background: #0f3460;
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
+            background: linear-gradient(135deg, #0d2946 0%, #1e3c72 100%);
         }
         
-        #ui {
-            display: flex;
-            gap: 20px;
-            margin: 10px;
+        .ui-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 8px;
             padding: 10px;
-            background: #16213e;
-            border-radius: 8px;
-            font-size: 14px;
+            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
+            border-top: 2px solid #00d4ff;
         }
         
-        .memory-counter {
+        .memory-stat {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
         
-        .memory-orb {
-            width: 12px;
-            height: 12px;
+        .memory-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            border-color: #00d4ff;
+        }
+        
+        .memory-icon {
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+            animation: pulse 2s infinite;
         }
         
-        .happy { background: #ffd700; }
-        .skill { background: #00ff88; }
-        .sad { background: #ff4757; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
         
-        #instructions {
+        .love { background: radial-gradient(circle, #ff69b4, #ff1493); }
+        .knowledge { background: radial-gradient(circle, #4169e1, #0000cd); }
+        .adventure { background: radial-gradient(circle, #ff8c00, #ff6347); }
+        .peace { background: radial-gradient(circle, #98fb98, #00ff7f); }
+        .nostalgia { background: radial-gradient(circle, #dda0dd, #9370db); }
+        .courage { background: radial-gradient(circle, #dc143c, #b22222); }
+        
+        .stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #a0a8b0;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: 900;
+            color: #00d4ff;
+        }
+        
+        .game-stats {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), rgba(255, 107, 107, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+        }
+        
+        /* Tutorial Overlay */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .tutorial-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tutorial-panel {
+            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
+            border: 3px solid #00d4ff;
+            border-radius: 20px;
+            padding: 30px;
             max-width: 600px;
-            margin: 10px;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .tutorial-overlay.active .tutorial-panel {
+            transform: scale(1);
+        }
+        
+        .tutorial-title {
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .tutorial-content {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #e0e6ed;
+        }
+        
+        .tutorial-step {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
             padding: 15px;
-            background: #16213e;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.5);
+            background: linear-gradient(45deg, #00e6ff, #00aadd);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(45deg, #ff7d7d, #ff5252);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+        }
+        
+        .tutorial-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        /* Menu Overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        
+        .menu-panel {
+            background: linear-gradient(135deg, #1e2749 0%, #2d3561 100%);
+            border: 3px solid #00d4ff;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 212, 255, 0.5);
+        }
+        
+        .menu-title {
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .menu-subtitle {
+            font-size: 14px;
+            color: #a0a8b0;
+            margin-bottom: 30px;
+        }
+        
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .tutorial-indicator {
+            position: absolute;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .building-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
             border-radius: 8px;
             font-size: 12px;
-            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
+            border: 1px solid #00d4ff;
         }
     </style>
 </head>
 <body>
-    <h1>🧠 Memory City Manager 🏙️</h1>
-    
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <!-- Menu Screen -->
+    <div id="menuOverlay" class="menu-overlay">
+        <div class="menu-panel">
+            <h1 class="menu-title">Memory Architect</h1>
+            <p class="menu-subtitle">Premium City Management Experience</p>
+            <div class="menu-buttons">
+                <button id="startGameBtn" class="btn">Start Game</button>
+                <button id="tutorialBtn" class="btn btn-secondary">Tutorial</button>
+            </div>
+        </div>
     </div>
     
-    <div id="ui">
-        <div class="memory-counter">
-            <span class="memory-orb happy"></span>
-            <span>幸せな記憶: <span id="happyCount">0</span></span>
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div class="tutorial-panel">
+            <h2 class="tutorial-title">Memory Architect Tutorial</h2>
+            <div id="tutorialContent" class="tutorial-content">
+                <!-- Tutorial content will be inserted here -->
+            </div>
+            <div class="tutorial-navigation">
+                <button id="tutorialPrev" class="btn btn-secondary">Previous</button>
+                <button id="tutorialNext" class="btn">Next</button>
+                <button id="tutorialSkip" class="btn btn-secondary">Skip Tutorial</button>
+            </div>
         </div>
-        <div class="memory-counter">
-            <span class="memory-orb skill"></span>
-            <span>技能記憶: <span id="skillCount">0</span></span>
-        </div>
-        <div class="memory-counter">
-            <span class="memory-orb sad"></span>
-            <span>悲しい記憶: <span id="sadCount">0</span></span>
-        </div>
-        <div>住民満足度: <span id="satisfaction">100</span>%</div>
-        <div>時間: <span id="gameTime">0</span>s</div>
     </div>
     
-    <div id="instructions">
-        <strong>遊び方:</strong> あなたは記憶アーキテクトです。住民（白い点）は記憶を求めて移動します。
-        建物をクリックして記憶を配布し、住民の満足度を維持してください。
-        記憶は時間と共に劣化するので、適切に管理しましょう！
+    <!-- Game Screen -->
+    <div id="gameScreen" style="display: none;">
+        <header class="game-header">
+            <h1 class="game-title">🧠 MEMORY ARCHITECT - NEURAL CITY MANAGEMENT 🏙️</h1>
+        </header>
+        
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="1000" height="700"></canvas>
+            <div id="tooltip" class="building-tooltip" style="display: none;"></div>
+        </div>
+        
+        <div class="ui-panel">
+            <div class="memory-stat">
+                <div class="memory-icon love"></div>
+                <div>
+                    <div class="stat-label">LOVE</div>
+                    <div class="stat-value" id="loveCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon knowledge"></div>
+                <div>
+                    <div class="stat-label">KNOWLEDGE</div>
+                    <div class="stat-value" id="knowledgeCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon adventure"></div>
+                <div>
+                    <div class="stat-label">ADVENTURE</div>
+                    <div class="stat-value" id="adventureCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon peace"></div>
+                <div>
+                    <div class="stat-label">PEACE</div>
+                    <div class="stat-value" id="peaceCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon nostalgia"></div>
+                <div>
+                    <div class="stat-label">NOSTALGIA</div>
+                    <div class="stat-value" id="nostalgiaCount">0</div>
+                </div>
+            </div>
+            <div class="memory-stat">
+                <div class="memory-icon courage"></div>
+                <div>
+                    <div class="stat-label">COURAGE</div>
+                    <div class="stat-value" id="courageCount">0</div>
+                </div>
+            </div>
+            <div class="game-stats">
+                <div>
+                    <div class="stat-label">CITIZEN SATISFACTION</div>
+                    <div class="stat-value" id="satisfaction">100%</div>
+                </div>
+                <div>
+                    <div class="stat-label">ELAPSED TIME</div>
+                    <div class="stat-value" id="gameTime">0s</div>
+                </div>
+                <div>
+                    <div class="stat-label">FULFILLED SOULS</div>
+                    <div class="stat-value" id="dissolvedCount">0</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        class MemoryCityGame {
+        class TutorialManager {
+            constructor() {
+                this.currentStep = 0;
+                this.steps = [
+                    {
+                        title: "Welcome to Memory Architect",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>🧠 You Are the Memory Architect</h3>
+                                <p>In this city, memories are precious resources. Citizens need specific types of memories to feel fulfilled and happy.</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Understanding Memory Types",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>💖 Six Types of Memories</h3>
+                                <p><strong>Love:</strong> Romantic and family memories<br>
+                                <strong>Knowledge:</strong> Learning and discovery<br>
+                                <strong>Adventure:</strong> Exploration and challenges<br>
+                                <strong>Peace:</strong> Tranquil and calming moments<br>
+                                <strong>Nostalgia:</strong> Bittersweet past memories<br>
+                                <strong>Courage:</strong> Brave and heroic moments</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Managing Citizens",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>👥 Citizen Behavior</h3>
+                                <p>Citizens appear as colored squares that move around the city. Each citizen needs a specific type of memory.</p>
+                                <p><strong>Colored icons above citizens</strong> show what memory type they need.</p>
+                                <p><strong>Citizen colors indicate satisfaction:</strong><br>
+                                🟢 Green = Very satisfied<br>
+                                🟡 Yellow = Moderately satisfied<br>
+                                🔴 Red = Needs attention</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Operating Memory Buildings",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>🏢 Memory Storage Buildings</h3>
+                                <p>Buildings store and distribute different types of memories.</p>
+                                <p><strong>Click on buildings</strong> to transfer memories from your inventory to the building's storage.</p>
+                                <p><strong>White bars</strong> at the bottom of buildings show storage levels.</p>
+                                <p>Citizens will automatically visit buildings that have their needed memory type.</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "The Fulfillment Cycle",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>✨ Soul Fulfillment</h3>
+                                <p>When citizens receive their needed memories, they become fulfilled and start glowing with beautiful colors.</p>
+                                <p>After 30 seconds of satisfaction, fulfilled citizens dissolve into sparkles and ascend, making room for new souls.</p>
+                                <p><strong>Goal:</strong> Help as many citizens as possible achieve fulfillment!</p>
+                            </div>
+                        `
+                    },
+                    {
+                        title: "Ready to Begin!",
+                        content: `
+                            <div class="tutorial-step">
+                                <h3>🎮 You're Ready!</h3>
+                                <p>Start by clicking on buildings to distribute memories. Watch citizens' satisfaction levels and try to keep everyone happy.</p>
+                                <p>New memories generate automatically over time, but manage them wisely.</p>
+                                <p><strong>Remember:</strong> Hover over buildings to see tooltips with helpful information!</p>
+                            </div>
+                        `
+                    }
+                ];
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('tutorialBtn').addEventListener('click', () => this.startTutorial());
+                document.getElementById('tutorialNext').addEventListener('click', () => this.nextStep());
+                document.getElementById('tutorialPrev').addEventListener('click', () => this.previousStep());
+                document.getElementById('tutorialSkip').addEventListener('click', () => this.skipTutorial());
+            }
+            
+            startTutorial() {
+                this.currentStep = 0;
+                document.getElementById('menuOverlay').style.display = 'none';
+                document.getElementById('tutorialOverlay').classList.add('active');
+                this.showStep();
+            }
+            
+            showStep() {
+                const step = this.steps[this.currentStep];
+                const content = document.getElementById('tutorialContent');
+                content.innerHTML = step.content;
+                
+                document.querySelector('.tutorial-title').textContent = step.title;
+                
+                document.getElementById('tutorialPrev').style.display = this.currentStep > 0 ? 'block' : 'none';
+                document.getElementById('tutorialNext').textContent = this.currentStep < this.steps.length - 1 ? 'Next' : 'Start Game!';
+            }
+            
+            nextStep() {
+                if (this.currentStep < this.steps.length - 1) {
+                    this.currentStep++;
+                    this.showStep();
+                } else {
+                    this.endTutorial();
+                }
+            }
+            
+            previousStep() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.showStep();
+                }
+            }
+            
+            skipTutorial() {
+                this.endTutorial();
+            }
+            
+            endTutorial() {
+                document.getElementById('tutorialOverlay').classList.remove('active');
+                document.getElementById('gameScreen').style.display = 'block';
+                if (window.memoryGame) {
+                    window.memoryGame.startGame();
+                }
+            }
+        }
+        
+        class MemoryArchitectGame {
             constructor() {
                 this.canvas = document.getElementById('gameCanvas');
                 this.ctx = this.canvas.getContext('2d');
+                this.tooltip = document.getElementById('tooltip');
                 
-                // ゲーム状態
+                // Game state
                 this.gameTime = 0;
                 this.satisfaction = 100;
-                this.memories = { happy: 10, skill: 8, sad: 5 };
+                this.memories = { love: 10, knowledge: 8, adventure: 6, peace: 9, nostalgia: 5, courage: 7 };
+                this.dissolvedCitizens = 0;
+                this.gameStarted = false;
                 
-                // ゲームオブジェクト
+                // Game objects
                 this.buildings = [];
                 this.citizens = [];
                 this.memoryOrbs = [];
-                this.selectedBuilding = null;
+                this.dissolveEffects = [];
+                this.particles = [];
                 
-                // マウス状態
+                // Mouse state
                 this.mouseX = 0;
                 this.mouseY = 0;
                 this.mouseDown = false;
                 
-                this.initializeGame();
+                this.initializeAssets();
                 this.setupEventListeners();
                 this.gameLoop();
             }
             
+            initializeAssets() {
+                // Create pixel art patterns for buildings
+                this.buildingPatterns = {};
+                this.createBuildingPatterns();
+            }
+            
+            createBuildingPatterns() {
+                const memoryTypes = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
+                memoryTypes.forEach(type => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 64;
+                    canvas.height = 64;
+                    const ctx = canvas.getContext('2d');
+                    this.drawBuildingPattern(ctx, type);
+                    this.buildingPatterns[type] = canvas;
+                });
+            }
+            
+            drawBuildingPattern(ctx, type) {
+                const colors = this.getMemoryColorPalette(type);
+                
+                // Building base
+                ctx.fillStyle = colors.primary;
+                ctx.fillRect(0, 0, 64, 64);
+                
+                // Building details
+                ctx.fillStyle = colors.secondary;
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        if ((i + j) % 2 === 0) {
+                            ctx.fillRect(8 + i * 12, 8 + j * 12, 8, 8);
+                        }
+                    }
+                }
+                
+                // Building outline
+                ctx.strokeStyle = colors.accent;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(2, 2, 60, 60);
+                
+                // Memory crystal at top
+                ctx.fillStyle = colors.accent;
+                ctx.fillRect(28, 4, 8, 8);
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(30, 6, 4, 4);
+            }
+            
+            getMemoryColorPalette(type) {
+                const palettes = {
+                    love: { primary: '#ff69b4', secondary: '#ff1493', accent: '#ffffff' },
+                    knowledge: { primary: '#4169e1', secondary: '#0000cd', accent: '#87ceeb' },
+                    adventure: { primary: '#ff8c00', secondary: '#ff6347', accent: '#ffd700' },
+                    peace: { primary: '#98fb98', secondary: '#00ff7f', accent: '#ffffff' },
+                    nostalgia: { primary: '#dda0dd', secondary: '#9370db', accent: '#ffffff' },
+                    courage: { primary: '#dc143c', secondary: '#b22222', accent: '#ffd700' }
+                };
+                return palettes[type] || palettes.love;
+            }
+            
+            startGame() {
+                this.gameStarted = true;
+                this.initializeGame();
+            }
+            
             initializeGame() {
-                // 建物を配置（記憶保管庫）
+                // Initialize buildings with enhanced layout
                 const buildingTypes = [
-                    { type: 'happy', color: '#ffd700', capacity: 20 },
-                    { type: 'skill', color: '#00ff88', capacity: 15 },
-                    { type: 'sad', color: '#ff4757', capacity: 25 }
+                    { type: 'love', capacity: 25 },
+                    { type: 'knowledge', capacity: 22 },
+                    { type: 'adventure', capacity: 18 },
+                    { type: 'peace', capacity: 28 },
+                    { type: 'nostalgia', capacity: 20 },
+                    { type: 'courage', capacity: 16 }
                 ];
                 
-                for (let i = 0; i < 9; i++) {
-                    const x = (i % 3) * 200 + 100;
-                    const y = Math.floor(i / 3) * 150 + 100;
-                    const buildingType = buildingTypes[i % 3];
+                for (let i = 0; i < 12; i++) {
+                    const x = (i % 4) * 220 + 110;
+                    const y = Math.floor(i / 4) * 200 + 120;
+                    const buildingType = buildingTypes[i % 6];
                     
                     this.buildings.push({
-                        x, y, width: 48, height: 48,
+                        x, y, width: 64, height: 64,
                         type: buildingType.type,
-                        color: buildingType.color,
                         storedMemories: 0,
                         capacity: buildingType.capacity,
-                        lastDistribution: 0
+                        lastDistribution: 0,
+                        pulseTimer: Math.random() * 120
                     });
                 }
                 
-                // 住民を配置
-                for (let i = 0; i < 12; i++) {
-                    this.citizens.push({
-                        x: Math.random() * (this.canvas.width - 16) + 8,
-                        y: Math.random() * (this.canvas.height - 16) + 8,
-                        targetX: 0, targetY: 0,
-                        speed: 0.5 + Math.random() * 0.5,
-                        needsMemory: Math.random() < 0.7,
-                        memoryType: ['happy', 'skill', 'sad'][Math.floor(Math.random() * 3)],
-                        satisfaction: 80 + Math.random() * 20,
-                        lastFed: 0
-                    });
+                // Initialize citizens with enhanced AI
+                for (let i = 0; i < 18; i++) {
+                    this.spawnNewCitizen();
                 }
                 
                 this.assignNewTargets();
             }
             
             setupEventListeners() {
-                this.canvas.addEventListener('mousemove', (e) => {
-                    const rect = this.canvas.getBoundingClientRect();
-                    this.mouseX = e.clientX - rect.left;
-                    this.mouseY = e.clientY - rect.top;
-                });
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                this.canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+                this.canvas.addEventListener('mouseup', () => this.mouseDown = false);
                 
-                this.canvas.addEventListener('mousedown', (e) => {
-                    this.mouseDown = true;
-                    this.handleClick();
-                });
-                
-                this.canvas.addEventListener('mouseup', () => {
-                    this.mouseDown = false;
+                document.getElementById('startGameBtn').addEventListener('click', () => {
+                    document.getElementById('menuOverlay').style.display = 'none';
+                    document.getElementById('gameScreen').style.display = 'block';
+                    this.startGame();
                 });
             }
             
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.mouseX = e.clientX - rect.left;
+                this.mouseY = e.clientY - rect.top;
+                
+                this.updateTooltip();
+            }
+            
+            updateTooltip() {
+                let tooltipText = '';
+                let showTooltip = false;
+                
+                for (const building of this.buildings) {
+                    if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
+                        this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
+                        
+                        const memoryName = building.type.charAt(0).toUpperCase() + building.type.slice(1);
+                        tooltipText = `${memoryName} Memory Bank\nStored: ${building.storedMemories}/${building.capacity}\nClick to distribute memories`;
+                        showTooltip = true;
+                        break;
+                    }
+                }
+                
+                if (showTooltip) {
+                    this.tooltip.textContent = tooltipText;
+                    this.tooltip.style.display = 'block';
+                    this.tooltip.style.left = (this.mouseX + 10) + 'px';
+                    this.tooltip.style.top = (this.mouseY - 30) + 'px';
+                } else {
+                    this.tooltip.style.display = 'none';
+                }
+            }
+            
+            handleMouseDown(e) {
+                this.mouseDown = true;
+                this.handleClick();
+            }
+            
             handleClick() {
-                // 建物クリック判定
                 for (const building of this.buildings) {
                     if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
                         this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
                         
                         if (this.memories[building.type] > 0) {
+                            const distributed = Math.min(3, this.memories[building.type]);
                             building.storedMemories = Math.min(
                                 building.capacity, 
-                                building.storedMemories + 5
+                                building.storedMemories + distributed
                             );
-                            this.memories[building.type] -= 1;
+                            this.memories[building.type] -= distributed;
                             building.lastDistribution = this.gameTime;
                             
-                            // 記憶オーブエフェクト生成
-                            for (let i = 0; i < 3; i++) {
-                                this.memoryOrbs.push({
-                                    x: building.x + building.width/2,
-                                    y: building.y + building.height/2,
-                                    vx: (Math.random() - 0.5) * 2,
-                                    vy: (Math.random() - 0.5) * 2,
-                                    color: building.color,
-                                    life: 30,
-                                    maxLife: 30
-                                });
-                            }
+                            this.createDistributionEffect(building);
                         }
                         break;
                     }
                 }
             }
             
+            createDistributionEffect(building) {
+                const colors = this.getMemoryColorPalette(building.type);
+                for (let i = 0; i < 8; i++) {
+                    this.memoryOrbs.push({
+                        x: building.x + building.width/2,
+                        y: building.y + building.height/2,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        color: colors.accent,
+                        life: 45,
+                        maxLife: 45,
+                        size: 2 + Math.random() * 2
+                    });
+                }
+            }
+            
             update() {
+                if (!this.gameStarted) return;
+                
                 this.gameTime++;
                 
-                // 住民の更新
                 this.updateCitizens();
+                this.updateEffects();
+                this.updateMemoryGeneration();
+                this.updateBuildingDecay();
+                this.updateSatisfaction();
+                this.updateUI();
+            }
+            
+            updateCitizens() {
+                for (let i = this.citizens.length - 1; i >= 0; i--) {
+                    const citizen = this.citizens[i];
+                    
+                    if (this.gameTime < citizen.satisfiedUntil) {
+                        citizen.glowIntensity = Math.sin(this.gameTime * 0.1) * 0.3 + 0.7;
+                        continue;
+                    } else if (citizen.satisfiedUntil > 0 && this.gameTime >= citizen.satisfiedUntil) {
+                        this.createDissolveEffect(citizen.x + 4, citizen.y + 4, citizen.memoryType);
+                        this.citizens.splice(i, 1);
+                        this.dissolvedCitizens++;
+                        this.spawnNewCitizen();
+                        continue;
+                    }
+                    
+                    // Movement AI
+                    const dx = citizen.targetX - citizen.x;
+                    const dy = citizen.targetY - citizen.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 3) {
+                        citizen.x += (dx / distance) * citizen.speed;
+                        citizen.y += (dy / distance) * citizen.speed;
+                        citizen.walkCycle = (citizen.walkCycle || 0) + 0.2;
+                    } else {
+                        const nearBuilding = this.buildings.find(b => 
+                            Math.abs(citizen.x - (b.x + b.width/2)) < 40 &&
+                            Math.abs(citizen.y - (b.y + b.height/2)) < 40 &&
+                            b.type === citizen.memoryType
+                        );
+                        
+                        if (nearBuilding && nearBuilding.storedMemories > 0) {
+                            nearBuilding.storedMemories--;
+                            citizen.satisfaction = 100;
+                            citizen.needsMemory = false;
+                            citizen.lastFed = this.gameTime;
+                            citizen.satisfiedUntil = this.gameTime + 1800; // 30 seconds
+                            citizen.glowIntensity = 1.0;
+                            
+                            this.createSatisfactionEffect(citizen, nearBuilding.type);
+                        } else {
+                            this.setNewTarget(citizen);
+                        }
+                    }
+                    
+                    // Satisfaction decay
+                    if (citizen.satisfiedUntil === 0 && this.gameTime - citizen.lastFed > 1200) {
+                        citizen.satisfaction = Math.max(0, citizen.satisfaction - 0.03);
+                        citizen.needsMemory = citizen.satisfaction < 65;
+                    }
+                }
                 
-                // 記憶オーブの更新
+                if (this.gameTime % 450 === 0) {
+                    this.assignNewTargets();
+                }
+            }
+            
+            createSatisfactionEffect(citizen, memoryType) {
+                const colors = this.getMemoryColorPalette(memoryType);
+                for (let i = 0; i < 12; i++) {
+                    this.particles.push({
+                        x: citizen.x + 4,
+                        y: citizen.y + 4,
+                        vx: (Math.random() - 0.5) * 6,
+                        vy: (Math.random() - 0.5) * 6 - 2,
+                        color: colors.accent,
+                        life: 80,
+                        maxLife: 80,
+                        size: 1 + Math.random() * 2,
+                        type: 'satisfaction'
+                    });
+                }
+            }
+            
+            updateEffects() {
+                // Update memory orbs
                 this.memoryOrbs = this.memoryOrbs.filter(orb => {
                     orb.x += orb.vx;
                     orb.y += orb.vy;
                     orb.life--;
-                    orb.vx *= 0.95;
-                    orb.vy *= 0.95;
+                    orb.vx *= 0.96;
+                    orb.vy *= 0.96;
                     return orb.life > 0;
                 });
                 
-                // 記憶の自動生成（少量）
-                if (this.gameTime % 300 === 0) {
-                    const types = ['happy', 'skill', 'sad'];
-                    const randomType = types[Math.floor(Math.random() * types.length)];
-                    this.memories[randomType] = Math.min(50, this.memories[randomType] + 1);
-                }
+                // Update particles
+                this.particles = this.particles.filter(particle => {
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.vy += 0.03; // Gravity
+                    particle.life--;
+                    particle.vx *= 0.98;
+                    return particle.life > 0;
+                });
                 
-                // 建物の記憶劣化
-                if (this.gameTime % 600 === 0) {
+                // Update dissolve effects
+                this.dissolveEffects = this.dissolveEffects.filter(effect => {
+                    effect.particles.forEach(p => {
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.02;
+                        p.alpha -= 0.015;
+                        p.scale *= 0.99;
+                    });
+                    effect.life--;
+                    return effect.life > 0;
+                });
+            }
+            
+            updateMemoryGeneration() {
+                if (this.gameTime % 360 === 0) {
+                    const types = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
+                    const randomType = types[Math.floor(Math.random() * types.length)];
+                    this.memories[randomType] = Math.min(50, this.memories[randomType] + 2);
+                }
+            }
+            
+            updateBuildingDecay() {
+                if (this.gameTime % 900 === 0) {
                     for (const building of this.buildings) {
                         if (building.storedMemories > 0) {
                             building.storedMemories = Math.max(0, building.storedMemories - 1);
@@ -249,50 +886,75 @@
                     }
                 }
                 
-                this.updateSatisfaction();
-                this.updateUI();
+                // Update building pulse timers
+                for (const building of this.buildings) {
+                    building.pulseTimer++;
+                }
             }
             
-            updateCitizens() {
-                for (const citizen of this.citizens) {
-                    // 目標に向かって移動
-                    const dx = citizen.targetX - citizen.x;
-                    const dy = citizen.targetY - citizen.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (distance > 2) {
-                        citizen.x += (dx / distance) * citizen.speed;
-                        citizen.y += (dy / distance) * citizen.speed;
-                    } else {
-                        // 建物に到達した場合の処理
-                        const nearBuilding = this.buildings.find(b => 
-                            Math.abs(citizen.x - (b.x + b.width/2)) < 30 &&
-                            Math.abs(citizen.y - (b.y + b.height/2)) < 30 &&
-                            b.type === citizen.memoryType
-                        );
-                        
-                        if (nearBuilding && nearBuilding.storedMemories > 0) {
-                            nearBuilding.storedMemories--;
-                            citizen.satisfaction = Math.min(100, citizen.satisfaction + 15);
-                            citizen.needsMemory = false;
-                            citizen.lastFed = this.gameTime;
-                        }
-                        
-                        // 新しい目標を設定
-                        this.setNewTarget(citizen);
-                    }
-                    
-                    // 満足度の自然減少
-                    if (this.gameTime - citizen.lastFed > 500) {
-                        citizen.satisfaction = Math.max(0, citizen.satisfaction - 0.1);
-                        citizen.needsMemory = citizen.satisfaction < 50;
-                    }
+            spawnNewCitizen() {
+                const memoryTypes = ['love', 'knowledge', 'adventure', 'peace', 'nostalgia', 'courage'];
+                const spawnX = Math.random() * (this.canvas.width - 32) + 16;
+                const spawnY = Math.random() * (this.canvas.height - 32) + 16;
+                
+                const newCitizen = {
+                    x: spawnX,
+                    y: spawnY,
+                    targetX: spawnX,
+                    targetY: spawnY,
+                    speed: 0.6 + Math.random() * 0.8,
+                    needsMemory: true,
+                    memoryType: memoryTypes[Math.floor(Math.random() * memoryTypes.length)],
+                    satisfaction: 45 + Math.random() * 35,
+                    lastFed: 0,
+                    satisfiedUntil: 0,
+                    glowIntensity: 0,
+                    walkCycle: 0
+                };
+                
+                this.citizens.push(newCitizen);
+                this.setNewTarget(newCitizen);
+                
+                // Spawn effect
+                this.createSpawnEffect(spawnX, spawnY);
+            }
+            
+            createSpawnEffect(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    this.particles.push({
+                        x: x + 4,
+                        y: y + 4,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: (Math.random() - 0.5) * 4,
+                        color: '#ffffff',
+                        life: 30,
+                        maxLife: 30,
+                        size: 1,
+                        type: 'spawn'
+                    });
+                }
+            }
+            
+            createDissolveEffect(x, y, memoryType) {
+                const colors = this.getMemoryColorPalette(memoryType);
+                const particles = [];
+                
+                for (let i = 0; i < 15; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        vx: (Math.random() - 0.5) * 5,
+                        vy: (Math.random() - 0.5) * 5 - 2,
+                        alpha: 1.0,
+                        scale: 1.0,
+                        color: colors.accent
+                    });
                 }
                 
-                // 定期的に新しい目標を割り当て
-                if (this.gameTime % 180 === 0) {
-                    this.assignNewTargets();
-                }
+                this.dissolveEffects.push({
+                    particles: particles,
+                    life: 150
+                });
             }
             
             assignNewTargets() {
@@ -302,68 +964,60 @@
             }
             
             setNewTarget(citizen) {
-                if (citizen.needsMemory) {
-                    // 必要な記憶タイプの建物を探す
+                if (citizen.needsMemory && citizen.satisfiedUntil === 0) {
                     const targetBuildings = this.buildings.filter(b => 
                         b.type === citizen.memoryType && b.storedMemories > 0
                     );
                     
                     if (targetBuildings.length > 0) {
                         const target = targetBuildings[Math.floor(Math.random() * targetBuildings.length)];
-                        citizen.targetX = target.x + target.width/2;
-                        citizen.targetY = target.y + target.height/2;
+                        citizen.targetX = target.x + target.width/2 + (Math.random() - 0.5) * 30;
+                        citizen.targetY = target.y + target.height/2 + (Math.random() - 0.5) * 30;
                     } else {
-                        // ランダムな位置へ
                         citizen.targetX = Math.random() * (this.canvas.width - 32) + 16;
                         citizen.targetY = Math.random() * (this.canvas.height - 32) + 16;
                     }
                 } else {
-                    // ランダムな位置へ散歩
                     citizen.targetX = Math.random() * (this.canvas.width - 32) + 16;
                     citizen.targetY = Math.random() * (this.canvas.height - 32) + 16;
                 }
             }
             
             updateSatisfaction() {
-                const averageSatisfaction = this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length;
-                this.satisfaction = Math.round(averageSatisfaction);
+                if (this.citizens.length > 0) {
+                    const averageSatisfaction = this.citizens.reduce((sum, c) => sum + c.satisfaction, 0) / this.citizens.length;
+                    this.satisfaction = Math.round(averageSatisfaction);
+                }
             }
             
             render() {
-                // 背景をクリア
-                this.ctx.fillStyle = '#0f3460';
+                // Clear canvas with animated background
+                const gradient = this.ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+                gradient.addColorStop(0, '#0d2946');
+                gradient.addColorStop(1, '#1e3c72');
+                this.ctx.fillStyle = gradient;
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 
-                // グリッドを描画
-                this.drawGrid();
+                if (!this.gameStarted) return;
                 
-                // 建物を描画
+                this.drawAnimatedGrid();
                 this.drawBuildings();
-                
-                // 住民を描画
                 this.drawCitizens();
-                
-                // 記憶オーブを描画
-                this.drawMemoryOrbs();
-                
-                // UI要素を描画
-                this.drawGameUI();
+                this.drawEffects();
             }
             
-            drawGrid() {
-                this.ctx.strokeStyle = '#1e4d73';
+            drawAnimatedGrid() {
+                this.ctx.strokeStyle = `rgba(0, 212, 255, ${0.1 + Math.sin(this.gameTime * 0.02) * 0.05})`;
                 this.ctx.lineWidth = 1;
                 
-                // 縦線
-                for (let x = 0; x < this.canvas.width; x += 40) {
+                for (let x = 0; x < this.canvas.width; x += 50) {
                     this.ctx.beginPath();
                     this.ctx.moveTo(x, 0);
                     this.ctx.lineTo(x, this.canvas.height);
                     this.ctx.stroke();
                 }
                 
-                // 横線
-                for (let y = 0; y < this.canvas.height; y += 40) {
+                for (let y = 0; y < this.canvas.height; y += 50) {
                     this.ctx.beginPath();
                     this.ctx.moveTo(0, y);
                     this.ctx.lineTo(this.canvas.width, y);
@@ -373,105 +1027,179 @@
             
             drawBuildings() {
                 for (const building of this.buildings) {
-                    // 建物本体（ドット絵風）
-                    this.ctx.fillStyle = building.color;
-                    this.ctx.fillRect(building.x, building.y, building.width, building.height);
+                    const pattern = this.buildingPatterns[building.type];
                     
-                    // 建物の輪郭
-                    this.ctx.strokeStyle = '#ffffff';
-                    this.ctx.lineWidth = 2;
-                    this.ctx.strokeRect(building.x, building.y, building.width, building.height);
-                    
-                    // 窓（ドット絵風）
-                    this.ctx.fillStyle = '#ffffff';
-                    for (let i = 0; i < 3; i++) {
-                        for (let j = 0; j < 3; j++) {
-                            const windowX = building.x + 8 + i * 12;
-                            const windowY = building.y + 8 + j * 12;
-                            this.ctx.fillRect(windowX, windowY, 4, 4);
-                        }
+                    // Pulse effect for buildings with recent activity
+                    const timeSinceDistribution = this.gameTime - building.lastDistribution;
+                    let scale = 1.0;
+                    if (timeSinceDistribution < 30) {
+                        scale = 1.0 + Math.sin(timeSinceDistribution * 0.3) * 0.05;
                     }
                     
-                    // 記憶ストレージ表示
-                    const fillRatio = building.storedMemories / building.capacity;
-                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                    this.ctx.fillRect(
-                        building.x + 2, 
-                        building.y + building.height - 6, 
-                        (building.width - 4) * fillRatio, 
-                        4
-                    );
+                    // Draw building shadow
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                    this.ctx.fillRect(building.x + 3, building.y + 3, building.width * scale, building.height * scale);
                     
-                    // ホバーエフェクト
+                    // Draw building
+                    this.ctx.save();
+                    this.ctx.translate(building.x + building.width/2, building.y + building.height/2);
+                    this.ctx.scale(scale, scale);
+                    this.ctx.drawImage(pattern, -building.width/2, -building.height/2);
+                    this.ctx.restore();
+                    
+                    // Draw storage indicator with enhanced visuals
+                    const fillRatio = building.storedMemories / building.capacity;
+                    const barWidth = building.width - 8;
+                    const barHeight = 6;
+                    const barX = building.x + 4;
+                    const barY = building.y + building.height + 5;
+                    
+                    // Storage bar background
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                    this.ctx.fillRect(barX, barY, barWidth, barHeight);
+                    
+                    // Storage bar fill with gradient
+                    if (fillRatio > 0) {
+                        const colors = this.getMemoryColorPalette(building.type);
+                        const gradient = this.ctx.createLinearGradient(barX, barY, barX + barWidth * fillRatio, barY);
+                        gradient.addColorStop(0, colors.primary);
+                        gradient.addColorStop(1, colors.accent);
+                        this.ctx.fillStyle = gradient;
+                        this.ctx.fillRect(barX, barY, barWidth * fillRatio, barHeight);
+                    }
+                    
+                    // Storage bar outline
+                    this.ctx.strokeStyle = '#ffffff';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.strokeRect(barX, barY, barWidth, barHeight);
+                    
+                    // Hover effect
                     if (this.mouseX >= building.x && this.mouseX <= building.x + building.width &&
                         this.mouseY >= building.y && this.mouseY <= building.y + building.height) {
-                        this.ctx.strokeStyle = '#ffff00';
+                        this.ctx.strokeStyle = '#00d4ff';
                         this.ctx.lineWidth = 3;
+                        this.ctx.shadowColor = '#00d4ff';
+                        this.ctx.shadowBlur = 10;
                         this.ctx.strokeRect(building.x - 2, building.y - 2, building.width + 4, building.height + 4);
+                        this.ctx.shadowBlur = 0;
                     }
                 }
             }
             
             drawCitizens() {
                 for (const citizen of this.citizens) {
-                    // 住民の満足度による色分け
-                    if (citizen.satisfaction > 70) {
-                        this.ctx.fillStyle = '#00ff00';
-                    } else if (citizen.satisfaction > 40) {
-                        this.ctx.fillStyle = '#ffff00';
+                    // Enhanced citizen rendering with walking animation
+                    const walkOffset = Math.sin(citizen.walkCycle || 0) * 1;
+                    
+                    if (citizen.glowIntensity > 0) {
+                        // Satisfied citizen with glow effect
+                        const colors = this.getMemoryColorPalette(citizen.memoryType);
+                        this.ctx.shadowColor = colors.accent;
+                        this.ctx.shadowBlur = 15 * citizen.glowIntensity;
+                        this.ctx.fillStyle = colors.primary;
                     } else {
-                        this.ctx.fillStyle = '#ff0000';
+                        // Regular citizen with satisfaction-based coloring
+                        this.ctx.shadowBlur = 0;
+                        if (citizen.satisfaction > 75) {
+                            this.ctx.fillStyle = '#00ff88';
+                        } else if (citizen.satisfaction > 45) {
+                            this.ctx.fillStyle = '#ffdd00';
+                        } else {
+                            this.ctx.fillStyle = '#ff4757';
+                        }
                     }
                     
-                    // 住民本体（ドット絵風）
-                    this.ctx.fillRect(citizen.x, citizen.y, 8, 8);
+                    // Draw citizen body (enhanced pixel art)
+                    this.ctx.fillRect(citizen.x, citizen.y + walkOffset, 10, 10);
                     
-                    // 輪郭
+                    // Reset shadow
+                    this.ctx.shadowBlur = 0;
+                    
+                    // Draw citizen outline
                     this.ctx.strokeStyle = '#ffffff';
                     this.ctx.lineWidth = 1;
-                    this.ctx.strokeRect(citizen.x, citizen.y, 8, 8);
+                    this.ctx.strokeRect(citizen.x, citizen.y + walkOffset, 10, 10);
                     
-                    // 記憶が必要な住民にはアイコン表示
-                    if (citizen.needsMemory) {
-                        this.ctx.fillStyle = this.getMemoryColor(citizen.memoryType);
-                        this.ctx.fillRect(citizen.x - 2, citizen.y - 6, 4, 4);
+                    // Draw eyes (cute detail)
+                    this.ctx.fillStyle = '#ffffff';
+                    this.ctx.fillRect(citizen.x + 2, citizen.y + 2 + walkOffset, 2, 2);
+                    this.ctx.fillRect(citizen.x + 6, citizen.y + 2 + walkOffset, 2, 2);
+                    
+                    // Draw memory need indicator (only when needed and not satisfied)
+                    if (citizen.needsMemory && citizen.satisfiedUntil === 0) {
+                        const colors = this.getMemoryColorPalette(citizen.memoryType);
+                        this.ctx.fillStyle = colors.primary;
+                        this.ctx.fillRect(citizen.x - 1, citizen.y - 8, 6, 6);
+                        this.ctx.strokeStyle = '#ffffff';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.strokeRect(citizen.x - 1, citizen.y - 8, 6, 6);
                     }
                 }
             }
             
-            drawMemoryOrbs() {
+            drawEffects() {
+                // Draw memory orbs
                 for (const orb of this.memoryOrbs) {
                     const alpha = orb.life / orb.maxLife;
-                    this.ctx.fillStyle = orb.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                    this.ctx.save();
+                    this.ctx.globalAlpha = alpha;
+                    this.ctx.fillStyle = orb.color;
+                    this.ctx.shadowColor = orb.color;
+                    this.ctx.shadowBlur = 8;
                     
                     this.ctx.beginPath();
-                    this.ctx.arc(orb.x, orb.y, 3, 0, Math.PI * 2);
+                    this.ctx.arc(orb.x, orb.y, orb.size, 0, Math.PI * 2);
                     this.ctx.fill();
+                    this.ctx.restore();
                 }
-            }
-            
-            drawGameUI() {
-                // 左上に簡単な説明
-                this.ctx.fillStyle = '#ffffff';
-                this.ctx.font = '12px monospace';
-                this.ctx.fillText('建物をクリックして記憶を配布', 10, 20);
-            }
-            
-            getMemoryColor(type) {
-                const colors = {
-                    happy: '#ffd700',
-                    skill: '#00ff88',
-                    sad: '#ff4757'
-                };
-                return colors[type] || '#ffffff';
+                
+                // Draw particles
+                for (const particle of this.particles) {
+                    const alpha = particle.life / particle.maxLife;
+                    this.ctx.save();
+                    this.ctx.globalAlpha = alpha;
+                    this.ctx.fillStyle = particle.color;
+                    
+                    if (particle.type === 'satisfaction') {
+                        this.ctx.shadowColor = particle.color;
+                        this.ctx.shadowBlur = 5;
+                    }
+                    
+                    this.ctx.fillRect(
+                        particle.x - particle.size/2,
+                        particle.y - particle.size/2,
+                        particle.size,
+                        particle.size
+                    );
+                    this.ctx.restore();
+                }
+                
+                // Draw dissolve effects
+                for (const effect of this.dissolveEffects) {
+                    for (const particle of effect.particles) {
+                        this.ctx.save();
+                        this.ctx.globalAlpha = particle.alpha;
+                        this.ctx.fillStyle = particle.color;
+                        this.ctx.shadowColor = particle.color;
+                        this.ctx.shadowBlur = 3;
+                        
+                        const size = 4 * particle.scale;
+                        this.ctx.fillRect(particle.x - size/2, particle.y - size/2, size, size);
+                        this.ctx.restore();
+                    }
+                }
             }
             
             updateUI() {
-                document.getElementById('happyCount').textContent = this.memories.happy;
-                document.getElementById('skillCount').textContent = this.memories.skill;
-                document.getElementById('sadCount').textContent = this.memories.sad;
-                document.getElementById('satisfaction').textContent = this.satisfaction;
-                document.getElementById('gameTime').textContent = Math.floor(this.gameTime / 60);
+                document.getElementById('loveCount').textContent = this.memories.love;
+                document.getElementById('knowledgeCount').textContent = this.memories.knowledge;
+                document.getElementById('adventureCount').textContent = this.memories.adventure;
+                document.getElementById('peaceCount').textContent = this.memories.peace;
+                document.getElementById('nostalgiaCount').textContent = this.memories.nostalgia;
+                document.getElementById('courageCount').textContent = this.memories.courage;
+                document.getElementById('satisfaction').textContent = this.satisfaction + '%';
+                document.getElementById('gameTime').textContent = Math.floor(this.gameTime / 60) + 's';
+                document.getElementById('dissolvedCount').textContent = this.dissolvedCitizens;
             }
             
             gameLoop() {
@@ -481,9 +1209,10 @@
             }
         }
         
-        // ゲーム開始
+        // Initialize the game
         window.addEventListener('load', () => {
-            new MemoryCityGame();
+            const tutorialManager = new TutorialManager();
+            window.memoryGame = new MemoryArchitectGame();
         });
     </script>
 </body>
