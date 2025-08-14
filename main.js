@@ -72,7 +72,7 @@ class UserManager {
     
     playAsGuest() {
         this.currentUser = null;
-        this.isGuest = false;
+        this.isGuest = true;
         this.showMainMenu();
     }
     
@@ -96,8 +96,10 @@ class UserManager {
         const welcomeMsg = document.getElementById('welcomeMessage');
         if (this.isGuest) {
             welcomeMsg.textContent = 'Guest Play - Some features are limited';
-        } else {
+        } else if (this.currentUser && this.currentUser.username) {
             welcomeMsg.textContent = `Welcome, ${this.currentUser.username}!`;
+        } else {
+            welcomeMsg.textContent = 'Welcome to Memory Architect!';
         }
         
         // ボタンの表示/非表示
